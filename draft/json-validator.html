@@ -1,0 +1,2511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Validate JSON online for free. Paste your JSON to check syntax errors, format messy JSON, minify output, and find invalid JSON issues instantly in your browser.">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:title" content="JSON Validator Online - 4all.tools">
+  <meta property="og:description" content="Validate, format, minify, and troubleshoot JSON instantly in your browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://4all.tools/developer-tools/json-validator/">
+  <meta property="og:image" content="https://4all.tools/images/json-validator-preview.png">
+  <link rel="canonical" href="https://4all.tools/developer-tools/json-validator/">
+  <title>JSON Validator Online - Validate, Format and Fix JSON | 4all.tools</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --subtle: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --success: #15803d;
+      --success-soft: #f0fdf4;
+      --error: #dc2626;
+      --error-soft: #fef2f2;
+      --warning: #b45309;
+      --warning-soft: #fffbeb;
+      --editor: #0f172a;
+      --editor-surface: #111c31;
+      --editor-text: #e2e8f0;
+      --editor-muted: #94a3b8;
+      --shadow: 0 24px 70px rgba(15, 23, 42, 0.10), 0 8px 24px rgba(15, 23, 42, 0.06);
+      --shadow-card: 0 10px 30px rgba(15, 23, 42, 0.06);
+      --radius-sm: 10px;
+      --radius: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --max: 1280px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    textarea,
+    input {
+      font: inherit;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    svg {
+      display: block;
+    }
+
+    :focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.35);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 100;
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: #fff;
+      background: var(--text);
+      transform: translateY(-160%);
+      transition: transform 160ms ease;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .container {
+      width: min(calc(100% - 32px), var(--max));
+      margin-inline: auto;
+    }
+
+    .narrow {
+      width: min(calc(100% - 32px), 1040px);
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.86);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      height: 72px;
+      gap: 28px;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex: none;
+      color: var(--text);
+      font-size: 19px;
+      font-weight: 750;
+      letter-spacing: -0.04em;
+    }
+
+    .logo-mark {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(2, 7px);
+      gap: 3px;
+      width: 22px;
+      height: 22px;
+      padding: 2px;
+      border-radius: 7px;
+      background: var(--text);
+    }
+
+    .logo-mark span {
+      border-radius: 2px;
+      background: #fff;
+    }
+
+    .logo-mark span:last-child {
+      background: #60a5fa;
+    }
+
+    .logo-dot {
+      color: var(--primary);
+    }
+
+    .desktop-nav {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin: 0 auto;
+    }
+
+    .desktop-nav a {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 150ms ease;
+    }
+
+    .desktop-nav a:hover,
+    .desktop-nav a.active {
+      color: var(--text);
+    }
+
+    .desktop-nav a.active {
+      position: relative;
+    }
+
+    .desktop-nav a.active::after {
+      position: absolute;
+      right: 0;
+      bottom: -25px;
+      left: 0;
+      height: 2px;
+      border-radius: 99px;
+      background: var(--primary);
+      content: "";
+    }
+
+    .nav-search {
+      display: flex;
+      align-items: center;
+      width: 190px;
+      height: 40px;
+      padding: 0 10px 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--subtle);
+      color: var(--text-muted);
+      transition: border-color 150ms ease, background 150ms ease;
+    }
+
+    .nav-search:focus-within {
+      border-color: #93c5fd;
+      background: #fff;
+    }
+
+    .nav-search svg {
+      width: 17px;
+      height: 17px;
+      flex: none;
+    }
+
+    .nav-search input {
+      min-width: 0;
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .nav-search kbd {
+      padding: 1px 6px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: #fff;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: inherit;
+    }
+
+    .mobile-actions,
+    .mobile-menu {
+      display: none;
+    }
+
+    .icon-button {
+      display: inline-grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: #fff;
+      color: var(--text-secondary);
+    }
+
+    .icon-button svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding-top: 23px;
+      color: var(--text-muted);
+      font-size: 13px;
+      white-space: nowrap;
+      scrollbar-width: none;
+    }
+
+    .breadcrumb::-webkit-scrollbar {
+      display: none;
+    }
+
+    .breadcrumb a:hover {
+      color: var(--primary);
+    }
+
+    .breadcrumb .current {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .breadcrumb svg {
+      width: 14px;
+      height: 14px;
+      flex: none;
+      color: var(--border-strong);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 350px;
+      align-items: center;
+      gap: 56px;
+      padding-top: 38px;
+      padding-bottom: 30px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 12px;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 0 5px var(--primary-soft);
+      content: "";
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin-bottom: 14px;
+      color: var(--text);
+      font-size: clamp(42px, 5vw, 64px);
+      line-height: 1.04;
+      letter-spacing: -0.055em;
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin-bottom: 20px;
+      color: var(--text-secondary);
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 32px;
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge svg {
+      width: 14px;
+      height: 14px;
+      color: var(--primary);
+    }
+
+    .trust-card {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, #fff 55%, #eff6ff);
+      box-shadow: var(--shadow-card);
+    }
+
+    .trust-card::after {
+      position: absolute;
+      right: -25px;
+      bottom: -55px;
+      width: 140px;
+      height: 140px;
+      border: 25px solid rgba(37, 99, 235, 0.05);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .trust-icon {
+      display: grid;
+      place-items: center;
+      width: 43px;
+      height: 43px;
+      margin-bottom: 17px;
+      border: 1px solid #bfdbfe;
+      border-radius: 13px;
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .trust-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .trust-card h2 {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 7px;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .trust-card p {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .tool-section {
+      position: relative;
+      padding: 8px 0 72px;
+    }
+
+    .tool-section::before {
+      position: absolute;
+      z-index: -1;
+      top: 80px;
+      left: 50%;
+      width: min(100%, 1500px);
+      height: 540px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(219, 234, 254, 0.8) 0%, rgba(248, 250, 252, 0) 68%);
+      content: "";
+      transform: translateX(-50%);
+      filter: blur(10px);
+    }
+
+    .workspace {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .workspace-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 68px;
+      gap: 16px;
+      padding: 12px 16px 12px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .editor-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .editor-heading strong {
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 26px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .status-pill::before {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      content: "";
+    }
+
+    .status-pill.valid {
+      background: var(--success-soft);
+      color: var(--success);
+    }
+
+    .status-pill.invalid {
+      background: var(--error-soft);
+      color: var(--error);
+    }
+
+    .status-pill.changed {
+      background: var(--warning-soft);
+      color: var(--warning);
+    }
+
+    .toolbar-actions,
+    .action-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      gap: 8px;
+      padding: 9px 14px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 750;
+      line-height: 1;
+      transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button svg {
+      width: 16px;
+      height: 16px;
+      flex: none;
+    }
+
+    .button.primary {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+    }
+
+    .button.primary:hover {
+      border-color: var(--primary-hover);
+      background: var(--primary-hover);
+    }
+
+    .button.secondary {
+      border-color: var(--border);
+      background: #fff;
+      color: var(--text-secondary);
+    }
+
+    .button.secondary:hover,
+    .button.ghost:hover {
+      border-color: var(--border-strong);
+      background: var(--subtle);
+      color: var(--text);
+    }
+
+    .button.ghost {
+      min-height: 38px;
+      padding: 7px 10px;
+      border-color: transparent;
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.82fr);
+      min-height: 610px;
+    }
+
+    .editor-pane {
+      min-width: 0;
+      padding: 16px;
+      background: #f8fafc;
+      border-right: 1px solid var(--border);
+    }
+
+    .editor-shell {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      border-radius: 17px;
+      background: var(--editor);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .editor-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 42px;
+      padding: 0 15px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+      color: var(--editor-muted);
+      background: var(--editor-surface);
+      font: 11px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .window-dots span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #334155;
+    }
+
+    .window-dots span:first-child {
+      background: #60a5fa;
+    }
+
+    #json-input {
+      display: block;
+      width: 100%;
+      min-height: 505px;
+      resize: vertical;
+      padding: 20px 22px 26px;
+      border: 0;
+      outline: 0;
+      color: var(--editor-text);
+      background: var(--editor);
+      font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      tab-size: 2;
+      caret-color: #93c5fd;
+      scrollbar-color: #334155 var(--editor);
+    }
+
+    #json-input::placeholder {
+      color: #64748b;
+    }
+
+    .editor-shell:focus-within {
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.18);
+    }
+
+    .action-row {
+      padding-top: 14px;
+    }
+
+    .action-row .primary {
+      margin-right: auto;
+      padding-inline: 18px;
+    }
+
+    .result-pane {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .result-card {
+      display: flex;
+      min-height: 240px;
+      flex-direction: column;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: var(--subtle);
+      transition: background 180ms ease, border-color 180ms ease;
+    }
+
+    .result-card.valid {
+      border-color: #bbf7d0;
+      background: var(--success-soft);
+    }
+
+    .result-card.invalid {
+      border-color: #fecaca;
+      background: var(--error-soft);
+    }
+
+    .result-card.warning {
+      border-color: #fde68a;
+      background: var(--warning-soft);
+    }
+
+    .result-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .result-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      flex: none;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text-muted);
+    }
+
+    .result-icon svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .result-card.valid .result-icon {
+      border-color: #bbf7d0;
+      color: var(--success);
+    }
+
+    .result-card.invalid .result-icon {
+      border-color: #fecaca;
+      color: var(--error);
+    }
+
+    .result-card.warning .result-icon {
+      border-color: #fde68a;
+      color: var(--warning);
+    }
+
+    .result-header h2 {
+      margin-bottom: 2px;
+      font-size: 16px;
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+    }
+
+    .result-header p {
+      margin-bottom: 0;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .result-details {
+      display: none;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .result-details.visible {
+      display: block;
+    }
+
+    .error-message {
+      margin-bottom: 12px;
+      color: #991b1b;
+      font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      overflow-wrap: anywhere;
+    }
+
+    .location-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .location-chip {
+      padding: 4px 8px;
+      border: 1px solid #fecaca;
+      border-radius: 7px;
+      background: #fff;
+      color: #991b1b;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .context-code {
+      overflow-x: auto;
+      margin: 0;
+      padding: 11px 12px;
+      border-radius: 10px;
+      color: #fecaca;
+      background: #450a0a;
+      font: 11px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      white-space: pre;
+    }
+
+    .common-checks {
+      display: none;
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid #fecaca;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.68);
+    }
+
+    .common-checks.visible {
+      display: block;
+    }
+
+    .common-checks strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #7f1d1d;
+      font-size: 12px;
+    }
+
+    .common-checks ul {
+      display: grid;
+      gap: 5px;
+      margin: 0;
+      padding-left: 17px;
+      color: #991b1b;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .preview-card {
+      display: none;
+      min-height: 0;
+      flex: 1;
+      margin-top: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: var(--editor);
+    }
+
+    .preview-card.visible {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 43px;
+      gap: 10px;
+      padding: 7px 9px 7px 14px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+      color: var(--editor-muted);
+      background: var(--editor-surface);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .preview-header .button {
+      min-height: 30px;
+      border-color: #334155;
+      background: #1e293b;
+      color: #cbd5e1;
+      font-size: 11px;
+    }
+
+    #output-preview {
+      min-height: 160px;
+      max-height: 255px;
+      overflow: auto;
+      margin: 0;
+      padding: 15px;
+      color: var(--editor-text);
+      font: 11px/1.65 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      scrollbar-color: #334155 var(--editor);
+    }
+
+    .metadata-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .metadata-item {
+      min-width: 0;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--subtle);
+    }
+
+    .metadata-item span {
+      display: block;
+      margin-bottom: 1px;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .metadata-item strong {
+      display: block;
+      overflow: hidden;
+      color: var(--text);
+      font-size: 13px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .privacy-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin: 15px 0 0;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .privacy-note svg {
+      width: 14px;
+      height: 14px;
+      color: var(--success);
+    }
+
+    .section {
+      padding: 80px 0;
+    }
+
+    .section.subtle {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--subtle);
+    }
+
+    .section-heading {
+      max-width: 720px;
+      margin-bottom: 32px;
+    }
+
+    .section-heading.centered {
+      margin-right: auto;
+      margin-left: auto;
+      text-align: center;
+    }
+
+    .section-heading h2 {
+      margin-bottom: 9px;
+      font-size: clamp(30px, 4vw, 42px);
+      line-height: 1.14;
+      letter-spacing: -0.045em;
+    }
+
+    .section-heading p {
+      margin-bottom: 0;
+      color: var(--text-secondary);
+      font-size: 16px;
+    }
+
+    .related-tools {
+      padding-top: 68px;
+      padding-bottom: 80px;
+    }
+
+    .tools-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: #fff;
+      box-shadow: var(--shadow-card);
+    }
+
+    .tool-link {
+      position: relative;
+      min-width: 0;
+      padding: 18px;
+      border-right: 1px solid var(--border);
+      transition: background 160ms ease;
+    }
+
+    .tool-link:last-child {
+      border-right: 0;
+    }
+
+    .tool-link:hover {
+      background: var(--subtle);
+    }
+
+    .mini-icon,
+    .feature-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .mini-icon svg,
+    .feature-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .tool-link strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .tool-link p {
+      margin-bottom: 20px;
+      color: var(--text-muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .arrow {
+      color: var(--primary);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .steps-grid,
+    .features-grid,
+    .errors-grid,
+    .categories-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .steps-grid,
+    .features-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .step-card,
+    .feature-card,
+    .error-card,
+    .category-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: #fff;
+      transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    }
+
+    .step-card:hover,
+    .feature-card:hover,
+    .category-card:hover {
+      border-color: #bfdbfe;
+      box-shadow: var(--shadow-card);
+      transform: translateY(-2px);
+    }
+
+    .step-card {
+      position: relative;
+      overflow: hidden;
+      padding: 26px;
+    }
+
+    .step-number {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      margin-bottom: 40px;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      color: var(--primary);
+      background: var(--primary-soft);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .step-card::after {
+      position: absolute;
+      top: 38px;
+      left: 74px;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent 70%);
+      content: "";
+    }
+
+    .step-card h3,
+    .feature-card h3,
+    .error-card h3,
+    .category-card h3 {
+      margin-bottom: 7px;
+      font-size: 17px;
+      line-height: 1.3;
+      letter-spacing: -0.025em;
+    }
+
+    .step-card p,
+    .feature-card p,
+    .error-card p,
+    .category-card p {
+      margin-bottom: 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .errors-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .error-card {
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(220px, 1.2fr);
+      gap: 20px;
+      padding: 22px;
+    }
+
+    .mini-code {
+      overflow-x: auto;
+      margin: 0;
+      padding: 14px;
+      border: 1px solid #1e293b;
+      border-radius: 13px;
+      color: #fecaca;
+      background: var(--editor);
+      font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      white-space: pre;
+    }
+
+    .feature-card {
+      padding: 24px;
+    }
+
+    .feature-icon {
+      margin-bottom: 18px;
+    }
+
+    .example-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      align-items: center;
+      gap: 56px;
+    }
+
+    .example-copy h2 {
+      margin-bottom: 12px;
+      font-size: clamp(30px, 4vw, 42px);
+      line-height: 1.14;
+      letter-spacing: -0.045em;
+    }
+
+    .example-copy p {
+      margin-bottom: 24px;
+      color: var(--text-secondary);
+    }
+
+    .example-code-wrap {
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      border-radius: var(--radius-lg);
+      background: var(--editor);
+      box-shadow: var(--shadow-card);
+    }
+
+    .example-code-wrap .editor-topbar {
+      border-radius: 0;
+    }
+
+    .example-code {
+      overflow-x: auto;
+      margin: 0;
+      padding: 24px;
+      color: var(--editor-text);
+      font: 13px/1.75 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .faq-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+      transition: border-color 150ms ease;
+    }
+
+    details[open] {
+      border-color: #bfdbfe;
+      box-shadow: 0 7px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    summary {
+      position: relative;
+      padding: 18px 52px 18px 20px;
+      cursor: pointer;
+      list-style: none;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::after {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      color: var(--text-muted);
+      font-size: 20px;
+      font-weight: 400;
+      content: "+";
+      transform: translateY(-52%);
+    }
+
+    details[open] summary::after {
+      content: "-";
+    }
+
+    details p {
+      max-width: 850px;
+      margin: -3px 52px 18px 20px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .categories-grid {
+      grid-template-columns: repeat(4, 1fr);
+      margin-bottom: 28px;
+    }
+
+    .category-card {
+      padding: 22px;
+    }
+
+    .category-card .mini-icon {
+      margin-bottom: 22px;
+    }
+
+    .specific-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .specific-links a {
+      padding: 7px 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      background: var(--subtle);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .specific-links a:hover {
+      border-color: #bfdbfe;
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--subtle);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr repeat(4, 1fr);
+      gap: 40px;
+      padding: 64px 0 48px;
+    }
+
+    .footer-brand p {
+      max-width: 250px;
+      margin: 18px 0 0;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .footer-column strong {
+      display: block;
+      margin-bottom: 13px;
+      color: var(--text);
+      font-size: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    .footer-column a {
+      display: block;
+      margin-top: 9px;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .footer-column a:hover {
+      color: var(--primary);
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 20px 0 28px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 50;
+      right: 20px;
+      bottom: 20px;
+      max-width: min(360px, calc(100% - 40px));
+      padding: 12px 15px;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      color: #fff;
+      background: var(--text);
+      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.24);
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1120px) {
+      .desktop-nav {
+        gap: 16px;
+      }
+
+      .desktop-nav a:nth-last-child(-n+2) {
+        display: none;
+      }
+
+      .nav-search {
+        width: 165px;
+      }
+
+      .hero {
+        grid-template-columns: minmax(0, 1fr) 310px;
+        gap: 30px;
+      }
+
+      .workspace-grid {
+        grid-template-columns: minmax(0, 1.3fr) minmax(330px, 0.8fr);
+      }
+
+      .tools-strip {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .tool-link:nth-child(3) {
+        border-right: 0;
+      }
+
+      .tool-link:nth-child(-n+3) {
+        border-bottom: 1px solid var(--border);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .site-header .nav {
+        height: 64px;
+      }
+
+      .desktop-nav,
+      .nav-search {
+        display: none;
+      }
+
+      .mobile-actions {
+        display: flex;
+        gap: 7px;
+        margin-left: auto;
+      }
+
+      .mobile-menu {
+        display: none;
+        padding: 0 16px 14px;
+      }
+
+      .mobile-menu.open {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+
+      .mobile-menu a {
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text-secondary);
+        background: var(--subtle);
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding-top: 30px;
+      }
+
+      .trust-card {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        column-gap: 15px;
+        align-items: center;
+      }
+
+      .trust-icon {
+        grid-row: span 2;
+        margin-bottom: 0;
+      }
+
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .editor-pane {
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      #json-input {
+        min-height: 400px;
+      }
+
+      .result-pane {
+        min-height: 470px;
+      }
+
+      .errors-grid,
+      .example-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .error-card {
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 1fr);
+      }
+
+      .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-grid {
+        grid-template-columns: 1.5fr repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 700px) {
+      .container,
+      .narrow {
+        width: min(calc(100% - 24px), var(--max));
+      }
+
+      .breadcrumb {
+        padding-top: 16px;
+      }
+
+      .hero {
+        padding-top: 25px;
+        padding-bottom: 20px;
+      }
+
+      h1 {
+        margin-bottom: 12px;
+        font-size: 40px;
+      }
+
+      .hero-copy {
+        font-size: 16px;
+        line-height: 1.65;
+      }
+
+      .trust-card {
+        padding: 18px;
+      }
+
+      .tool-section {
+        padding-top: 5px;
+        padding-bottom: 52px;
+      }
+
+      .workspace {
+        border-radius: 20px;
+      }
+
+      .workspace-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 14px;
+      }
+
+      .toolbar-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .button.ghost {
+        border-color: var(--border);
+        background: var(--subtle);
+      }
+
+      .editor-pane,
+      .result-pane {
+        padding: 10px;
+      }
+
+      .editor-shell {
+        border-radius: 13px;
+      }
+
+      #json-input {
+        min-height: 340px;
+        padding: 16px;
+        font-size: 13px;
+      }
+
+      .action-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .action-row .button {
+        width: 100%;
+      }
+
+      .action-row .primary {
+        grid-column: 1 / -1;
+        margin-right: 0;
+      }
+
+      .result-pane {
+        min-height: 0;
+      }
+
+      .result-card {
+        min-height: 210px;
+        padding: 17px;
+      }
+
+      .metadata-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .privacy-note {
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .section {
+        padding: 56px 0;
+      }
+
+      .related-tools {
+        padding-top: 50px;
+        padding-bottom: 56px;
+      }
+
+      .section-heading {
+        margin-bottom: 24px;
+      }
+
+      .section-heading h2 {
+        font-size: 30px;
+      }
+
+      .tools-strip,
+      .steps-grid,
+      .features-grid,
+      .errors-grid,
+      .categories-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-link,
+      .tool-link:nth-child(3),
+      .tool-link:nth-child(-n+3) {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        column-gap: 12px;
+        align-items: center;
+        padding: 14px;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .tool-link:last-child {
+        border-bottom: 0;
+      }
+
+      .mini-icon {
+        grid-row: span 2;
+        margin-bottom: 0;
+      }
+
+      .tool-link strong {
+        margin-bottom: 0;
+      }
+
+      .tool-link p {
+        grid-column: 2;
+        margin-bottom: 0;
+      }
+
+      .tool-link .arrow {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+      }
+
+      .step-card {
+        padding: 20px;
+      }
+
+      .step-number {
+        margin-bottom: 24px;
+      }
+
+      .error-card {
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      .example-wrap {
+        gap: 28px;
+      }
+
+      .example-code {
+        padding: 17px;
+        font-size: 11px;
+      }
+
+      .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px 22px;
+        padding: 48px 0 38px;
+      }
+
+      .footer-brand {
+        grid-column: 1 / -1;
+      }
+
+      .footer-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "JSON Validator",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "Free online JSON validator to check syntax, format JSON, minify JSON, and find common JSON errors.",
+      "url": "https://4all.tools/developer-tools/json-validator/"
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://4all.tools/"},
+        {"@type": "ListItem", "position": 2, "name": "Developer Tools", "item": "https://4all.tools/developer-tools/"},
+        {"@type": "ListItem", "position": 3, "name": "JSON Validator", "item": "https://4all.tools/developer-tools/json-validator/"}
+      ]
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "What is a JSON validator?", "acceptedAnswer": {"@type": "Answer", "text": "A JSON validator checks whether your JSON follows the correct syntax. It can help identify issues like missing quotes, trailing commas, unclosed brackets, or invalid characters."}},
+        {"@type": "Question", "name": "Is my JSON uploaded to a server?", "acceptedAnswer": {"@type": "Answer", "text": "JSON validation runs locally in your browser. Your input is not uploaded just to check syntax."}},
+        {"@type": "Question", "name": "Can this tool format JSON?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. If your JSON is valid, you can format it into readable indented output."}},
+        {"@type": "Question", "name": "Can this tool minify JSON?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The minify option removes unnecessary whitespace from valid JSON."}},
+        {"@type": "Question", "name": "Why is my JSON invalid?", "acceptedAnswer": {"@type": "Answer", "text": "Common reasons include trailing commas, single quotes, missing quotes around keys, comments, unclosed braces, or invalid escape characters."}},
+        {"@type": "Question", "name": "Does JSON allow comments?", "acceptedAnswer": {"@type": "Answer", "text": "Standard JSON does not allow comments. Remove comments before validating."}},
+        {"@type": "Question", "name": "What is the difference between JSON validation and JSON formatting?", "acceptedAnswer": {"@type": "Answer", "text": "Validation checks whether the syntax is correct. Formatting changes the appearance of valid JSON to make it easier to read."}}
+      ]
+    }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#json-input">Skip to JSON editor</a>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a class="logo" href="/" aria-label="4all.tools home">
+        <span class="logo-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+        <span>4all<span class="logo-dot">.</span>tools</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Main navigation">
+        <a href="/tools/">Tools</a>
+        <a href="/categories/">Categories</a>
+        <a class="active" href="/developer-tools/">Developer Tools</a>
+        <a href="/calculators/">Calculators</a>
+        <a href="/pdf-tools/">PDF Tools</a>
+        <a href="/converters/">Converters</a>
+      </nav>
+      <label class="nav-search" aria-label="Search tools">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+        <input id="tool-search" type="search" placeholder="Search tools">
+        <kbd>/</kbd>
+      </label>
+      <div class="mobile-actions">
+        <button class="icon-button" id="mobile-search-btn" type="button" aria-label="Focus search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+        </button>
+        <button class="icon-button" id="menu-btn" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
+      <a href="/tools/">Tools</a>
+      <a href="/categories/">Categories</a>
+      <a href="/developer-tools/">Developer Tools</a>
+      <a href="/calculators/">Calculators</a>
+      <a href="/pdf-tools/">PDF Tools</a>
+      <a href="/converters/">Converters</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+        <a href="/developer-tools/">Developer Tools</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+        <span class="current" aria-current="page">JSON Validator</span>
+      </nav>
+
+      <section class="hero">
+        <div>
+          <span class="eyebrow">Developer Tools</span>
+          <h1>JSON Validator Online</h1>
+          <p class="hero-copy">Validate JSON syntax, format messy objects, minify output, and find errors instantly. Paste your JSON below and get a clear result without uploading your data.</p>
+          <div class="badges" aria-label="Tool benefits">
+            <span class="badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+              Free forever
+            </span>
+            <span class="badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="m8 12 3 3 5-6"></path></svg>
+              Runs in your browser
+            </span>
+            <span class="badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v18M3 12h18"></path></svg>
+              No sign up
+            </span>
+          </div>
+        </div>
+        <aside class="trust-card">
+          <span class="trust-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-5"></path></svg>
+          </span>
+          <h2>Private by design</h2>
+          <p>Your JSON is processed locally in your browser. Nothing is uploaded just to validate your data.</p>
+        </aside>
+      </section>
+    </div>
+
+    <section class="tool-section" aria-label="JSON validator workspace">
+      <div class="container">
+        <div class="workspace">
+          <div class="workspace-toolbar">
+            <div class="editor-heading">
+              <strong>JSON Input</strong>
+              <span class="status-pill" id="status-pill">Ready</span>
+            </div>
+            <div class="toolbar-actions">
+              <button class="button ghost" id="sample-btn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"></path></svg>
+                Load sample
+              </button>
+              <button class="button ghost" id="upload-btn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"></path></svg>
+                Upload
+              </button>
+              <input class="sr-only" id="file-input" type="file" accept=".json,application/json">
+              <button class="button ghost" id="paste-btn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="7" y="4" width="10" height="16" rx="2"></rect><path d="M9 4V2h6v2"></path></svg>
+                Paste
+              </button>
+              <button class="button ghost" id="clear-btn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"></path></svg>
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <div class="workspace-grid">
+            <div class="editor-pane">
+              <label class="sr-only" for="json-input">JSON input</label>
+              <div class="editor-shell">
+                <div class="editor-topbar" aria-hidden="true">
+                  <span class="window-dots"><span></span><span></span><span></span></span>
+                  <span>input.json</span>
+                </div>
+                <textarea id="json-input" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="editor-help result-message" placeholder='{
+  "name": "4all.tools",
+  "type": "developer-tool",
+  "features": ["validate", "format", "minify"]
+}'></textarea>
+              </div>
+              <p class="sr-only" id="editor-help">Paste JSON here, then choose Validate JSON to check its syntax.</p>
+              <div class="action-row">
+                <button class="button primary" id="validate-btn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4L19 6"></path></svg>
+                  Validate JSON
+                </button>
+                <button class="button secondary" id="format-btn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h16"></path></svg>
+                  Format
+                </button>
+                <button class="button secondary" id="minify-btn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m8 3-5 5 5 5M16 11l5 5-5 5M3 8h8M13 16h8"></path></svg>
+                  Minify
+                </button>
+                <button class="button secondary" id="copy-btn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg>
+                  Copy
+                </button>
+                <button class="button secondary" id="download-btn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"></path></svg>
+                  Download
+                </button>
+              </div>
+            </div>
+
+            <aside class="result-pane" aria-label="Validation result">
+              <div class="result-card" id="result-panel" aria-live="polite">
+                <div class="result-header">
+                  <span class="result-icon" id="result-icon" aria-hidden="true">
+                    <svg id="result-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"></path><circle cx="12" cy="12" r="9"></circle></svg>
+                  </span>
+                  <div>
+                    <h2 id="result-title">Waiting for JSON</h2>
+                    <p id="result-message">Paste JSON into the editor and run validation to check for syntax errors.</p>
+                  </div>
+                </div>
+                <div class="result-details" id="result-details">
+                  <div class="error-message" id="error-message"></div>
+                  <div class="location-row" id="location-row"></div>
+                  <pre class="context-code" id="context-code"></pre>
+                </div>
+                <div class="common-checks" id="common-checks">
+                  <strong>Common things to check</strong>
+                  <ul>
+                    <li>Use double quotes for keys and strings.</li>
+                    <li>Remove trailing commas.</li>
+                    <li>Make sure every object and array is closed.</li>
+                    <li>Remove comments before validating.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="preview-card" id="preview-card">
+                <div class="preview-header">
+                  <span>Formatted preview</span>
+                  <button class="button" id="copy-output-btn" type="button" aria-label="Copy formatted JSON">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg>
+                    Copy output
+                  </button>
+                </div>
+                <pre id="output-preview"></pre>
+              </div>
+
+              <div class="metadata-grid" aria-label="JSON metadata">
+                <div class="metadata-item"><span>Characters</span><strong id="metadata-characters">0</strong></div>
+                <div class="metadata-item"><span>Lines</span><strong id="metadata-lines">0</strong></div>
+                <div class="metadata-item"><span>Size</span><strong id="metadata-size">0 B</strong></div>
+                <div class="metadata-item"><span>Top-level type</span><strong id="metadata-type">Unknown</strong></div>
+              </div>
+            </aside>
+          </div>
+        </div>
+        <p class="privacy-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-5"></path></svg>
+          Your JSON is validated locally in your browser. Nothing is uploaded to our servers.
+        </p>
+      </div>
+    </section>
+
+    <section class="container related-tools" aria-labelledby="related-title">
+      <div class="section-heading">
+        <span class="eyebrow">Keep building</span>
+        <h2 id="related-title">Related developer tools</h2>
+        <p>Keep working with data, strings, and API payloads using these free tools.</p>
+      </div>
+      <div class="tools-strip">
+        <a class="tool-link" href="/developer-tools/json-formatter/">
+          <span class="mini-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h16"></path></svg></span>
+          <strong>JSON Formatter</strong><p>Beautify JSON for easier reading.</p><span class="arrow">&rarr;</span>
+        </a>
+        <a class="tool-link" href="/developer-tools/json-minifier/">
+          <span class="mini-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 3-5 5 5 5M16 11l5 5-5 5"></path></svg></span>
+          <strong>JSON Minifier</strong><p>Remove unnecessary whitespace.</p><span class="arrow">&rarr;</span>
+        </a>
+        <a class="tool-link" href="/developer-tools/json-to-csv/">
+          <span class="mini-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4zM4 10h16M9 5v14"></path></svg></span>
+          <strong>JSON to CSV</strong><p>Convert structured data to CSV.</p><span class="arrow">&rarr;</span>
+        </a>
+        <a class="tool-link" href="/developer-tools/base64-encoder/">
+          <span class="mini-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 9h8M8 15h8M11 5 8 19M16 5l-3 14"></path></svg></span>
+          <strong>Base64 Encoder</strong><p>Encode text and data safely.</p><span class="arrow">&rarr;</span>
+        </a>
+        <a class="tool-link" href="/developer-tools/url-encoder/">
+          <span class="mini-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1-1"></path></svg></span>
+          <strong>URL Encoder</strong><p>Encode URL-safe strings.</p><span class="arrow">&rarr;</span>
+        </a>
+        <a class="tool-link" href="/developer-tools/regex-tester/">
+          <span class="mini-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 6v12M13 8l8 8M21 8l-8 8M3 12h6"></path></svg></span>
+          <strong>Regex Tester</strong><p>Test regular expressions quickly.</p><span class="arrow">&rarr;</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section subtle" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section-heading centered">
+          <span class="eyebrow">Three simple steps</span>
+          <h2 id="how-title">How to validate JSON online</h2>
+          <p>Use this JSON validator to quickly check whether your JSON is correctly structured.</p>
+        </div>
+        <div class="steps-grid">
+          <article class="step-card"><span class="step-number">01</span><h3>Paste your JSON</h3><p>Copy your JSON object, array, or API response into the editor.</p></article>
+          <article class="step-card"><span class="step-number">02</span><h3>Validate the syntax</h3><p>Click Validate JSON to check for syntax errors and parsing issues.</p></article>
+          <article class="step-card"><span class="step-number">03</span><h3>Fix, format, or minify</h3><p>Review errors if needed, or format and minify valid JSON for your workflow.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="errors-title">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Troubleshoot faster</span>
+          <h2 id="errors-title">Common JSON errors this validator can help you find</h2>
+          <p>JSON is intentionally strict. These small syntax mistakes are among the most common reasons a payload cannot be parsed.</p>
+        </div>
+        <div class="errors-grid">
+          <article class="error-card"><div><h3>Trailing commas</h3><p>JSON does not allow a comma after the last property in an object or array.</p></div><pre class="mini-code">{
+  "name": "Alex",
+}</pre></article>
+          <article class="error-card"><div><h3>Single quotes</h3><p>JSON strings and object keys must use double quotes.</p></div><pre class="mini-code">{
+  'name': 'Alex'
+}</pre></article>
+          <article class="error-card"><div><h3>Unquoted keys</h3><p>Object keys must be wrapped in double quotes.</p></div><pre class="mini-code">{
+  name: "Alex"
+}</pre></article>
+          <article class="error-card"><div><h3>Comments in JSON</h3><p>Standard JSON does not support comments.</p></div><pre class="mini-code">{
+  // user name
+  "name": "Alex"
+}</pre></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section subtle" aria-labelledby="features-title">
+      <div class="container">
+        <div class="section-heading centered">
+          <span class="eyebrow">Focused and practical</span>
+          <h2 id="features-title">Why use this JSON validator?</h2>
+          <p>A fast, private tool for getting from a parsing error to clean JSON.</p>
+        </div>
+        <div class="features-grid">
+          <article class="feature-card"><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m13 2-9 12h8l-1 8 9-12h-8l1-8Z"></path></svg></span><h3>Instant validation</h3><p>Check JSON syntax in seconds and quickly identify parsing issues.</p></article>
+          <article class="feature-card"><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h16"></path></svg></span><h3>Format and beautify JSON</h3><p>Turn compact or messy JSON into readable, indented output.</p></article>
+          <article class="feature-card"><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 3-5 5 5 5M16 11l5 5-5 5"></path></svg></span><h3>Minify JSON</h3><p>Remove whitespace from valid JSON when you need a smaller payload.</p></article>
+          <article class="feature-card"><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path></svg></span><h3>Private by default</h3><p>Your input is processed locally in your browser for a faster and more private workflow.</p></article>
+          <article class="feature-card"><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"></path><circle cx="12" cy="12" r="9"></circle></svg></span><h3>Helpful error feedback</h3><p>See parser errors, approximate locations, and common suggestions for fixing invalid JSON.</p></article>
+          <article class="feature-card"><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"></path></svg></span><h3>No account required</h3><p>Use the tool immediately without signing up or installing anything.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="example-title">
+      <div class="container example-wrap">
+        <div class="example-copy">
+          <span class="eyebrow">Correctly structured</span>
+          <h2 id="example-title">Example of valid JSON</h2>
+          <p>Valid JSON uses double quotes for keys and string values, does not include trailing commas, and must have balanced braces and brackets.</p>
+          <button class="button primary" id="example-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"></path></svg>
+            Try this example
+          </button>
+        </div>
+        <div class="example-code-wrap">
+          <div class="editor-topbar" aria-hidden="true"><span class="window-dots"><span></span><span></span><span></span></span><span>valid-example.json</span></div>
+          <pre class="example-code">{
+  "user": {
+    "id": 101,
+    "name": "Alex Rivera",
+    "active": true,
+    "roles": ["admin", "editor"]
+  },
+  "createdAt": "2026-06-12T10:30:00Z"
+}</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section subtle" aria-labelledby="faq-title">
+      <div class="narrow">
+        <div class="section-heading centered">
+          <span class="eyebrow">Questions answered</span>
+          <h2 id="faq-title">JSON validator FAQ</h2>
+          <p>Quick answers about validating, formatting, and troubleshooting JSON.</p>
+        </div>
+        <div class="faq-list">
+          <details open><summary>What is a JSON validator?</summary><p>A JSON validator checks whether your JSON follows the correct syntax. It can help identify issues like missing quotes, trailing commas, unclosed brackets, or invalid characters.</p></details>
+          <details><summary>Is my JSON uploaded to a server?</summary><p>For this tool, JSON validation runs locally in your browser. That means your input does not need to be uploaded just to check syntax.</p></details>
+          <details><summary>Can this tool format JSON?</summary><p>Yes. If your JSON is valid, you can format it into readable indented output.</p></details>
+          <details><summary>Can this tool minify JSON?</summary><p>Yes. The minify option removes unnecessary whitespace from valid JSON.</p></details>
+          <details><summary>Why is my JSON invalid?</summary><p>Common reasons include trailing commas, single quotes, missing quotes around keys, comments, unclosed braces, or invalid escape characters.</p></details>
+          <details><summary>Does JSON allow comments?</summary><p>Standard JSON does not allow comments. If your data includes comments, remove them before validating.</p></details>
+          <details><summary>What is the difference between JSON validation and JSON formatting?</summary><p>Validation checks whether the syntax is correct. Formatting changes the appearance of valid JSON to make it easier to read.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="explore-title">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">More from 4all.tools</span>
+          <h2 id="explore-title">Explore more tools</h2>
+          <p>Move between related workflows without losing momentum.</p>
+        </div>
+        <div class="categories-grid">
+          <a class="category-card" href="/developer-tools/"><span class="mini-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"></path></svg></span><h3>Developer Tools</h3><p>Format, validate, encode, decode, and test code-related data.</p></a>
+          <a class="category-card" href="/seo-tools/"><span class="mini-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4M8 11h6M11 8v6"></path></svg></span><h3>SEO Tools</h3><p>Audit, analyze, and improve website visibility.</p></a>
+          <a class="category-card" href="/text-tools/"><span class="mini-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7V4h14v3M9 20h6M12 4v16"></path></svg></span><h3>Text Tools</h3><p>Clean, transform, count, and format text.</p></a>
+          <a class="category-card" href="/converters/"><span class="mini-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 7 4-4 4 4M11 3v13M17 17l-4 4-4-4M13 21V8"></path></svg></span><h3>Converter Tools</h3><p>Convert files, units, data formats, and measurements.</p></a>
+        </div>
+        <nav class="specific-links" aria-label="Specific related tools">
+          <a href="/developer-tools/json-formatter/">JSON Formatter</a><a href="/developer-tools/json-minifier/">JSON Minifier</a><a href="/developer-tools/xml-formatter/">XML Formatter</a><a href="/developer-tools/html-formatter/">HTML Formatter</a><a href="/developer-tools/base64-encoder/">Base64 Encoder</a><a href="/developer-tools/base64-decoder/">Base64 Decoder</a><a href="/developer-tools/url-encoder/">URL Encoder</a><a href="/developer-tools/url-decoder/">URL Decoder</a><a href="/developer-tools/regex-tester/">Regex Tester</a><a href="/developer-tools/uuid-generator/">UUID Generator</a>
+        </nav>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a class="logo" href="/" aria-label="4all.tools home"><span class="logo-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span><span>4all<span class="logo-dot">.</span>tools</span></a>
+        <p>Free online tools for everyone. Fast, useful, and focused on the task.</p>
+      </div>
+      <nav class="footer-column" aria-label="Tools links"><strong>Tools</strong><a href="/calculators/">Calculators</a><a href="/pdf-tools/">PDF Tools</a><a href="/developer-tools/">Developer Tools</a><a href="/seo-tools/">SEO Tools</a><a href="/converters/">Converters</a></nav>
+      <nav class="footer-column" aria-label="Developer tools links"><strong>Developer Tools</strong><a href="/developer-tools/json-validator/">JSON Validator</a><a href="/developer-tools/json-formatter/">JSON Formatter</a><a href="/developer-tools/base64-encoder/">Base64 Encoder</a><a href="/developer-tools/url-encoder/">URL Encoder</a><a href="/developer-tools/regex-tester/">Regex Tester</a></nav>
+      <nav class="footer-column" aria-label="Resource links"><strong>Resources</strong><a href="/blog/">Blog</a><a href="/guides/">Guides</a><a href="/popular-tools/">Popular Tools</a><a href="/new-tools/">New Tools</a></nav>
+      <nav class="footer-column" aria-label="Company links"><strong>Company</strong><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
+    </div>
+    <div class="container footer-bottom"><span>&copy; 2026 4all.tools. Free online tools for everyone.</span><span>Private by design. Built for speed.</span></div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const sampleJson = `{
+  "project": "4all.tools",
+  "category": "Developer Tools",
+  "tool": "JSON Validator",
+  "free": true,
+  "features": [
+    "Validate JSON",
+    "Format JSON",
+    "Minify JSON",
+    "Find syntax errors"
+  ],
+  "metadata": {
+    "version": "1.0",
+    "privacy": "Runs locally in your browser"
+  }
+}`;
+
+      const exampleJson = `{
+  "user": {
+    "id": 101,
+    "name": "Alex Rivera",
+    "active": true,
+    "roles": ["admin", "editor"]
+  },
+  "createdAt": "2026-06-12T10:30:00Z"
+}`;
+
+      const icons = {
+        waiting: '<path d="M12 8v4M12 16h.01"></path><circle cx="12" cy="12" r="9"></circle>',
+        valid: '<path d="m5 12 4 4L19 6"></path><circle cx="12" cy="12" r="9"></circle>',
+        invalid: '<path d="M8 8l8 8M16 8l-8 8"></path><circle cx="12" cy="12" r="9"></circle>',
+        warning: '<path d="M12 8v4M12 16h.01"></path><path d="M10.3 3.6 2.4 17.2A2 2 0 0 0 4.1 20h15.8a2 2 0 0 0 1.7-2.8L13.7 3.6a2 2 0 0 0-3.4 0Z"></path>'
+      };
+
+      const input = document.getElementById("json-input");
+      const resultPanel = document.getElementById("result-panel");
+      const resultTitle = document.getElementById("result-title");
+      const resultMessage = document.getElementById("result-message");
+      const resultDetails = document.getElementById("result-details");
+      const resultIconSvg = document.getElementById("result-icon-svg");
+      const errorMessage = document.getElementById("error-message");
+      const locationRow = document.getElementById("location-row");
+      const contextCode = document.getElementById("context-code");
+      const commonChecks = document.getElementById("common-checks");
+      const previewCard = document.getElementById("preview-card");
+      const outputPreview = document.getElementById("output-preview");
+      const statusPill = document.getElementById("status-pill");
+      const metadataCharacters = document.getElementById("metadata-characters");
+      const metadataLines = document.getElementById("metadata-lines");
+      const metadataSize = document.getElementById("metadata-size");
+      const metadataType = document.getElementById("metadata-type");
+      const fileInput = document.getElementById("file-input");
+      const toast = document.getElementById("toast");
+      let lastParsedValue = null;
+      let toastTimer;
+
+      function byteSize(value) {
+        return new Blob([value]).size;
+      }
+
+      function formatSize(bytes) {
+        if (bytes === 0) return "0 B";
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(bytes < 10240 ? 2 : 1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+      }
+
+      function topLevelType(value) {
+        if (value === null) return "Null";
+        if (Array.isArray(value)) return "Array";
+        return value.constructor?.name || typeof value;
+      }
+
+      function updateMetadata(parsedValue) {
+        const value = input.value;
+        metadataCharacters.textContent = value.length.toLocaleString();
+        metadataLines.textContent = value ? value.split(/\r\n|\r|\n/).length.toLocaleString() : "0";
+        metadataSize.textContent = formatSize(byteSize(value));
+        metadataType.textContent = arguments.length ? topLevelType(parsedValue) : "Unknown";
+      }
+
+      function setStatus(text, state = "") {
+        statusPill.textContent = text;
+        statusPill.className = `status-pill${state ? ` ${state}` : ""}`;
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("visible");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("visible"), 1800);
+      }
+
+      function setResult(state, title, message) {
+        resultPanel.className = `result-card${state !== "waiting" ? ` ${state}` : ""}`;
+        resultTitle.textContent = title;
+        resultMessage.textContent = message;
+        resultIconSvg.innerHTML = icons[state] || icons.waiting;
+        resultDetails.classList.remove("visible");
+        commonChecks.classList.remove("visible");
+        previewCard.classList.remove("visible");
+      }
+
+      function resetResult() {
+        lastParsedValue = null;
+        setStatus("Ready");
+        setResult("waiting", "Waiting for JSON", "Paste JSON into the editor and run validation to check for syntax errors.");
+        outputPreview.textContent = "";
+        errorMessage.textContent = "";
+        locationRow.replaceChildren();
+        contextCode.textContent = "";
+        updateMetadata();
+      }
+
+      function getErrorLocation(error, value) {
+        const message = error && error.message ? error.message : String(error);
+        let position = null;
+        let line = null;
+        let column = null;
+        const positionMatch = message.match(/position\s+(\d+)/i);
+        const lineColumnMatch = message.match(/line\s+(\d+)\s+column\s+(\d+)/i);
+
+        if (positionMatch) {
+          position = Number(positionMatch[1]);
+        } else if (/unexpected end/i.test(message)) {
+          position = value.length;
+        }
+
+        if (lineColumnMatch) {
+          line = Number(lineColumnMatch[1]);
+          column = Number(lineColumnMatch[2]);
+        } else if (position !== null) {
+          const before = value.slice(0, position);
+          const parts = before.split(/\r\n|\r|\n/);
+          line = parts.length;
+          column = parts[parts.length - 1].length + 1;
+        }
+
+        return { position, line, column };
+      }
+
+      function makeContext(value, location) {
+        if (!location.line || !location.column) return "";
+        const lines = value.split(/\r\n|\r|\n/);
+        const index = Math.max(0, Math.min(location.line - 1, lines.length - 1));
+        const sourceLine = lines[index] || "";
+        const maxWidth = 72;
+        const start = Math.max(0, location.column - 1 - 34);
+        const visibleLine = sourceLine.slice(start, start + maxWidth);
+        const caretOffset = Math.max(0, Math.min(location.column - 1 - start, visibleLine.length));
+        const prefix = start > 0 ? "..." : "";
+        const suffix = sourceLine.length > start + maxWidth ? "..." : "";
+        return `${prefix}${visibleLine}${suffix}\n${" ".repeat(prefix.length + caretOffset)}^`;
+      }
+
+      function showValid(parsed) {
+        lastParsedValue = parsed;
+        const formatted = JSON.stringify(parsed, null, 2);
+        setStatus("Valid", "valid");
+        setResult("valid", "Valid JSON", "Your JSON syntax is valid and ready to use.");
+        outputPreview.textContent = formatted;
+        previewCard.classList.add("visible");
+        updateMetadata(parsed);
+        return parsed;
+      }
+
+      function showInvalid(error) {
+        lastParsedValue = null;
+        const message = error && error.message ? error.message : String(error);
+        const location = getErrorLocation(error, input.value);
+        setStatus("Invalid", "invalid");
+        setResult("invalid", "Invalid JSON", "We found a syntax issue in your JSON.");
+        errorMessage.textContent = message;
+        locationRow.replaceChildren();
+
+        if (location.line) {
+          const lineChip = document.createElement("span");
+          lineChip.className = "location-chip";
+          lineChip.textContent = `Approx. line ${location.line}`;
+          locationRow.appendChild(lineChip);
+        }
+
+        if (location.column) {
+          const columnChip = document.createElement("span");
+          columnChip.className = "location-chip";
+          columnChip.textContent = `Approx. column ${location.column}`;
+          locationRow.appendChild(columnChip);
+        }
+
+        const context = makeContext(input.value, location);
+        contextCode.textContent = context;
+        contextCode.hidden = !context;
+        resultDetails.classList.add("visible");
+        commonChecks.classList.add("visible");
+        updateMetadata();
+        return null;
+      }
+
+      function validate(showEmptyWarning = true) {
+        const value = input.value.trim();
+        if (!value) {
+          resetResult();
+          if (showEmptyWarning) {
+            setStatus("Empty", "changed");
+            setResult("warning", "Add JSON to continue", "Paste or upload JSON before running validation.");
+          }
+          return null;
+        }
+
+        try {
+          return showValid(JSON.parse(value));
+        } catch (error) {
+          return showInvalid(error);
+        }
+      }
+
+      async function copyText(value, button, successMessage) {
+        if (!value) {
+          showToast("There is nothing to copy yet.");
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(value);
+        } catch {
+          const helper = document.createElement("textarea");
+          helper.value = value;
+          helper.style.position = "fixed";
+          helper.style.opacity = "0";
+          document.body.appendChild(helper);
+          helper.select();
+          document.execCommand("copy");
+          helper.remove();
+        }
+
+        const original = button.lastChild.textContent;
+        button.lastChild.textContent = " Copied";
+        showToast(successMessage);
+        setTimeout(() => { button.lastChild.textContent = original; }, 1500);
+      }
+
+      function loadAndValidate(value) {
+        input.value = value;
+        input.focus();
+        validate();
+        input.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      document.getElementById("validate-btn").addEventListener("click", () => validate());
+
+      document.getElementById("format-btn").addEventListener("click", () => {
+        const parsed = validate();
+        if (parsed !== null || input.value.trim() === "null") {
+          input.value = JSON.stringify(parsed, null, 2);
+          showValid(parsed);
+          showToast("JSON formatted.");
+        }
+      });
+
+      document.getElementById("minify-btn").addEventListener("click", () => {
+        const parsed = validate();
+        if (parsed !== null || input.value.trim() === "null") {
+          input.value = JSON.stringify(parsed);
+          showValid(parsed);
+          showToast("JSON minified.");
+        }
+      });
+
+      document.getElementById("copy-btn").addEventListener("click", (event) => copyText(input.value, event.currentTarget, "JSON copied."));
+      document.getElementById("copy-output-btn").addEventListener("click", (event) => copyText(outputPreview.textContent, event.currentTarget, "Formatted JSON copied."));
+
+      document.getElementById("clear-btn").addEventListener("click", () => {
+        input.value = "";
+        resetResult();
+        input.focus();
+        showToast("Editor cleared.");
+      });
+
+      document.getElementById("sample-btn").addEventListener("click", () => loadAndValidate(sampleJson));
+      document.getElementById("example-btn").addEventListener("click", () => loadAndValidate(exampleJson));
+
+      document.getElementById("paste-btn").addEventListener("click", async () => {
+        try {
+          const text = await navigator.clipboard.readText();
+          if (!text) {
+            showToast("Your clipboard is empty.");
+            return;
+          }
+          input.value = text;
+          validate();
+          input.focus();
+          showToast("Clipboard pasted.");
+        } catch {
+          input.focus();
+          showToast("Clipboard access was blocked. Paste with Ctrl+V or Command+V.");
+        }
+      });
+
+      document.getElementById("upload-btn").addEventListener("click", () => fileInput.click());
+      fileInput.addEventListener("change", () => {
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+          showToast("Please choose a JSON file smaller than 5 MB.");
+          fileInput.value = "";
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          input.value = String(reader.result || "");
+          validate();
+          showToast(`${file.name} loaded.`);
+          fileInput.value = "";
+        };
+        reader.onerror = () => showToast("The selected file could not be read.");
+        reader.readAsText(file);
+      });
+
+      document.getElementById("download-btn").addEventListener("click", () => {
+        const parsed = validate();
+        if (parsed === null && input.value.trim() !== "null") return;
+        const blob = new Blob([JSON.stringify(parsed, null, 2)], { type: "application/json;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "validated.json";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        showToast("Formatted JSON downloaded.");
+      });
+
+      input.addEventListener("input", () => {
+        lastParsedValue = null;
+        updateMetadata();
+        metadataType.textContent = "Unknown";
+        if (input.value) {
+          setStatus("Not validated", "changed");
+          setResult("waiting", "Ready to validate", "Run validation when you are ready to check this JSON.");
+        } else {
+          resetResult();
+        }
+      });
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Tab") {
+          event.preventDefault();
+          const start = input.selectionStart;
+          const end = input.selectionEnd;
+          input.setRangeText("  ", start, end, "end");
+          input.dispatchEvent(new Event("input"));
+        }
+        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+          event.preventDefault();
+          validate();
+        }
+      });
+
+      const menuButton = document.getElementById("menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+      menuButton.addEventListener("click", () => {
+        const open = menuButton.getAttribute("aria-expanded") === "true";
+        menuButton.setAttribute("aria-expanded", String(!open));
+        mobileMenu.classList.toggle("open", !open);
+      });
+
+      document.getElementById("mobile-search-btn").addEventListener("click", () => {
+        document.getElementById("explore-title").scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "/" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+          event.preventDefault();
+          document.getElementById("tool-search").focus();
+        }
+      });
+
+      resetResult();
+    })();
+  </script>
+</body>
+</html>

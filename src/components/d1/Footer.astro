@@ -1,0 +1,80 @@
+---
+import "./d1.css";
+import Logo from "./Logo.astro";
+import type { LinkItem } from "./types";
+
+interface FooterGroup {
+  title: string;
+  links: LinkItem[];
+}
+
+interface Props {
+  homeHref?: string;
+  groups?: FooterGroup[];
+}
+
+const defaultGroups: FooterGroup[] = [
+  {
+    title: "Tools",
+    links: [
+      { label: "Calculators", href: "#featured" },
+      { label: "Converters", href: "#featured" },
+      { label: "PDF tools", href: "#featured" },
+      { label: "Image tools", href: "#featured" },
+    ],
+  },
+  {
+    title: "Categories",
+    links: [
+      { label: "SEO", href: "#browse" },
+      { label: "Developer", href: "#browse" },
+      { label: "Finance", href: "#browse" },
+      { label: "Education", href: "#browse" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Collections", href: "#collections" },
+      { label: "Help center", href: "#faq" },
+      { label: "New tools", href: "#featured" },
+      { label: "Suggest a tool", href: "mailto:hello@4all.tools" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "#why" },
+      { label: "Stories", href: "#testimonials" },
+      { label: "Privacy", href: "#footer" },
+      { label: "Terms", href: "#footer" },
+    ],
+  },
+];
+
+const { homeHref = "/", groups = defaultGroups } = Astro.props;
+---
+
+<footer class="d1-footer">
+  <div class="d1-shell d1-footer-grid">
+    <div class="d1-footer-brand">
+      <Logo href={homeHref} />
+      <p>The internet's most useful tools, thoughtfully organized in one place.</p>
+      <span class="d1-status"><i></i> All systems operational</span>
+    </div>
+
+    {
+      groups.map(({ title, links }) => (
+        <div class="d1-footer-group">
+          <h3>{title}</h3>
+          {links.map(({ label, href }) => <a href={href}>{label}</a>)}
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="d1-shell d1-footer-bottom" id="footer">
+    <span>&copy; 2026 4all.tools. Built to be useful.</span>
+    <span>Made for everyone, everywhere.</span>
+  </div>
+</footer>

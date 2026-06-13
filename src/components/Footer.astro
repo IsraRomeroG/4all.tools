@@ -1,0 +1,76 @@
+---
+import "../styles/global.css";
+
+const footerGroups = [
+  {
+    title: "Tools",
+    links: ["Calculators", "Converters", "PDF tools", "Developer tools"],
+  },
+  {
+    title: "Categories",
+    links: ["SEO", "Finance", "Images", "Education"],
+  },
+  {
+    title: "Resources",
+    links: ["Collections", "Popular tools", "New tools", "Request a tool"],
+  },
+  {
+    title: "Company",
+    links: ["About", "Contact", "Privacy", "Terms"],
+  },
+];
+---
+
+<footer
+  class="bg-white px-6 pt-[65px] pb-[22px] font-[Inter,Arial,sans-serif] text-slate-900 max-[720px]:px-[18px]"
+>
+  <div
+    class="mx-auto grid max-w-[1280px] grid-cols-[2fr_repeat(4,1fr)] gap-10 max-[1000px]:grid-cols-[2fr_repeat(2,1fr)] max-[720px]:grid-cols-2"
+  >
+    <div class="max-[720px]:col-span-full max-[720px]:mb-[15px]">
+      <a
+        class="inline-flex items-center gap-2.5 text-[19px] font-extrabold tracking-[-0.8px]"
+        href="/"
+        aria-label="4all.tools home"
+      >
+        <span
+          class="grid grid-cols-[repeat(2,6px)] gap-0.5 rounded-[9px] bg-slate-900 p-[7px]"
+          aria-hidden="true"
+        >
+          <span class="size-1.5 rounded-sm bg-white"></span>
+          <span class="size-1.5 rounded-sm bg-white"></span>
+          <span class="size-1.5 rounded-sm bg-white"></span>
+          <span class="size-1.5 rounded-sm bg-blue-400"></span>
+        </span>
+        <span>4all<span class="text-blue-600">.</span>tools</span>
+      </a>
+
+      <p class="mt-5 text-xs leading-[1.7] text-slate-500">
+        Free tools for everyone.<br />
+        Fast, useful and easy to find.
+      </p>
+    </div>
+
+    {
+      footerGroups.map(({ title, links }) => (
+        <div class="flex flex-col gap-3">
+          <strong class="mb-1 text-xs tracking-[0.08em] uppercase">
+            {title}
+          </strong>
+          {links.map((label) => (
+            <a class="text-xs text-slate-500 hover:text-blue-600" href="#">
+              {label}
+            </a>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+
+  <div
+    class="mx-auto mt-[50px] flex max-w-[1280px] justify-between gap-[15px] border-t border-slate-200 pt-5 text-[11px] text-slate-400"
+  >
+    <span>&copy; 2026 4all.tools</span>
+    <span>Tools for all.</span>
+  </div>
+</footer>

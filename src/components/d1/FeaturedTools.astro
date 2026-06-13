@@ -1,0 +1,98 @@
+---
+import "./d1.css";
+import ButtonLink from "./ButtonLink.astro";
+import SectionHeading from "./SectionHeading.astro";
+import ToolCard from "./ToolCard.astro";
+import type { ToolItem } from "./types";
+
+interface Props {
+  tools?: ToolItem[];
+}
+
+const defaultTools: ToolItem[] = [
+  {
+    title: "Percentage Calculator",
+    description: "Calculate percentages, changes, and differences in seconds.",
+    badge: "Popular",
+    icon: "percent",
+    tone: "blue",
+    href: "#featured",
+  },
+  {
+    title: "PDF to Word",
+    description: "Convert PDF documents into editable Word files instantly.",
+    badge: "Fast",
+    icon: "file",
+    tone: "red",
+    href: "#featured",
+  },
+  {
+    title: "Image Compressor",
+    description: "Reduce image size while keeping every detail crisp.",
+    badge: "Private",
+    icon: "image",
+    tone: "pink",
+    href: "#featured",
+  },
+  {
+    title: "JSON Formatter",
+    description: "Format, validate, and inspect JSON without the friction.",
+    badge: "Developer",
+    icon: "code",
+    tone: "slate",
+    href: "#featured",
+  },
+  {
+    title: "Age Calculator",
+    description: "Find exact age in years, months, days, and even minutes.",
+    badge: "Easy",
+    icon: "calendar",
+    tone: "violet",
+    href: "#featured",
+  },
+  {
+    title: "QR Code Generator",
+    description: "Create clean, scannable QR codes for any destination.",
+    badge: "Free",
+    icon: "qr",
+    tone: "indigo",
+    href: "#featured",
+  },
+  {
+    title: "Loan Calculator",
+    description: "Estimate payments, interest, and your payoff timeline.",
+    badge: "Finance",
+    icon: "chart",
+    tone: "green",
+    href: "#featured",
+  },
+  {
+    title: "Word Counter",
+    description: "Count words, characters, sentences, and reading time.",
+    badge: "Writing",
+    icon: "text",
+    tone: "amber",
+    href: "#featured",
+  },
+];
+
+const { tools = defaultTools } = Astro.props;
+---
+
+<section class="d1-section d1-featured-section" id="featured">
+  <div class="d1-shell">
+    <SectionHeading
+      kicker="Community favorites"
+      title="Featured tools"
+      description="Reliable, quick, and loved by millions. These are the tools people reach for every day."
+    />
+
+    <div class="d1-tools-grid">
+      {tools.map((tool) => <ToolCard {...tool} />)}
+    </div>
+
+    <div class="d1-center-action">
+      <ButtonLink href="#browse" label="View all tools" variant="secondary" />
+    </div>
+  </div>
+</section>

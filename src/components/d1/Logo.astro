@@ -1,0 +1,17 @@
+---
+import "./d1.css";
+
+interface Props {
+  href?: string;
+  label?: string;
+}
+
+const { href = "/", label = "4all.tools home" } = Astro.props;
+---
+
+<a class="d1-logo" href={href} aria-label={label}>
+  <span class="d1-logo-mark" aria-hidden="true">
+    <span></span><span></span><span></span><span></span>
+  </span>
+  <span>4all<span>.tools</span></span>
+</a>
