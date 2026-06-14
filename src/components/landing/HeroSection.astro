@@ -36,7 +36,7 @@ interface Props {
 const {
   title = "Every Tool You Need.",
   accentTitle = "One Search Away.",
-  description = "Search thousands of free calculators, converters, SEO tools, PDF utilities and developer tools.",
+  description = "Find calculators, converters, SEO tools, PDF utilities, developer tools and more.",
   announcementBadge = "New",
   announcementLabel = "Curated tool collections are here",
   announcementHref = "#collections",
@@ -53,17 +53,23 @@ const {
   <div
     class="absolute top-[5%] left-[-260px] size-[500px] rounded-full bg-blue-400 opacity-[0.16] blur-[40px]"
     aria-hidden="true"
-  ></div>
+  >
+  </div>
   <div
     class="absolute top-[14%] right-[-280px] size-[500px] rounded-full bg-violet-400 opacity-[0.16] blur-[40px]"
     aria-hidden="true"
-  ></div>
+  >
+  </div>
 
   <div
     class="relative z-[1] mx-auto w-[calc(100%-40px)] max-w-[1280px] text-center max-[760px]:w-[calc(100%-28px)] max-[760px]:max-w-[560px]"
   >
     <div class="mb-6 max-[760px]:mb-[19px]">
-      <AnnouncementPill badge={announcementBadge} label={announcementLabel} href={announcementHref} />
+      <AnnouncementPill
+        badge={announcementBadge}
+        label={announcementLabel}
+        href={announcementHref}
+      />
     </div>
 
     <h1
