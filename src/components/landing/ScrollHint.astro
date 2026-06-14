@@ -1,0 +1,62 @@
+---
+import "@styles/global.css";
+
+interface Props {
+  href?: string;
+  label?: string;
+  ariaLabel?: string;
+}
+
+const {
+  href = "#popular",
+  label = "Explore tools",
+  ariaLabel = "Explore popular categories",
+} = Astro.props;
+---
+
+<a
+  class="scroll-hint absolute bottom-[21px] left-1/2 flex -translate-x-1/2 items-center gap-2 text-[10px] font-bold tracking-[0.12em] text-slate-400 uppercase no-underline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-blue-600/35 max-[760px]:hidden"
+  href={href}
+  aria-label={ariaLabel}
+>
+  <span class="relative h-7 w-[18px] rounded-full border border-slate-300"></span>
+  {label}
+</a>
+
+<style>
+  .scroll-hint > span::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 7px;
+    width: 2px;
+    height: 5px;
+    border-radius: 99px;
+    background: #2563eb;
+    animation: scroll-hint 1.8s infinite;
+  }
+
+  @keyframes scroll-hint {
+    0% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+
+    25%,
+    75% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateY(8px);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-hint > span::after {
+      animation-duration: 0.01ms;
+      animation-iteration-count: 1;
+    }
+  }
+</style>

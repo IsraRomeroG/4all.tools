@@ -1,0 +1,30 @@
+---
+import "@styles/global.css";
+import Icon from "@components/icons/Icon.astro";
+
+interface Props {
+  badge?: string;
+  label?: string;
+  href?: string;
+}
+
+const {
+  badge = "New",
+  label = "Curated tool collections are here",
+  href = "#collections",
+} = Astro.props;
+---
+
+<a
+  class="group inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/80 py-[5px] pr-[11px] pl-1.5 text-xs font-semibold text-slate-600 no-underline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-blue-600/35"
+  href={href}
+>
+  <span class="rounded-full bg-blue-600 px-2 py-0.5 text-[10px] tracking-[0.8px] text-white uppercase">
+    {badge}
+  </span>
+  {label}
+  <Icon
+    name="arrow"
+    class="size-3.5 text-blue-600 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
+  />
+</a>
