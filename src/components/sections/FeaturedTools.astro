@@ -1,9 +1,51 @@
 ---
-import "./d1.css";
-import ButtonLink from "./ButtonLink.astro";
-import SectionHeading from "./SectionHeading.astro";
-import ToolCard from "./ToolCard.astro";
-import type { ToolItem } from "./types";
+import "@styles/global.css";
+import ButtonLink from "@components/buttons/ButtonLink.astro";
+import SectionHeading from "@components/sections/SectionHeading.astro";
+import ToolCard from "@components/cards/ToolCard.astro";
+
+interface ToolItem {
+  title: string;
+  description: string;
+  badge: string;
+  icon:
+    | "search"
+    | "calculator"
+    | "file"
+    | "chart"
+    | "code"
+    | "sparkles"
+    | "image"
+    | "text"
+    | "arrows"
+    | "megaphone"
+    | "book"
+    | "briefcase"
+    | "percent"
+    | "calendar"
+    | "qr"
+    | "rocket"
+    | "arrow"
+    | "check"
+    | "bolt"
+    | "grid"
+    | "menu"
+    | "close";
+  tone:
+    | "blue"
+    | "violet"
+    | "red"
+    | "green"
+    | "slate"
+    | "purple"
+    | "pink"
+    | "amber"
+    | "cyan"
+    | "orange"
+    | "indigo"
+    | "emerald";
+  href: string;
+}
 
 interface Props {
   tools?: ToolItem[];
@@ -79,19 +121,22 @@ const defaultTools: ToolItem[] = [
 const { tools = defaultTools } = Astro.props;
 ---
 
-<section class="d1-section d1-featured-section" id="featured">
-  <div class="d1-shell">
+<section
+  class="border-y border-[#edf1f6] bg-slate-50 py-28 font-[Inter,ui-sans-serif,system-ui,sans-serif] leading-[1.6] text-slate-900 antialiased max-[760px]:py-[76px]"
+  id="featured"
+>
+  <div class="mx-auto w-[calc(100%-40px)] max-w-[1280px] max-[760px]:w-[calc(100%-28px)] max-[760px]:max-w-[560px]">
     <SectionHeading
       kicker="Community favorites"
       title="Featured tools"
       description="Reliable, quick, and loved by millions. These are the tools people reach for every day."
     />
 
-    <div class="d1-tools-grid">
+    <div class="grid grid-cols-4 gap-5 max-[1050px]:grid-cols-2 max-[760px]:grid-cols-1">
       {tools.map((tool) => <ToolCard {...tool} />)}
     </div>
 
-    <div class="d1-center-action">
+    <div class="mt-[38px] text-center">
       <ButtonLink href="#browse" label="View all tools" variant="secondary" />
     </div>
   </div>

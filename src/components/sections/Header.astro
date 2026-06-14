@@ -1,0 +1,129 @@
+---
+import "@styles/global.css";
+import Icon from "@components/icons/Icon.astro";
+import Logo from "@components/logos/Logo.astro";
+
+interface LinkItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  homeHref?: string;
+  links?: LinkItem[];
+}
+
+const defaultLinks: LinkItem[] = [
+  { label: "Tools", href: "#featured" },
+  { label: "Categories", href: "#categories" },
+  { label: "SEO", href: "#browse" },
+  { label: "Calculators", href: "#popular" },
+  { label: "Converters", href: "#featured" },
+  { label: "PDF", href: "#browse" },
+];
+
+const { homeHref = "/", links = defaultLinks } = Astro.props;
+---
+
+<header
+  class="fixed top-0 left-0 z-50 w-full border-b border-transparent font-[Inter,ui-sans-serif,system-ui,sans-serif] leading-[1.6] text-slate-900 antialiased transition-[background-color,box-shadow,border-color] duration-[250ms] data-[scrolled=true]:border-slate-200/80 data-[scrolled=true]:bg-white/90 data-[scrolled=true]:shadow-[0_6px_30px_#0f172a0d] data-[scrolled=true]:backdrop-blur-[16px] motion-reduce:transition-none"
+  data-d1-header
+  data-scrolled="false"
+>
+  <nav
+    class="mx-auto flex h-[76px] w-[calc(100%-40px)] max-w-[1280px] items-center justify-between gap-7 max-[760px]:h-[66px] max-[760px]:w-[calc(100%-28px)] max-[760px]:max-w-[560px]"
+    aria-label="Main navigation"
+  >
+    <Logo href={homeHref} />
+
+    <div class="ml-auto flex items-center gap-7 max-[1050px]:hidden">
+      {
+        links.map(({ label, href }) => (
+          <a
+            class="text-sm font-semibold text-slate-700 no-underline transition-colors duration-200 hover:text-blue-600 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-blue-600/35 motion-reduce:transition-none"
+            href={href}
+          >
+            {label}
+          </a>
+        ))
+      }
+    </div>
+
+    <button
+      class="flex min-h-[42px] cursor-pointer items-center gap-[9px] rounded-xl border border-slate-200 bg-white/70 py-0 pr-2.5 pl-3.5 text-slate-600 shadow-[0_1px_3px_#0f172a0a] [font:inherit] focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-blue-600/35 max-[1050px]:ml-auto max-[760px]:hidden"
+      type="button"
+      data-focus-search
+    >
+      <Icon name="search" class="size-[17px]" />
+      <span class="text-[13px]">Search tools</span>
+      <kbd class="rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-[Inter,ui-sans-serif,system-ui,sans-serif] text-[11px] leading-[18px] text-slate-400">
+        &#8984; K
+      </kbd>
+    </button>
+
+    <button
+      class="group hidden size-11 items-center justify-center rounded-xl border-0 bg-transparent text-slate-900 [font:inherit] focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-blue-600/35 max-[760px]:flex"
+      type="button"
+      aria-label="Open navigation"
+      aria-expanded="false"
+      aria-controls="d1-mobile-menu"
+      data-menu-button
+    >
+      <Icon class="size-[22px] group-aria-expanded:hidden" name="menu" />
+      <Icon class="hidden size-[22px] group-aria-expanded:block" name="close" />
+    </button>
+  </nav>
+
+  <div
+    class="absolute top-[70px] right-0 left-0 mx-auto hidden w-[calc(100%-28px)] max-w-[560px] grid-cols-2 gap-1 rounded-2xl border border-slate-200 bg-white p-2 shadow-[0_18px_50px_rgba(15,23,42,0.08)] data-[open=true]:grid min-[761px]:!hidden"
+    id="d1-mobile-menu"
+    data-mobile-menu
+    data-open="false"
+  >
+    {
+      links.map(({ label, href }) => (
+        <a
+          class="flex min-h-11 items-center rounded-[10px] px-3 text-[13px] font-bold text-slate-900 no-underline hover:bg-slate-50 hover:text-blue-600 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-blue-600/35"
+          href={href}
+        >
+          {label}
+        </a>
+      ))
+    }
+  </div>
+</header>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-d1-header]").forEach((header) => {
+    const menuButton = header.querySelector<HTMLButtonElement>("[data-menu-button]");
+    const mobileMenu = header.querySelector<HTMLElement>("[data-mobile-menu]");
+    const searchButton = header.querySelector<HTMLButtonElement>("[data-focus-search]");
+
+    const updateScrollState = () => {
+      header.dataset.scrolled = String(window.scrollY > 20);
+    };
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+
+    searchButton?.addEventListener("click", () => {
+      const search = document.querySelector<HTMLInputElement>("#tool-search");
+      search?.focus();
+      search?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    menuButton?.addEventListener("click", () => {
+      const isOpen = menuButton.getAttribute("aria-expanded") === "true";
+      menuButton.setAttribute("aria-expanded", String(!isOpen));
+      menuButton.setAttribute("aria-label", isOpen ? "Open navigation" : "Close navigation");
+      if (mobileMenu) mobileMenu.dataset.open = String(!isOpen);
+    });
+
+    mobileMenu?.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        menuButton?.setAttribute("aria-expanded", "false");
+        menuButton?.setAttribute("aria-label", "Open navigation");
+        mobileMenu.dataset.open = "false";
+      });
+    });
+  });
+</script>

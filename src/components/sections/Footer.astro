@@ -1,0 +1,103 @@
+---
+import "@styles/global.css";
+import Logo from "@components/logos/Logo.astro";
+
+interface LinkItem {
+  label: string;
+  href: string;
+}
+
+interface FooterGroup {
+  title: string;
+  links: LinkItem[];
+}
+
+interface Props {
+  homeHref?: string;
+  groups?: FooterGroup[];
+}
+
+const defaultGroups: FooterGroup[] = [
+  {
+    title: "Tools",
+    links: [
+      { label: "Calculators", href: "#featured" },
+      { label: "Converters", href: "#featured" },
+      { label: "PDF tools", href: "#featured" },
+      { label: "Image tools", href: "#featured" },
+    ],
+  },
+  {
+    title: "Categories",
+    links: [
+      { label: "SEO", href: "#browse" },
+      { label: "Developer", href: "#browse" },
+      { label: "Finance", href: "#browse" },
+      { label: "Education", href: "#browse" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Collections", href: "#collections" },
+      { label: "Help center", href: "#faq" },
+      { label: "New tools", href: "#featured" },
+      { label: "Suggest a tool", href: "mailto:hello@4all.tools" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "#why" },
+      { label: "Stories", href: "#testimonials" },
+      { label: "Privacy", href: "#footer" },
+      { label: "Terms", href: "#footer" },
+    ],
+  },
+];
+
+const { homeHref = "/", groups = defaultGroups } = Astro.props;
+---
+
+<footer class="bg-slate-900 pt-[75px] pb-[25px] font-[Inter,ui-sans-serif,system-ui,sans-serif] leading-[1.6] text-white antialiased">
+  <div
+    class="mx-auto grid w-[calc(100%-40px)] max-w-[1280px] grid-cols-[2fr_repeat(4,1fr)] gap-[55px] pb-[65px] max-[1050px]:grid-cols-[2fr_repeat(2,1fr)] max-[760px]:grid-cols-2 max-[760px]:gap-x-6 max-[760px]:gap-y-[38px] max-[760px]:w-[calc(100%-28px)] max-[760px]:max-w-[560px]"
+  >
+    <div class="max-[760px]:col-span-full">
+      <Logo href={homeHref} markShadow={false} variant="light" />
+      <p class="my-[19px] max-w-[260px] text-xs leading-[1.7] text-slate-400">
+        The internet's most useful tools, thoughtfully organized in one place.
+      </p>
+      <span class="inline-flex items-center gap-[7px] text-[9px] font-bold text-slate-400">
+        <i class="size-1.5 rounded-full bg-green-500 shadow-[0_0_0_4px_#22c55e1f]"></i>
+        All systems operational
+      </span>
+    </div>
+
+    {
+      groups.map(({ title, links }) => (
+        <div class="flex flex-col items-start gap-2.5">
+          <h3 class="mt-1 mb-[17px] text-[10px] font-bold tracking-[0.1em] text-slate-300 uppercase">{title}</h3>
+          {
+            links.map(({ label, href }) => (
+              <a
+                class="text-[11px] text-slate-400 no-underline transition-colors duration-200 hover:text-white focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-blue-600/35 motion-reduce:transition-none"
+                href={href}
+              >
+                {label}
+              </a>
+            ))
+          }
+        </div>
+      ))
+    }
+  </div>
+
+  <div
+    class="mx-auto flex w-[calc(100%-40px)] max-w-[1280px] justify-between border-t border-slate-800 pt-6 text-[9px] text-slate-500 max-[760px]:w-[calc(100%-28px)] max-[760px]:max-w-[560px] max-[760px]:flex-col max-[760px]:gap-[15px]"
+    id="footer"
+  >
+    <span>&copy; 2026 4all.tools. Built to be useful.</span>
+    <span>Made for everyone, everywhere.</span>
+  </div>
+</footer>

@@ -1,6 +1,29 @@
 ---
-import "./d1.css";
-import type { IconName } from "./types";
+import "@styles/global.css";
+
+type IconName =
+  | "search"
+  | "calculator"
+  | "file"
+  | "chart"
+  | "code"
+  | "sparkles"
+  | "image"
+  | "text"
+  | "arrows"
+  | "megaphone"
+  | "book"
+  | "briefcase"
+  | "percent"
+  | "calendar"
+  | "qr"
+  | "rocket"
+  | "arrow"
+  | "check"
+  | "bolt"
+  | "grid"
+  | "menu"
+  | "close";
 
 interface Props {
   name: IconName;
@@ -44,7 +67,10 @@ const icons: Record<IconName, string> = {
 ---
 
 <svg
-  class:list={["d1-icon", className]}
+  class:list={[
+    "size-6 fill-none stroke-current [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:1.8]",
+    className,
+  ]}
   viewBox="0 0 24 24"
   aria-hidden={label ? undefined : "true"}
   aria-label={label}

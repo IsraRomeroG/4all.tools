@@ -1,0 +1,33 @@
+---
+import "@styles/global.css";
+import Icon from "@components/icons/Icon.astro";
+
+interface Props {
+  href: string;
+  variant?: "primary" | "secondary" | "white";
+  label: string;
+}
+
+const { href, variant = "primary", label } = Astro.props;
+
+const variantClasses = {
+  primary: "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-[0_10px_22px_#2563eb33]",
+  secondary:
+    "min-h-12 border border-slate-200 bg-white px-[22px] text-[13px] text-slate-900 hover:border-blue-200 hover:bg-white hover:text-blue-600 hover:shadow-[0_10px_25px_#0f172a12]",
+  white: "bg-white text-blue-600 hover:bg-blue-700 hover:shadow-[0_10px_22px_#2563eb33]",
+} satisfies Record<NonNullable<Props["variant"]>, string>;
+---
+
+<a
+  class:list={[
+    "group/link inline-flex min-h-[58px] cursor-pointer items-center justify-center gap-[9px] rounded-full border-0 px-7 font-[Inter,ui-sans-serif,system-ui,sans-serif] leading-[1.6] font-bold no-underline antialiased transition-[background-color,transform,box-shadow,border-color,color] duration-200 hover:-translate-y-px focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-blue-600/35 motion-reduce:transform-none motion-reduce:transition-none",
+    variantClasses[variant],
+  ]}
+  href={href}
+>
+  {label}
+  <Icon
+    name="arrow"
+    class="size-[15px] transition-transform duration-200 group-hover/link:translate-x-[3px] motion-reduce:transform-none motion-reduce:transition-none"
+  />
+</a>
