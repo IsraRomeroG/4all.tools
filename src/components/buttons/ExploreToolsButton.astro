@@ -1,0 +1,20 @@
+---
+import "@styles/global.css";
+
+interface Props {
+  href?: string;
+  class?: string;
+}
+
+const { href = "/tools/", class: className } = Astro.props;
+---
+
+<a
+  class:list={[
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-blue-600 bg-blue-600 px-[17px] text-sm font-[750] text-white no-underline transition-[background-color,border-color,transform] duration-200 hover:-translate-y-px hover:border-blue-700 hover:bg-blue-700 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-blue-600/35 motion-reduce:transform-none motion-reduce:transition-none",
+    className,
+  ]}
+  href={href}
+>
+  Explore tools
+</a>

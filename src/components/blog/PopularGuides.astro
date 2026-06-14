@@ -1,0 +1,22 @@
+---
+import "@styles/global.css";
+import RankedGuideItem from "./RankedGuideItem.astro";
+import WeeklyGuide from "./WeeklyGuide.astro";
+import type { RankedGuide } from "./types";
+
+interface Props {
+  items: RankedGuide[];
+  weeklyTitle: string;
+  weeklyDescription: string;
+  weeklyHref: string;
+}
+
+const { items, weeklyTitle, weeklyDescription, weeklyHref } = Astro.props;
+---
+
+<div class="grid gap-7 min-[1024px]:grid-cols-[1.25fr_0.75fr] min-[1024px]:gap-[45px]">
+  <div class="grid">
+    {items.map((item, index) => <RankedGuideItem rank={index + 1} {...item} />)}
+  </div>
+  <WeeklyGuide title={weeklyTitle} description={weeklyDescription} href={weeklyHref} />
+</div>

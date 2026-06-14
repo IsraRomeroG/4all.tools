@@ -1,0 +1,43 @@
+---
+import "@styles/global.css";
+import BlogButton from "./BlogButton.astro";
+import ConnectionRow from "./ConnectionRow.astro";
+import type { ConnectedGuide } from "./types";
+
+interface Props {
+  id?: string;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  buttonLabel?: string;
+  buttonHref?: string;
+  items: ConnectedGuide[];
+}
+
+const {
+  id,
+  eyebrow = "Connected learning",
+  title = "Articles that lead directly to useful tools.",
+  description = "Every guide is connected to practical calculators, converters and utilities so you can apply what you learn immediately.",
+  buttonLabel = "Browse all tools",
+  buttonHref = "/tools/",
+  items,
+} = Astro.props;
+---
+
+<div class="grid items-center gap-7 min-[1024px]:grid-cols-[0.8fr_1.2fr] min-[1024px]:gap-[58px]">
+  <div>
+    <p class="mb-2 text-xs font-extrabold tracking-[0.11em] text-blue-600 uppercase">{eyebrow}</p>
+    <h2
+      class="mb-[9px] max-w-[520px] text-[clamp(29px,4vw,42px)] leading-[1.12] font-bold tracking-[-0.045em] text-slate-900"
+      id={id}
+    >
+      {title}
+    </h2>
+    <p class="m-0 mb-6 max-w-[540px] text-[15px] leading-[1.7] text-slate-500">{description}</p>
+    <BlogButton href={buttonHref} label={buttonLabel} arrow />
+  </div>
+  <div class="grid gap-[9px] rounded-3xl border border-slate-200 bg-white p-[10px] shadow-[0_16px_48px_rgba(15,23,42,0.08)]">
+    {items.map((item) => <ConnectionRow {...item} />)}
+  </div>
+</div>

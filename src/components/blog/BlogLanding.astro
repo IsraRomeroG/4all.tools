@@ -1,0 +1,367 @@
+---
+import "@styles/global.css";
+import ArticleCard from "./ArticleCard.astro";
+import BlogFooter from "./BlogFooter.astro";
+import BlogHeader from "./BlogHeader.astro";
+import BlogHero from "./BlogHero.astro";
+import BlogSectionHeading from "./BlogSectionHeading.astro";
+import CategoryGuideCard from "./CategoryGuideCard.astro";
+import ConnectedLearning from "./ConnectedLearning.astro";
+import FeaturedGuide from "./FeaturedGuide.astro";
+import Newsletter from "./Newsletter.astro";
+import PopularGuides from "./PopularGuides.astro";
+import TopicCard from "./TopicCard.astro";
+import TopicClusterCard from "./TopicClusterCard.astro";
+import type {
+  BlogArticle,
+  BlogGuide,
+  BlogTopic,
+  ConnectedGuide,
+  RankedGuide,
+  TopicCluster,
+} from "./types";
+
+interface Props {
+  showHeader?: boolean;
+  showFooter?: boolean;
+}
+
+const { showHeader = true, showFooter = true } = Astro.props;
+
+const topics: BlogTopic[] = [
+  { symbol: "SUM", label: "Calculators", count: "32 articles", href: "/blog/calculators/" },
+  { symbol: "SEO", label: "SEO", count: "24 articles", href: "/blog/seo/" },
+  { symbol: "PDF", label: "PDF", count: "18 articles", href: "/blog/pdf/" },
+  { symbol: "<>", label: "Converters", count: "21 articles", href: "/blog/converters/" },
+  { symbol: "{ }", label: "Developer Tools", count: "16 articles", href: "/blog/developer-tools/" },
+  { symbol: "IMG", label: "Image Tools", count: "14 articles", href: "/blog/image-tools/" },
+  { symbol: "$", label: "Finance", count: "12 articles", href: "/blog/finance/" },
+  { symbol: "MKT", label: "Marketing", count: "11 articles", href: "/blog/marketing/" },
+  { symbol: "T", label: "Text Tools", count: "10 articles", href: "/blog/text-tools/" },
+  { symbol: "24h", label: "Date & Time", count: "8 articles", href: "/blog/date-time/" },
+  { symbol: "EDU", label: "Education", count: "9 articles", href: "/blog/education/" },
+  { symbol: "OK", label: "Productivity", count: "13 articles", href: "/blog/productivity/" },
+];
+
+const articles: BlogArticle[] = [
+  {
+    category: "PDF",
+    symbol: "PDF",
+    title: "How to compress a PDF without losing readability",
+    href: "/blog/pdf/compress-without-losing-readability/",
+    description: "Learn what affects PDF size, when compression is safe and which settings work best for documents, forms and scanned files.",
+    readTime: "6 min read",
+    updated: "Updated Jun 2026",
+    toolLabel: "Try PDF Compressor",
+    toolHref: "/tools/pdf-compressor/",
+  },
+  {
+    category: "Calculators",
+    symbol: "%",
+    title: "Percentage increase vs percentage difference: what is the real difference?",
+    href: "/blog/calculators/percentage-increase-vs-difference/",
+    description: "A clear explanation with examples for business, finance, shopping discounts and data comparisons.",
+    readTime: "7 min read",
+    updated: "Updated Jun 2026",
+    toolLabel: "Open Percentage Calculator",
+    toolHref: "/tools/percentage-calculator/",
+  },
+  {
+    category: "SEO",
+    symbol: "SEO",
+    title: "What is keyword density and does it still matter?",
+    href: "/blog/seo/what-is-keyword-density/",
+    description: "Understand keyword density, modern SEO context and how to use it without over-optimizing your content.",
+    readTime: "8 min read",
+    updated: "Updated Jun 2026",
+    toolLabel: "Use Keyword Density Checker",
+    toolHref: "/tools/keyword-density-checker/",
+  },
+  {
+    category: "Developer Tools",
+    symbol: "{ }",
+    title: "How to format JSON correctly before sharing API data",
+    href: "/blog/developer-tools/format-json-correctly/",
+    description: "A practical guide to making JSON easier to read, debug and validate before sending it to teammates or clients.",
+    readTime: "5 min read",
+    updated: "Updated Jun 2026",
+    toolLabel: "Open JSON Formatter",
+    toolHref: "/tools/json-formatter/",
+  },
+  {
+    category: "Images",
+    symbol: "IMG",
+    title: "Image resizing basics: dimensions, aspect ratio and file size explained",
+    href: "/blog/image-tools/image-resizing-basics/",
+    description: "Learn how image size affects websites, social media, email attachments and page performance.",
+    readTime: "6 min read",
+    updated: "Updated Jun 2026",
+    toolLabel: "Try Image Resizer",
+    toolHref: "/tools/image-resizer/",
+  },
+  {
+    category: "Converters",
+    symbol: "<>",
+    title: "The simple guide to unit conversion for everyday tasks",
+    href: "/blog/converters/simple-guide-to-unit-conversion/",
+    description: "Understand length, weight, volume, temperature and digital storage conversions with practical examples.",
+    readTime: "7 min read",
+    updated: "Updated Jun 2026",
+    toolLabel: "Browse Unit Converters",
+    toolHref: "/categories/converters/",
+  },
+];
+
+const guides: BlogGuide[] = [
+  {
+    title: "SEO Guides",
+    symbol: "SEO",
+    description: "Practical explanations for keywords, metadata, content checks and on-page optimization.",
+    links: [
+      { label: "What is keyword density?", href: "/blog/seo/keyword-density/" },
+      { label: "How to write useful meta descriptions", href: "/blog/seo/meta-descriptions/" },
+      { label: "A beginner's on-page SEO checklist", href: "/blog/seo/on-page-checks/" },
+    ],
+    moreLabel: "View SEO articles",
+    moreHref: "/blog/seo/",
+  },
+  {
+    title: "PDF Guides",
+    symbol: "PDF",
+    description: "Clear workflows for compressing, converting, merging and preparing document files.",
+    links: [
+      { label: "How to compress a PDF", href: "/blog/pdf/compress-pdf/" },
+      { label: "When to convert PDF to Word", href: "/blog/pdf/pdf-to-word/" },
+      { label: "How to merge PDF files safely", href: "/blog/pdf/merge-files/" },
+    ],
+    moreLabel: "View PDF articles",
+    moreHref: "/blog/pdf/",
+  },
+  {
+    title: "Calculator Guides",
+    symbol: "SUM",
+    description: "Simple explanations for common math, finance, health and business calculations.",
+    links: [
+      { label: "How to calculate percentage increase", href: "/blog/calculators/percentage-increase/" },
+      { label: "BMI calculation explained in simple terms", href: "/blog/calculators/bmi-explained/" },
+      { label: "How mortgage payments are calculated", href: "/blog/calculators/mortgage-payments/" },
+    ],
+    moreLabel: "View calculator articles",
+    moreHref: "/blog/calculators/",
+  },
+  {
+    title: "Developer Guides",
+    symbol: "{ }",
+    description: "Quick tutorials for formatting, validating and transforming developer data.",
+    links: [
+      { label: "JSON formatting explained", href: "/blog/developer-tools/json-formatting/" },
+      { label: "Base64 encoding and decoding basics", href: "/blog/developer-tools/base64-basics/" },
+      { label: "How URL encoding works", href: "/blog/developer-tools/url-encoding/" },
+    ],
+    moreLabel: "View developer articles",
+    moreHref: "/blog/developer-tools/",
+  },
+];
+
+const connectedGuides: ConnectedGuide[] = [
+  {
+    category: "Calculators",
+    title: "How to calculate percentage increase",
+    tool: "Percentage Calculator",
+    toolHref: "/tools/percentage-calculator/",
+  },
+  {
+    category: "PDF",
+    title: "How to compress a PDF",
+    tool: "PDF Compressor",
+    toolHref: "/tools/pdf-compressor/",
+  },
+  {
+    category: "SEO",
+    title: "What is keyword density?",
+    tool: "Keyword Density Checker",
+    toolHref: "/tools/keyword-density-checker/",
+  },
+  {
+    category: "Developer Tools",
+    title: "How to format JSON",
+    tool: "JSON Formatter",
+    toolHref: "/tools/json-formatter/",
+  },
+];
+
+const rankedGuides: RankedGuide[] = [
+  { label: "How to calculate percentages quickly", href: "/blog/calculators/calculate-percentages/", meta: "Calculators - 6 min read" },
+  { label: "How to reduce PDF file size", href: "/blog/pdf/reduce-file-size/", meta: "PDF - 5 min read" },
+  { label: "How to convert images without losing quality", href: "/blog/image-tools/convert-without-losing-quality/", meta: "Images - 7 min read" },
+  { label: "How to format JSON for easier debugging", href: "/blog/developer-tools/json-debugging/", meta: "Developer Tools - 5 min read" },
+  { label: "How to write better meta descriptions", href: "/blog/seo/meta-descriptions/", meta: "SEO - 8 min read" },
+  { label: "How to calculate loan payments", href: "/blog/finance/loan-payments/", meta: "Finance - 9 min read" },
+  { label: "How to convert units accurately", href: "/blog/converters/convert-units-accurately/", meta: "Converters - 6 min read" },
+  { label: "How to resize images for websites", href: "/blog/image-tools/resize-for-websites/", meta: "Images - 7 min read" },
+];
+
+const clusters: TopicCluster[] = [
+  {
+    title: "PDF Workflows",
+    description: "Compression, conversion, merging, splitting, editing and file preparation.",
+    links: [
+      { label: "Compress PDF", href: "/blog/pdf/compress/" },
+      { label: "Convert PDF to Word", href: "/blog/pdf/to-word/" },
+      { label: "Merge PDF files", href: "/blog/pdf/merge/" },
+      { label: "Reduce scanned PDF size", href: "/blog/pdf/scanned-size/" },
+    ],
+  },
+  {
+    title: "SEO Basics",
+    description: "Simple explanations for page optimization, keywords, metadata and audits.",
+    links: [
+      { label: "Keyword density", href: "/blog/seo/keyword-density/" },
+      { label: "Meta descriptions", href: "/blog/seo/meta-descriptions/" },
+      { label: "Title tags", href: "/blog/seo/title-tags/" },
+      { label: "On-page checks", href: "/blog/seo/on-page-checks/" },
+    ],
+  },
+  {
+    title: "Everyday Math",
+    description: "Percentages, averages, ratios, discounts and practical calculations.",
+    links: [
+      { label: "Percentage increase", href: "/blog/calculators/percentage-increase/" },
+      { label: "Discount calculations", href: "/blog/calculators/discounts/" },
+      { label: "Average calculator", href: "/blog/calculators/average/" },
+      { label: "Ratio basics", href: "/blog/calculators/ratios/" },
+    ],
+  },
+  {
+    title: "Developer Formatting",
+    description: "Format, validate and transform structured data for easier debugging.",
+    links: [
+      { label: "JSON formatting", href: "/blog/developer-tools/json/" },
+      { label: "Base64 encoding", href: "/blog/developer-tools/base64/" },
+      { label: "URL encoding", href: "/blog/developer-tools/url-encoding/" },
+      { label: "XML formatting", href: "/blog/developer-tools/xml/" },
+    ],
+  },
+  {
+    title: "Image Optimization",
+    description: "Resize, compress and convert images for web, email and social media.",
+    links: [
+      { label: "Resize images", href: "/blog/image-tools/resize/" },
+      { label: "Compress images", href: "/blog/image-tools/compress/" },
+      { label: "Convert JPG to PNG", href: "/blog/image-tools/jpg-to-png/" },
+      { label: "Web image basics", href: "/blog/image-tools/web-basics/" },
+    ],
+  },
+  {
+    title: "Business Calculations",
+    description: "Useful calculations for finance, marketing, sales and planning.",
+    links: [
+      { label: "ROI calculation", href: "/blog/finance/roi/" },
+      { label: "Profit margin", href: "/blog/finance/profit-margin/" },
+      { label: "Loan payments", href: "/blog/finance/loan-payments/" },
+      { label: "Break-even point", href: "/blog/finance/break-even/" },
+    ],
+  },
+];
+
+const containerClass = "mx-auto w-[calc(100%-40px)] max-w-[1280px] min-[768px]:w-[calc(100%-64px)]";
+const sectionClass = "py-[58px] min-[768px]:py-[72px] min-[1024px]:py-[88px]";
+---
+
+<div class="font-[Inter,ui-sans-serif,system-ui,sans-serif] leading-[1.6] text-slate-900 antialiased">
+  {showHeader && <BlogHeader />}
+  <main>
+    <BlogHero />
+
+    <section class={sectionClass} aria-labelledby="featured-guide-title">
+      <div class={containerClass}>
+        <p class="mb-2 text-xs font-extrabold tracking-[0.11em] text-blue-600 uppercase">Featured guide</p>
+        <FeaturedGuide id="featured-guide-title" />
+      </div>
+    </section>
+
+    <section class:list={[sectionClass, "border-y border-slate-200 bg-slate-50"]} aria-labelledby="topics-title">
+      <div class={containerClass}>
+        <BlogSectionHeading
+          eyebrow="Find your subject"
+          title="Browse by topic"
+          description="Explore practical articles grouped by the types of tools people use every day."
+          id="topics-title"
+        />
+        <div class="grid grid-cols-2 gap-[10px] min-[600px]:grid-cols-3 min-[768px]:grid-cols-4 min-[1024px]:grid-cols-6 min-[1024px]:gap-3">
+          {topics.map((topic) => <TopicCard {...topic} />)}
+        </div>
+      </div>
+    </section>
+
+    <section class={sectionClass} aria-labelledby="latest-title">
+      <div class={containerClass}>
+        <BlogSectionHeading
+          eyebrow="Recently published"
+          title="Latest articles"
+          description="Fresh tutorials, explainers and practical workflows from the 4all.tools team."
+          id="latest-title"
+          linkLabel="View all articles"
+          linkHref="/blog/"
+        />
+        <div class="grid gap-[13px] min-[600px]:grid-cols-2 min-[1024px]:grid-cols-3 min-[1024px]:gap-4">
+          {articles.map((article) => <ArticleCard {...article} />)}
+        </div>
+      </div>
+    </section>
+
+    <section class:list={[sectionClass, "border-y border-slate-200 bg-slate-50"]} aria-labelledby="category-guides-title">
+      <div class={containerClass}>
+        <BlogSectionHeading
+          eyebrow="Structured learning"
+          title="Practical guides by category"
+          description="Start with a topic, understand the basics and move directly into useful workflows."
+          id="category-guides-title"
+        />
+        <div class="grid gap-3.5 min-[768px]:grid-cols-2">
+          {guides.map((guide) => <CategoryGuideCard {...guide} />)}
+        </div>
+      </div>
+    </section>
+
+    <section class={sectionClass} aria-labelledby="connected-title">
+      <div class={containerClass}>
+        <ConnectedLearning id="connected-title" items={connectedGuides} />
+      </div>
+    </section>
+
+    <section class:list={[sectionClass, "border-y border-slate-200 bg-slate-50"]} aria-labelledby="popular-title">
+      <div class={containerClass}>
+        <BlogSectionHeading
+          eyebrow="Reader favorites"
+          title="Popular guides"
+          description="Start with the tutorials readers use most often."
+          id="popular-title"
+        />
+        <PopularGuides
+          items={rankedGuides}
+          weeklyTitle="The beginner's guide to free online tools"
+          weeklyDescription="A practical overview of the most useful tools for students, marketers, developers, small businesses and everyday tasks."
+          weeklyHref="/blog/productivity/beginners-guide-to-online-tools/"
+        />
+      </div>
+    </section>
+
+    <section class={sectionClass} aria-labelledby="clusters-title">
+      <div class={containerClass}>
+        <BlogSectionHeading
+          eyebrow="Go deeper"
+          title="Explore topic clusters"
+          description="Organized paths for learning more about common tasks, tools and workflows."
+          id="clusters-title"
+        />
+        <div class="grid gap-[13px] min-[600px]:grid-cols-2 min-[1024px]:grid-cols-3 min-[1024px]:gap-[15px]">
+          {clusters.map((cluster) => <TopicClusterCard {...cluster} />)}
+        </div>
+      </div>
+    </section>
+
+    <Newsletter />
+  </main>
+  {showFooter && <BlogFooter />}
+</div>

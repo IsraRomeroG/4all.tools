@@ -1,0 +1,24 @@
+---
+import "@styles/global.css";
+
+interface Props {
+  href?: string;
+  label?: string;
+}
+
+const { href = "/", label = "4all.tools home" } = Astro.props;
+---
+
+<a
+  class="inline-flex items-center gap-[9px] text-xl font-black tracking-[-0.045em] text-slate-900 no-underline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-blue-600/40"
+  href={href}
+  aria-label={label}
+>
+  <span
+    class="grid size-7 place-items-center rounded-[9px] bg-blue-600 text-sm font-black tracking-[-0.04em] text-white"
+    aria-hidden="true"
+  >
+    4
+  </span>
+  4all.tools
+</a>

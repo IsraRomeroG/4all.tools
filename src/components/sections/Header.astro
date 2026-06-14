@@ -1,5 +1,6 @@
 ---
 import "@styles/global.css";
+import ExploreToolsButton from "@components/buttons/ExploreToolsButton.astro";
 import Icon from "@components/icons/Icon.astro";
 import Logo from "@components/logos/Logo.astro";
 
@@ -30,7 +31,7 @@ const { homeHref = "/", links = defaultLinks } = Astro.props;
 ---
 
 <header
-  class="fixed top-0 left-0 z-50 w-full border-b border-transparent font-[Inter,ui-sans-serif,system-ui,sans-serif] leading-[1.6] text-slate-900 antialiased transition-[background-color,box-shadow,border-color] duration-[250ms] data-[scrolled=true]:border-slate-200/80 data-[scrolled=true]:bg-white/90 data-[scrolled=true]:shadow-[0_6px_30px_#0f172a0d] data-[scrolled=true]:backdrop-blur-[16px] motion-reduce:transition-none"
+  class="fixed top-0 left-0 z-50 w-full border-b border-slate-200/80 bg-slate-100/40 font-[Inter,ui-sans-serif,system-ui,sans-serif] leading-[1.6] text-slate-900 antialiased shadow-[0_6px_30px_#0f172a0d] transition-[background-color,box-shadow,border-color] duration-[250ms] data-[scrolled=true]:bg-slate-100/40 data-[scrolled=true]:backdrop-blur-[16px] motion-reduce:transition-none"
   data-d1-header
   data-scrolled="false"
 >
@@ -38,7 +39,7 @@ const { homeHref = "/", links = defaultLinks } = Astro.props;
     class="mx-auto flex h-[76px] w-[calc(100%-40px)] max-w-[1280px] items-center justify-between gap-7 max-[760px]:h-[66px] max-[760px]:w-[calc(100%-28px)] max-[760px]:max-w-[560px]"
     aria-label="Main navigation"
   >
-    <Logo href={homeHref} />
+    <Logo href={homeHref} markShadow={false} variant="dark" />
 
     <div class="ml-auto flex items-center gap-7 max-[1050px]:hidden">
       {
@@ -66,6 +67,8 @@ const { homeHref = "/", links = defaultLinks } = Astro.props;
         &#8984; K
       </kbd>
     </button>
+
+    <ExploreToolsButton class="max-[1050px]:hidden" />
 
     <button
       class="group hidden size-11 items-center justify-center rounded-xl border-0 bg-transparent text-slate-900 [font:inherit] focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-blue-600/35 max-[760px]:flex"

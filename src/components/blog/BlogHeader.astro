@@ -1,0 +1,92 @@
+---
+import "@styles/global.css";
+import Icon from "@components/icons/Icon.astro";
+import BlogButton from "./BlogButton.astro";
+import BlogLogo from "./BlogLogo.astro";
+import type { BlogLink } from "./types";
+
+interface Props {
+  links?: BlogLink[];
+}
+
+const defaultLinks: BlogLink[] = [
+  { label: "Tools", href: "/tools/" },
+  { label: "Categories", href: "/categories/" },
+  { label: "Blog", href: "/blog/" },
+  { label: "About", href: "/about/" },
+];
+
+const { links = defaultLinks } = Astro.props;
+---
+
+<header
+  class="sticky top-0 z-50 h-16 border-b border-slate-200/90 bg-white/90 font-[Inter,ui-sans-serif,system-ui,sans-serif] backdrop-blur-[14px] min-[1024px]:h-[72px]"
+  data-blog-header
+>
+  <nav
+    class="mx-auto flex h-full w-[calc(100%-40px)] max-w-[1280px] items-center justify-between gap-6 min-[768px]:w-[calc(100%-64px)]"
+    aria-label="Blog navigation"
+  >
+    <BlogLogo />
+    <div class="hidden items-center gap-[3px] min-[1024px]:flex">
+      {
+        links.map(({ label, href }) => (
+          <a
+            class:list={[
+              "rounded-[10px] px-[11px] py-[9px] text-sm font-semibold text-slate-500 no-underline hover:bg-slate-50 hover:text-slate-900",
+              label === "Blog" && "bg-blue-50 text-blue-700",
+            ]}
+            href={href}
+          >
+            {label}
+          </a>
+        ))
+      }
+    </div>
+    <div class="hidden items-center gap-2 min-[1024px]:flex">
+      <BlogButton href="/tools/" label="Browse tools" variant="secondary" />
+      <BlogButton href="/blog/" label="Read the blog" />
+    </div>
+    <button
+      class="grid size-[42px] place-items-center rounded-[11px] border border-slate-200 bg-white text-slate-700 min-[1024px]:hidden"
+      type="button"
+      aria-label="Open navigation"
+      aria-expanded="false"
+      aria-controls="blog-mobile-menu"
+      data-blog-menu-button
+    >
+      <Icon name="menu" class="size-5" />
+    </button>
+  </nav>
+  <div
+    class="absolute inset-x-0 top-16 hidden border-b border-slate-200 bg-white px-5 pt-3 pb-5 shadow-[0_16px_48px_rgba(15,23,42,0.08)] data-[open=true]:grid min-[1024px]:!hidden"
+    id="blog-mobile-menu"
+    data-blog-mobile-menu
+    data-open="false"
+  >
+    {
+      links.map(({ label, href }) => (
+        <a
+          class="border-b border-slate-200 px-2 py-[13px] text-[15px] font-semibold text-slate-700 no-underline"
+          href={href}
+        >
+          {label}
+        </a>
+      ))
+    }
+  </div>
+</header>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-blog-header]").forEach((header) => {
+    const button = header.querySelector<HTMLButtonElement>("[data-blog-menu-button]");
+    const menu = header.querySelector<HTMLElement>("[data-blog-mobile-menu]");
+
+    button?.addEventListener("click", () => {
+      const isOpen = button.getAttribute("aria-expanded") === "true";
+      button.setAttribute("aria-expanded", String(!isOpen));
+      button.setAttribute("aria-label", isOpen ? "Open navigation" : "Close navigation");
+      if (menu) menu.dataset.open = String(!isOpen);
+    });
+  });
+</script>

@@ -1,0 +1,69 @@
+---
+import "@styles/global.css";
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  note?: string;
+  action?: string;
+}
+
+const {
+  eyebrow = "Useful updates, occasionally",
+  title = "Get practical tool guides in your inbox",
+  description = "Occasional tutorials, new tools and useful workflows. No spam. Join readers who use 4all.tools to solve everyday digital tasks faster.",
+  note = "Short, useful emails. Unsubscribe whenever you like.",
+  action = "#",
+} = Astro.props;
+---
+
+<section
+  class="mx-auto w-[calc(100%-40px)] max-w-[1280px] py-[58px] pb-[70px] min-[768px]:w-[calc(100%-64px)]"
+  aria-labelledby="blog-newsletter-title"
+>
+  <div
+    class="relative grid items-center gap-[25px] overflow-hidden rounded-[28px] border border-blue-200 bg-[linear-gradient(135deg,#eff6ff,#f8fafc)] p-7 after:absolute after:top-[-160px] after:right-[-150px] after:size-[230px] after:rounded-full after:border after:border-blue-600/20 min-[768px]:p-10 min-[1024px]:grid-cols-[1.1fr_0.9fr] min-[1024px]:rounded-[32px] min-[1024px]:p-[52px]"
+  >
+    <div class="relative z-[1]">
+      <p class="mb-2 text-xs font-extrabold tracking-[0.11em] text-blue-600 uppercase">{eyebrow}</p>
+      <h2
+        class="m-0 mb-[9px] max-w-[590px] text-[clamp(29px,4vw,42px)] leading-[1.12] font-bold tracking-[-0.045em] text-slate-900"
+        id="blog-newsletter-title"
+      >
+        {title}
+      </h2>
+      <p class="m-0 max-w-[620px] text-sm leading-[1.65] text-slate-500">{description}</p>
+    </div>
+    <div class="relative z-[1]">
+      <form
+        class="flex flex-col gap-2 min-[600px]:flex-row"
+        action={action}
+        data-blog-newsletter={action === "#" ? "" : undefined}
+      >
+        <label class="sr-only" for="blog-newsletter-email">Email address</label>
+        <input
+          class="h-[50px] w-full rounded-xl border border-slate-300 bg-white px-3.5 text-slate-900 outline-0 focus:border-blue-600 focus:shadow-[0_0_0_3px_rgba(37,99,235,0.13)] min-[600px]:min-w-0 min-[600px]:flex-1"
+          id="blog-newsletter-email"
+          type="email"
+          name="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+        />
+        <button
+          class="min-h-[50px] rounded-xl border border-blue-600 bg-blue-600 px-[17px] text-sm font-bold text-white hover:bg-blue-700"
+          type="submit"
+        >
+          Subscribe
+        </button>
+      </form>
+      <p class="mt-[9px] mb-0 text-[11px] text-slate-500">{note}</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>("[data-blog-newsletter]").forEach((form) => {
+    form.addEventListener("submit", (event) => event.preventDefault());
+  });
+</script>

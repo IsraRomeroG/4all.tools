@@ -1,0 +1,94 @@
+---
+import "@styles/global.css";
+import Icon from "@components/icons/Icon.astro";
+import type { BlogLink } from "./types";
+
+interface Props {
+  badge?: string;
+  title?: string;
+  description?: string;
+  popularSearches?: BlogLink[];
+}
+
+const defaultSearches: BlogLink[] = [
+  { label: "PDF compression", href: "/blog/pdf/" },
+  { label: "Percentage increase", href: "/blog/calculators/" },
+  { label: "Keyword density", href: "/blog/seo/" },
+  { label: "JSON formatting", href: "/blog/developer-tools/" },
+  { label: "Image resize", href: "/blog/image-tools/" },
+  { label: "Unit conversion", href: "/blog/converters/" },
+];
+
+const {
+  badge = "4all.tools Blog",
+  title = "Practical guides for everyday online tools.",
+  description = "Learn how to solve common tasks with calculators, converters, SEO tools, PDF utilities, developer tools and more, all connected to free tools you can use instantly.",
+  popularSearches = defaultSearches,
+} = Astro.props;
+---
+
+<section
+  class="relative overflow-hidden border-b border-slate-200 bg-[linear-gradient(180deg,#fff,#f8fafc)] py-[58px] text-center before:pointer-events-none before:absolute before:bottom-[-290px] before:left-1/2 before:h-[380px] before:w-[700px] before:-translate-x-1/2 before:bg-[radial-gradient(circle,rgba(37,99,235,0.16),transparent_68%)] min-[1024px]:py-[90px]"
+  aria-labelledby="blog-hero-title"
+>
+  <div class="relative mx-auto w-[calc(100%-40px)] max-w-[1280px] min-[768px]:w-[calc(100%-64px)]">
+    <span class="inline-flex items-center gap-[7px] rounded-full bg-blue-100 px-[11px] py-[7px] text-xs font-bold text-blue-700">
+      <span class="size-1.5 rounded-full bg-blue-600" aria-hidden="true"></span>
+      {badge}
+    </span>
+    <h1
+      class="mx-auto mt-5 mb-[18px] max-w-[880px] text-[clamp(38px,7vw,64px)] leading-[1.04] font-bold tracking-[-0.055em] text-slate-900"
+      id="blog-hero-title"
+    >
+      {title}
+    </h1>
+    <p class="mx-auto m-0 max-w-[820px] text-[clamp(17px,2vw,20px)] leading-[1.65] text-slate-700">
+      {description}
+    </p>
+    <form
+      class="mx-auto mt-8 flex min-h-16 max-w-[840px] items-center rounded-[20px] border border-slate-300 bg-white p-1.5 shadow-[0_16px_48px_rgba(15,23,42,0.08)]"
+      action="#"
+      role="search"
+      data-blog-search
+    >
+      <label class="flex min-w-0 flex-1 items-center gap-[11px] pl-3 text-slate-500">
+        <span class="sr-only">Search blog</span>
+        <Icon name="search" class="size-5" />
+        <input
+          class="h-12 w-full min-w-0 border-0 bg-transparent text-[15px] text-slate-900 outline-0"
+          type="search"
+          name="q"
+          placeholder="Search guides, tutorials or tools..."
+        />
+      </label>
+      <button
+        class="hidden min-h-[50px] rounded-[15px] border border-blue-600 bg-blue-600 px-[23px] text-sm font-bold text-white hover:bg-blue-700 min-[600px]:inline-flex min-[600px]:items-center"
+        type="submit"
+      >
+        Search
+      </button>
+    </form>
+    <div
+      class="mx-auto mt-5 flex max-w-[980px] items-center gap-2 overflow-x-auto pb-[5px] [scrollbar-width:none] min-[600px]:flex-wrap min-[600px]:justify-center min-[600px]:overflow-visible"
+      aria-label="Popular searches"
+    >
+      <span class="shrink-0 text-xs font-bold text-slate-500">Popular searches:</span>
+      {
+        popularSearches.map(({ label, href }) => (
+          <a
+            class="shrink-0 rounded-full border border-slate-200 bg-white/80 px-[10px] py-[7px] text-xs font-bold text-slate-700 no-underline hover:border-blue-200 hover:text-blue-700"
+            href={href}
+          >
+            {label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>("[data-blog-search]").forEach((form) => {
+    form.addEventListener("submit", (event) => event.preventDefault());
+  });
+</script>
