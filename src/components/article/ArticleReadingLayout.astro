@@ -1,0 +1,24 @@
+---
+import ArticleMobileToc from "./ArticleMobileToc.astro";
+import ArticleProse from "./ArticleProse.astro";
+import type { ArticleTocItem } from "./types";
+
+interface Props {
+  toc: ArticleTocItem[];
+}
+
+const { toc } = Astro.props;
+---
+
+<div
+  class="mx-auto grid w-[min(1180px,calc(100%-40px))] gap-12 py-11 pb-[84px] max-[639px]:w-[min(1180px,calc(100%-32px))] min-[900px]:grid-cols-[minmax(0,720px)_300px] min-[900px]:justify-between min-[900px]:gap-14 min-[900px]:py-16 min-[900px]:pb-[100px]"
+>
+  <div class="min-w-0">
+    <ArticleMobileToc items={toc} />
+    <ArticleProse>
+      <slot />
+    </ArticleProse>
+    <slot name="after-prose" />
+  </div>
+  <slot name="sidebar" />
+</div>

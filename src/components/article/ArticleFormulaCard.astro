@@ -1,0 +1,30 @@
+---
+import type { ArticleDefinitionItem } from "./types";
+
+interface Props {
+  label?: string;
+  formula: string;
+  definitions?: ArticleDefinitionItem[];
+}
+
+const { label = "Formula", formula, definitions = [] } = Astro.props;
+---
+
+<div class="my-7 rounded-[20px] border border-slate-200 bg-slate-50 p-[22px]">
+  <div class="mb-2.5 text-[11px] font-extrabold text-slate-500 uppercase">{label}</div>
+  <code class="block overflow-x-auto whitespace-nowrap text-[15px] font-bold text-slate-900 min-[900px]:text-base">
+    {formula}
+  </code>
+  {
+    definitions.length > 0 && (
+      <div class="mt-[18px] grid gap-2.5 sm:grid-cols-3">
+        {definitions.map(({ term, description }) => (
+          <div class="rounded-xl border border-slate-200 bg-white px-3.5 py-[13px] text-sm leading-[1.5] text-slate-700">
+            <strong class="block text-xs text-slate-900">{term}</strong>
+            {description}
+          </div>
+        ))}
+      </div>
+    )
+  }
+</div>

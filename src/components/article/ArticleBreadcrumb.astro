@@ -1,0 +1,35 @@
+---
+import type { ArticleBreadcrumbItem } from "./types";
+
+interface Props {
+  items: ArticleBreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav
+  class="mx-auto w-[min(1180px,calc(100%-40px))] pt-[30px] max-[639px]:w-[min(1180px,calc(100%-32px))] min-[900px]:pt-10"
+  aria-label="Breadcrumb"
+>
+  <ol class="m-0 flex min-w-0 list-none items-center gap-2 p-0 text-[13px] text-slate-500">
+    {
+      items.map((item, index) => (
+        <li class="flex min-w-0 items-center gap-2">
+          {item.current ? (
+            <span class="truncate text-slate-700" aria-current="page">
+              {item.label}
+            </span>
+          ) : (
+            <>
+              <a class="no-underline hover:text-blue-600" href={item.href}>
+                {item.label}
+              </a>
+              {index < items.length - 1 && <span aria-hidden="true">/</span>}
+            </>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

@@ -1,0 +1,37 @@
+---
+import ArticleIconBox from "./ArticleIconBox.astro";
+import type { IconName } from "@components/icons/iconNames";
+
+interface Props {
+  title: string;
+  variant?: "tip" | "warning";
+  icon?: IconName;
+}
+
+const { title, variant = "tip", icon } = Astro.props;
+
+const variants = {
+  tip: {
+    wrapper: "border-green-200 bg-green-50",
+    icon: "border-green-200 bg-white text-green-700",
+    iconName: "lightbulb",
+  },
+  warning: {
+    wrapper: "border-amber-200 bg-amber-50",
+    icon: "border-amber-200 bg-white text-amber-700",
+    iconName: "triangle-warning",
+  },
+} as const;
+
+const selected = variants[variant];
+---
+
+<div class:list={["my-7 grid grid-cols-[auto_1fr] gap-3.5 rounded-[20px] border p-[18px]", selected.wrapper]}>
+  <ArticleIconBox icon={icon ?? (selected.iconName as IconName)} class={["size-[38px]", selected.icon].join(" ")} />
+  <div>
+    <strong class="mb-1 block text-sm text-slate-900">{title}</strong>
+    <div class="[&_p]:m-0 [&_p]:text-sm [&_p]:leading-[1.65]">
+      <slot />
+    </div>
+  </div>
+</div>

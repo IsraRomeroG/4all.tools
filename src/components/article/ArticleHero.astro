@@ -1,0 +1,94 @@
+---
+import Icon from "@components/icons/Icon.astro";
+import ArticleButton from "./ArticleButton.astro";
+import ArticleIconBox from "./ArticleIconBox.astro";
+import type { ArticleMetaItem, ArticleTool } from "./types";
+
+interface Props {
+  badge?: string;
+  title: string;
+  description: string;
+  meta?: ArticleMetaItem[];
+  featuredTool?: ArticleTool;
+}
+
+const defaultMeta: ArticleMetaItem[] = [
+  { icon: "user", label: "4all.tools Editorial Team" },
+  { icon: "calendar-simple", label: "Updated June 10, 2026" },
+  { icon: "clock-compact", label: "6 min read" },
+];
+
+const defaultTool: ArticleTool = {
+  title: "Percentage Calculator",
+  description: "Calculate percentage increase, decrease, discounts, and more in seconds.",
+  href: "#",
+  ctaLabel: "Open free calculator",
+  icon: "calculator-circle",
+  trustNote: "Free to use. No sign up required.",
+};
+
+const {
+  badge = "Calculators guide",
+  title,
+  description,
+  meta = defaultMeta,
+  featuredTool = defaultTool,
+} = Astro.props;
+
+const hasFeaturedToolSlot = Astro.slots.has("featured-tool");
+---
+
+<header class="py-[42px] pb-[52px] min-[900px]:py-[60px] min-[900px]:pb-[68px]">
+  <div
+    class="mx-auto grid w-[min(1180px,calc(100%-40px))] items-center gap-7 max-[639px]:w-[min(1180px,calc(100%-32px))] min-[900px]:grid-cols-[minmax(0,1fr)_310px] min-[900px]:gap-14"
+  >
+    <div>
+      <span
+        class="inline-flex w-fit items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-bold text-blue-700"
+      >
+        <span class="size-1.5 rounded-full bg-blue-600" aria-hidden="true"></span>
+        {badge}
+      </span>
+      <h1 class="mt-[18px] mb-[18px] max-w-[820px] text-[38px] leading-[1.05] font-extrabold text-slate-900 sm:text-5xl min-[900px]:text-[58px]">
+        {title}
+      </h1>
+      <p class="m-0 max-w-[760px] text-lg leading-[1.65] text-slate-700 min-[900px]:text-xl">
+        {description}
+      </p>
+      <div class="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-[13px] text-slate-500">
+        {
+          meta.map(({ icon, label }) => (
+            <span class="inline-flex items-center gap-2">
+              <Icon name={icon} class="size-4" />
+              {label}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+
+    {
+      hasFeaturedToolSlot ? (
+        <slot name="featured-tool" />
+      ) : (
+        <aside
+          class="overflow-hidden rounded-[22px] border border-slate-200 bg-white p-[22px] shadow-[0_18px_50px_rgba(15,23,42,0.07)]"
+          aria-label="Featured tool"
+        >
+          <ArticleIconBox icon={featuredTool.icon ?? "calculator-circle"} />
+          <h2 class="mt-[17px] mb-2 text-xl font-extrabold text-slate-900">{featuredTool.title}</h2>
+          <p class="mt-0 mb-[18px] text-sm leading-[1.6] text-slate-500">{featuredTool.description}</p>
+          <ArticleButton href={featuredTool.href} label={featuredTool.ctaLabel} arrow class="w-full" />
+          {
+            featuredTool.trustNote && (
+              <span class="mt-[13px] flex items-center gap-2 text-xs text-slate-500">
+                <Icon name="check" class="size-[15px] text-green-700" />
+                {featuredTool.trustNote}
+              </span>
+            )
+          }
+        </aside>
+      )
+    }
+  </div>
+</header>

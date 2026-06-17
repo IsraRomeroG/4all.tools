@@ -1,0 +1,25 @@
+---
+import Icon from "@components/icons/Icon.astro";
+import type { IconName } from "@components/icons/iconNames";
+
+interface Props {
+  icon: IconName;
+  label?: string;
+  class?: string;
+  iconClass?: string;
+}
+
+const { icon, label, class: className, iconClass } = Astro.props;
+---
+
+<div
+  class:list={[
+    "grid size-11 shrink-0 place-items-center rounded-[13px] border border-blue-200 bg-blue-50 text-blue-600",
+    className,
+  ]}
+  aria-hidden={label ? undefined : "true"}
+  aria-label={label}
+  role={label ? "img" : undefined}
+>
+  <Icon name={icon} class={["size-5", iconClass].filter(Boolean).join(" ")} />
+</div>

@@ -8,7 +8,12 @@ interface Props {
   variant?: "dark" | "light";
 }
 
-const { href = "/", label = "4all.tools home", markShadow = true, variant = "dark" } = Astro.props;
+const {
+  href = "/",
+  label = "4all.tools home",
+  markShadow = true,
+  variant = "dark",
+} = Astro.props;
 
 const variantClasses = {
   dark: "text-slate-900",
@@ -36,5 +41,5 @@ const variantClasses = {
     <span class="rounded-[1.5px] bg-white opacity-95"></span>
     <span class="rounded-[1.5px] bg-blue-400 opacity-95"></span>
   </span>
-  <span>4all<span class="text-blue-600">.tools</span></span>
+  <span>4all<span class="text-blue-500">.tools</span></span>
 </a>

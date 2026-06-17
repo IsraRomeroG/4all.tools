@@ -1,0 +1,52 @@
+---
+import ArticleIconBox from "./ArticleIconBox.astro";
+import ArticleSection from "./ArticleSection.astro";
+import ArticleTextLink from "./ArticleTextLink.astro";
+import type { ArticleToolCard } from "./types";
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  titleId?: string;
+  description?: string;
+  actionLabel?: string;
+  actionHref?: string;
+  tools: ArticleToolCard[];
+}
+
+const {
+  eyebrow = "Keep calculating",
+  title = "Related tools",
+  titleId = "related-tools-title",
+  description = "Useful calculators related to this guide.",
+  actionLabel = "Browse all calculators",
+  actionHref = "/categories/calculators/",
+  tools,
+} = Astro.props;
+---
+
+<ArticleSection
+  eyebrow={eyebrow}
+  title={title}
+  titleId={titleId}
+  description={description}
+  actionLabel={actionLabel}
+  actionHref={actionHref}
+  soft
+>
+  <div class="grid gap-3.5 sm:grid-cols-2 min-[900px]:grid-cols-3">
+    {
+      tools.map(({ title, description, href, icon, ctaLabel = "Open tool" }) => (
+        <a
+          class="flex min-h-full flex-col rounded-[19px] border border-slate-200 bg-white p-5 no-underline transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_12px_30px_rgba(15,23,42,0.06)] motion-reduce:transform-none"
+          href={href}
+        >
+          <ArticleIconBox icon={icon} />
+          <h3 class="mt-4 mb-2 text-base font-extrabold text-slate-900">{title}</h3>
+          <p class="mt-0 mb-[18px] text-[13px] leading-[1.6] text-slate-500">{description}</p>
+          <ArticleTextLink href={href} label={ctaLabel} class="mt-auto" />
+        </a>
+      ))
+    }
+  </div>
+</ArticleSection>

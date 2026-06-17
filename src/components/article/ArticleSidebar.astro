@@ -1,0 +1,98 @@
+---
+import Icon from "@components/icons/Icon.astro";
+import ArticleButton from "./ArticleButton.astro";
+import ArticleIconBox from "./ArticleIconBox.astro";
+import type { ArticleShareLink, ArticleTocItem, ArticleTool, ArticleLink } from "./types";
+
+interface Props {
+  toc: ArticleTocItem[];
+  tool?: ArticleTool;
+  relatedTools?: ArticleLink[];
+  shareLinks?: ArticleShareLink[];
+}
+
+const defaultTool: ArticleTool = {
+  title: "Percentage Calculator",
+  description: "Get the answer instantly with our free calculator.",
+  href: "#",
+  ctaLabel: "Open calculator",
+  icon: "circle-plus",
+};
+
+const defaultRelatedTools: ArticleLink[] = [
+  { label: "Discount Calculator", href: "#" },
+  { label: "ROI Calculator", href: "#" },
+  { label: "Margin Calculator", href: "#" },
+];
+
+const defaultShareLinks: ArticleShareLink[] = [
+  { label: "Copy link", href: "#", icon: "link", ariaLabel: "Copy article link" },
+  { label: "Email", href: "#", icon: "mail", ariaLabel: "Share by email" },
+  { label: "Print", href: "#", icon: "printer", ariaLabel: "Print article" },
+];
+
+const {
+  toc,
+  tool = defaultTool,
+  relatedTools = defaultRelatedTools,
+  shareLinks = defaultShareLinks,
+} = Astro.props;
+---
+
+<aside class="hidden min-[900px]:block" aria-label="Article sidebar">
+  <div class="sticky top-24 grid gap-4">
+    <nav class="rounded-[18px] border border-slate-200 bg-white p-[19px]" aria-label="Table of contents">
+      <h3 class="m-0 mb-3.5 text-sm font-extrabold text-slate-900">On this page</h3>
+      <div class="grid gap-2.5 border-l-2 border-slate-200 pl-3">
+        {
+          toc.map(({ label, href }) => (
+            <a class="text-[13px] leading-[1.45] text-slate-500 no-underline hover:text-blue-600" href={href}>
+              {label}
+            </a>
+          ))
+        }
+      </div>
+    </nav>
+
+    <div class="rounded-[18px] border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-[19px]">
+      <ArticleIconBox icon={tool.icon ?? "circle-plus"} class="size-10" />
+      <h3 class="mt-[13px] mb-1.5 text-base font-extrabold text-slate-900">{tool.title}</h3>
+      <p class="mt-0 mb-[18px] text-sm leading-[1.6] text-slate-500">{tool.description}</p>
+      <ArticleButton href={tool.href} label={tool.ctaLabel} class="min-h-[42px] w-full" />
+    </div>
+
+    <div class="rounded-[18px] border border-slate-200 bg-white p-[19px]">
+      <h3 class="m-0 mb-3.5 text-sm font-extrabold text-slate-900">Related tools</h3>
+      <div class="grid gap-1">
+        {
+          relatedTools.map(({ label, href }) => (
+            <a
+              class="flex items-center justify-between gap-2 rounded-lg px-2 py-[9px] text-[13px] font-semibold text-slate-700 no-underline hover:bg-slate-50 hover:text-blue-600"
+              href={href}
+            >
+              {label}
+              <Icon name="arrow-right-long" class="size-[15px]" />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="rounded-[18px] border border-slate-200 bg-white p-[19px]">
+      <h3 class="m-0 mb-3.5 text-sm font-extrabold text-slate-900">Share this guide</h3>
+      <div class="flex gap-2">
+        {
+          shareLinks.map(({ href, icon, ariaLabel }) => (
+            <a
+              class="grid size-[38px] place-items-center rounded-[10px] border border-slate-200 bg-slate-50 text-slate-500 no-underline hover:border-blue-200 hover:text-blue-600"
+              href={href}
+              aria-label={ariaLabel}
+            >
+              <Icon name={icon} class="size-[17px]" />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</aside>
