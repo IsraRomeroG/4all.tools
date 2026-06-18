@@ -1,0 +1,17 @@
+---
+import BlogIndexPage from "@components/blog/BlogIndexPage.astro";
+import { DEFAULT_LOCALE } from "@/lib/blog/config";
+import {
+  getBlogIndexAlternates,
+  getPostsByLocale,
+  getPublishedBlogPosts,
+  paginateBlogPosts,
+} from "@/lib/blog/content";
+
+const locale = DEFAULT_LOCALE;
+const allPosts = await getPublishedBlogPosts();
+const pagination = paginateBlogPosts(getPostsByLocale(allPosts, locale), 1);
+const alternates = await getBlogIndexAlternates(1);
+---
+
+<BlogIndexPage locale={locale} allPosts={allPosts} pagination={pagination} alternates={alternates} />

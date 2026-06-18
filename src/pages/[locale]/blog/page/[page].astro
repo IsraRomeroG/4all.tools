@@ -1,0 +1,37 @@
+---
+import BlogIndexPage from "@components/blog/BlogIndexPage.astro";
+import { NON_DEFAULT_LOCALES, type Locale } from "@/lib/blog/config";
+import {
+  getBlogIndexAlternates,
+  getPostsByLocale,
+  getPublishedBlogPosts,
+  paginateBlogPosts,
+} from "@/lib/blog/content";
+
+interface Props {
+  locale: Locale;
+  page: number;
+}
+
+export async function getStaticPaths() {
+  const allPosts = await getPublishedBlogPosts();
+
+  return NON_DEFAULT_LOCALES.flatMap((locale) => {
+    const totalPages = paginateBlogPosts(getPostsByLocale(allPosts, locale), 1).totalPages;
+    return Array.from({ length: Math.max(0, totalPages - 1) }, (_, index) => {
+      const page = index + 2;
+      return {
+        params: { locale, page: String(page) },
+        props: { locale, page },
+      };
+    });
+  });
+}
+
+const { locale, page } = Astro.props as Props;
+const allPosts = await getPublishedBlogPosts();
+const pagination = paginateBlogPosts(getPostsByLocale(allPosts, locale), page);
+const alternates = await getBlogIndexAlternates(page);
+---
+
+<BlogIndexPage locale={locale} allPosts={allPosts} pagination={pagination} alternates={alternates} />

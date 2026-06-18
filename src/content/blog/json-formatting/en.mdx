@@ -1,0 +1,34 @@
+---
+locale: en
+slug: format-json-correctly
+categoryId: developer-tools
+title: How to Format JSON Correctly Before Sharing API Data
+description: A practical guide to making JSON easier to read, debug, validate, and share with teammates.
+publishedAt: 2026-06-17
+updatedAt: 2026-06-17
+status: published
+tags:
+  - json
+  - developer tools
+relatedTools:
+  - label: JSON Validator
+    href: /developer/json-validator
+relatedPosts:
+  - percentage-increase
+---
+
+Formatted JSON is easier to scan, review, and debug. It turns a dense block of data into a structure where objects, arrays, keys, and values are visually clear.
+
+## What good JSON formatting does
+
+Good formatting uses consistent indentation, one key-value pair per line, and predictable nesting. It does not change the data itself; it only changes whitespace.
+
+## Before sharing JSON
+
+Validate the JSON first. A missing quote, extra comma, or mismatched bracket can make the whole payload fail.
+
+Remove secrets before sending examples to teammates, clients, or public issue trackers. API keys, tokens, private email addresses, and customer identifiers should not be copied into shared snippets.
+
+## When to minify instead
+
+Use formatted JSON while reading or debugging. Use minified JSON when file size matters, such as storing fixtures or sending payloads across a network.

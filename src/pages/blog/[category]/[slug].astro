@@ -1,0 +1,36 @@
+---
+import BlogArticlePage from "@components/blog/BlogArticlePage.astro";
+import { DEFAULT_LOCALE } from "@/lib/blog/config";
+import {
+  getPostAlternates,
+  getPostTranslations,
+  getPostsByLocale,
+  getPublishedBlogPosts,
+  getRelatedPosts,
+  type BlogPost,
+} from "@/lib/blog/content";
+import { render } from "astro:content";
+
+interface Props {
+  post: BlogPost;
+}
+
+export async function getStaticPaths() {
+  const allPosts = await getPublishedBlogPosts();
+
+  return getPostsByLocale(allPosts, DEFAULT_LOCALE).map((post) => ({
+    params: { category: post.categorySlug, slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props as Props;
+const translations = await getPostTranslations(post.group);
+const relatedPosts = await getRelatedPosts(post);
+const alternates = getPostAlternates(translations);
+const { Content } = await render(post.entry);
+---
+
+<BlogArticlePage post={post} translations={translations} relatedPosts={relatedPosts} alternates={alternates}>
+  <Content />
+</BlogArticlePage>

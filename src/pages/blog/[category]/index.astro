@@ -1,0 +1,38 @@
+---
+import BlogIndexPage from "@components/blog/BlogIndexPage.astro";
+import { DEFAULT_LOCALE, type BlogCategoryId } from "@/lib/blog/config";
+import {
+  getAvailableCategories,
+  getCategoryAlternates,
+  getPostsByCategory,
+  getPublishedBlogPosts,
+  paginateBlogPosts,
+} from "@/lib/blog/content";
+
+interface Props {
+  categoryId: BlogCategoryId;
+}
+
+export async function getStaticPaths() {
+  const allPosts = await getPublishedBlogPosts();
+
+  return getAvailableCategories(allPosts, DEFAULT_LOCALE).map((category) => ({
+    params: { category: category.slugs[DEFAULT_LOCALE] },
+    props: { categoryId: category.id },
+  }));
+}
+
+const { categoryId } = Astro.props as Props;
+const locale = DEFAULT_LOCALE;
+const allPosts = await getPublishedBlogPosts();
+const pagination = paginateBlogPosts(getPostsByCategory(allPosts, locale, categoryId), 1);
+const alternates = await getCategoryAlternates(categoryId, 1);
+---
+
+<BlogIndexPage
+  locale={locale}
+  allPosts={allPosts}
+  pagination={pagination}
+  alternates={alternates}
+  categoryId={categoryId}
+/>

@@ -11,41 +11,40 @@ const defaultGroups: FooterGroup[] = [
   {
     title: "Tools",
     links: [
-      { label: "All tools", href: "/tools/" },
-      { label: "Calculators", href: "/categories/calculators/" },
-      { label: "PDF tools", href: "/categories/pdf/" },
-      { label: "SEO tools", href: "/categories/seo/" },
-      { label: "Developer tools", href: "/categories/developer-tools/" },
-      { label: "Image tools", href: "/categories/image-tools/" },
+      { label: "All tools", href: "/tools" },
+      { label: "Calculators", href: "/categories/calculators" },
+      { label: "PDF tools", href: "/categories/pdf" },
+      { label: "SEO tools", href: "/categories/seo" },
+      { label: "Developer tools", href: "/categories/developer-tools" },
+      { label: "Image tools", href: "/categories/image-tools" },
     ],
   },
   {
     title: "Blog",
     links: [
-      { label: "Latest articles", href: "/blog/" },
-      { label: "Popular guides", href: "/blog/popular/" },
-      { label: "SEO guides", href: "/blog/seo/" },
-      { label: "PDF guides", href: "/blog/pdf/" },
-      { label: "Calculator guides", href: "/blog/calculators/" },
-      { label: "Developer guides", href: "/blog/developer-tools/" },
+      { label: "Latest articles", href: "/blog" },
+      { label: "SEO guides", href: "/blog/seo" },
+      { label: "PDF guides", href: "/blog/pdf" },
+      { label: "Calculator guides", href: "/blog/calculators" },
+      { label: "Developer guides", href: "/blog/developer-tools" },
     ],
   },
   {
     title: "Resources",
     links: [
-      { label: "Categories", href: "/categories/" },
-      { label: "Collections", href: "/collections/" },
-      { label: "New tools", href: "/new-tools/" },
-      { label: "Sitemap", href: "/sitemap/" },
+      { label: "Categories", href: "/categories" },
+      { label: "Collections", href: "/collections" },
+      { label: "New tools", href: "/new-tools" },
+      { label: "Sitemap", href: "/sitemap" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About", href: "/about/" },
-      { label: "Contact", href: "/contact/" },
-      { label: "Privacy", href: "/privacy/" },
-      { label: "Terms", href: "/terms/" },
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
     ],
   },
 ];
@@ -85,8 +84,8 @@ const { groups = defaultGroups } = Astro.props;
     <div class="mt-[38px] flex flex-col gap-2 border-t border-slate-200 pt-5 text-[11px] text-slate-400 min-[600px]:flex-row min-[600px]:items-center min-[600px]:justify-between">
       <span>&copy; 2026 4all.tools. All rights reserved.</span>
       <span class="flex gap-4">
-        <a class="no-underline hover:text-blue-700" href="/privacy/">Privacy Policy</a>
-        <a class="no-underline hover:text-blue-700" href="/terms/">Terms of Service</a>
+        <a class="no-underline hover:text-blue-700" href="/privacy">Privacy Policy</a>
+        <a class="no-underline hover:text-blue-700" href="/terms">Terms of Service</a>
       </span>
     </div>
   </div>

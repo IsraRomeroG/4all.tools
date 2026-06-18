@@ -1,0 +1,159 @@
+---
+import ArticleBreadcrumb from "@components/article/ArticleBreadcrumb.astro";
+import ArticleButton from "@components/article/ArticleButton.astro";
+import ArticleHero from "@components/article/ArticleHero.astro";
+import ArticleProse from "@components/article/ArticleProse.astro";
+import BlogLayout from "@layouts/BlogLayout.astro";
+import { BLOG_UI, type BlogCategoryId } from "@/lib/blog/config";
+import {
+  formatBlogDate,
+  getReadingTimeLabel,
+  type BlogPost,
+} from "@/lib/blog/content";
+import { buildBlogIndexPath, buildCategoryPath, type AlternateLink } from "@/lib/blog/routes";
+import type { IconName } from "@components/icons/iconNames";
+
+interface Props {
+  post: BlogPost;
+  translations: BlogPost[];
+  relatedPosts: BlogPost[];
+  alternates: AlternateLink[];
+}
+
+const { post, translations, relatedPosts, alternates } = Astro.props;
+const ui = BLOG_UI[post.locale];
+const relatedTool = post.relatedTools[0];
+const categoryIcons = {
+  calculators: "calculator-circle",
+  "developer-tools": "code-compact",
+  seo: "search-wide",
+  pdf: "file-lines",
+  "image-tools": "image-landscape",
+} satisfies Record<BlogCategoryId, IconName>;
+const featuredTool = relatedTool
+  ? {
+      title: relatedTool.label,
+      description: `Open the related ${relatedTool.label} tool while you read this guide.`,
+      href: relatedTool.href,
+      ctaLabel: relatedTool.label,
+      icon: categoryIcons[post.categoryId],
+      trustNote: "Free to use. No sign up required.",
+    }
+  : {
+      title: post.category.labels[post.locale],
+      description: post.category.descriptions[post.locale],
+      href: buildCategoryPath(post.locale, post.categoryId),
+      ctaLabel: ui.allArticles,
+      icon: categoryIcons[post.categoryId],
+      trustNote: "Browse related guides.",
+    };
+const languageNames = new Intl.DisplayNames([post.locale], { type: "language" });
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: post.title,
+  description: post.description,
+  datePublished: post.publishedAt.toISOString(),
+  dateModified: post.updatedAt.toISOString(),
+  inLanguage: post.locale,
+  mainEntityOfPage: post.path,
+  author: {
+    "@type": "Organization",
+    name: "4all.tools",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "4all.tools",
+  },
+};
+---
+
+<BlogLayout
+  title={`${post.title} | 4all.tools`}
+  description={post.description}
+  lang={post.locale}
+  canonicalPath={post.path}
+  alternates={alternates}
+  categoryLinks={[
+    { label: post.category.labels[post.locale], href: buildCategoryPath(post.locale, post.categoryId) },
+  ]}
+  type="article"
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <ArticleBreadcrumb
+    items={[
+      { label: ui.blogLabel, href: buildBlogIndexPath(post.locale) },
+      { label: post.category.labels[post.locale], href: buildCategoryPath(post.locale, post.categoryId) },
+      { label: post.title, href: post.path, current: true },
+    ]}
+  />
+
+  <ArticleHero
+    badge={post.category.labels[post.locale]}
+    title={post.title}
+    description={post.description}
+    meta={[
+      { icon: "user", label: "4all.tools Editorial Team" },
+      { icon: "calendar-simple", label: `${ui.updated} ${formatBlogDate(post.locale, post.updatedAt)}` },
+      { icon: "clock-compact", label: getReadingTimeLabel(post) },
+    ]}
+    featuredTool={featuredTool}
+  />
+
+  <section class="pb-16 min-[900px]:pb-24">
+    <div class="mx-auto grid w-[min(1180px,calc(100%-40px))] gap-10 max-[639px]:w-[min(1180px,calc(100%-32px))] min-[1000px]:grid-cols-[minmax(0,1fr)_300px]">
+      <ArticleProse>
+        <slot />
+      </ArticleProse>
+
+      <aside class="space-y-5">
+        {
+          translations.length > 1 && (
+            <section class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <h2 class="m-0 mb-3 text-sm font-extrabold text-slate-950">Languages</h2>
+              <div class="grid gap-2">
+                {translations.map((translation) => (
+                  <a
+                    class:list={[
+                      "rounded-xl border px-3 py-2 text-sm font-semibold no-underline",
+                      translation.locale === post.locale
+                        ? "border-blue-200 bg-blue-50 text-blue-700"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:text-blue-700",
+                    ]}
+                    href={translation.path}
+                    aria-current={translation.locale === post.locale ? "page" : undefined}
+                  >
+                    {languageNames.of(translation.locale)}
+                  </a>
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        {
+          relatedPosts.length > 0 && (
+            <section class="rounded-2xl border border-slate-200 bg-white p-5">
+              <h2 class="m-0 mb-3 text-sm font-extrabold text-slate-950">Related guides</h2>
+              <div class="grid gap-3">
+                {relatedPosts.map((relatedPost) => (
+                  <a class="block rounded-xl border border-slate-200 p-4 text-slate-900 no-underline hover:border-blue-200 hover:text-blue-700" href={relatedPost.path}>
+                    <span class="block text-sm font-bold">{relatedPost.title}</span>
+                    <span class="mt-1 block text-xs leading-5 text-slate-500">{relatedPost.description}</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        <section class="rounded-2xl border border-blue-100 bg-blue-50 p-5">
+          <h2 class="m-0 mb-2 text-base font-extrabold text-slate-950">{post.category.labels[post.locale]}</h2>
+          <p class="m-0 mb-4 text-sm leading-6 text-slate-600">{post.category.descriptions[post.locale]}</p>
+          <ArticleButton href={buildCategoryPath(post.locale, post.categoryId)} label={ui.allArticles} arrow class="w-full" />
+        </section>
+      </aside>
+    </div>
+  </section>
+</BlogLayout>

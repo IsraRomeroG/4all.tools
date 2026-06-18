@@ -1,0 +1,39 @@
+---
+interface Props {
+  page: number;
+  totalPages: number;
+  previousHref?: string;
+  nextHref?: string;
+  pageLabel: string;
+}
+
+const { page, totalPages, previousHref, nextHref, pageLabel } = Astro.props;
+---
+
+{
+  totalPages > 1 && (
+    <nav class="mt-12 flex items-center justify-between border-t border-slate-200 pt-6" aria-label="Pagination">
+      <span class="text-sm font-semibold text-slate-500">
+        {pageLabel} {page} / {totalPages}
+      </span>
+      <div class="flex gap-2">
+        {previousHref && (
+          <a
+            class="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-200 px-4 text-sm font-bold text-slate-700 no-underline hover:border-blue-200 hover:text-blue-700"
+            href={previousHref}
+          >
+            Previous
+          </a>
+        )}
+        {nextHref && (
+          <a
+            class="inline-flex min-h-10 items-center justify-center rounded-xl border border-blue-600 bg-blue-600 px-4 text-sm font-bold text-white no-underline hover:border-blue-700 hover:bg-blue-700"
+            href={nextHref}
+          >
+            Next
+          </a>
+        )}
+      </div>
+    </nav>
+  )
+}

@@ -7,16 +7,26 @@ import type { BlogLink } from "./types";
 
 interface Props {
   links?: BlogLink[];
+  toolsHref?: string;
+  blogHref?: string;
+  toolsLabel?: string;
+  blogLabel?: string;
 }
 
 const defaultLinks: BlogLink[] = [
-  { label: "Tools", href: "/tools/" },
-  { label: "Categories", href: "/categories/" },
-  { label: "Blog", href: "/blog/" },
-  { label: "About", href: "/about/" },
+  { label: "Tools", href: "/tools" },
+  { label: "Categories", href: "/categories" },
+  { label: "Blog", href: "/blog" },
+  { label: "About", href: "/about" },
 ];
 
-const { links = defaultLinks } = Astro.props;
+const {
+  links = defaultLinks,
+  toolsHref = "/tools",
+  blogHref = "/blog",
+  toolsLabel = "Browse tools",
+  blogLabel = "Read the blog",
+} = Astro.props;
 ---
 
 <header
@@ -44,8 +54,8 @@ const { links = defaultLinks } = Astro.props;
       }
     </div>
     <div class="hidden items-center gap-2 min-[1024px]:flex">
-      <BlogButton href="/tools/" label="Browse tools" variant="secondary" />
-      <BlogButton href="/blog/" label="Read the blog" />
+      <BlogButton href={toolsHref} label={toolsLabel} variant="secondary" />
+      <BlogButton href={blogHref} label={blogLabel} />
     </div>
     <button
       class="grid size-[42px] place-items-center rounded-[11px] border border-slate-200 bg-white text-slate-700 min-[1024px]:hidden"

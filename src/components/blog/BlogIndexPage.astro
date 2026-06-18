@@ -1,0 +1,173 @@
+---
+import ArticleCard from "@components/blog/ArticleCard.astro";
+import BlogLayout from "@layouts/BlogLayout.astro";
+import PaginationNav from "@components/blog/PaginationNav.astro";
+import {
+  BLOG_CATEGORIES,
+  BLOG_UI,
+  type BlogCategoryId,
+  type Locale,
+} from "@/lib/blog/config";
+import {
+  formatBlogDate,
+  getAvailableCategories,
+  getCategoryPostCount,
+  getReadingTimeLabel,
+  type BlogPost,
+  type PaginatedBlogPosts,
+} from "@/lib/blog/content";
+import {
+  buildBlogPagePath,
+  buildCategoryPagePath,
+  buildCategoryPath,
+  type AlternateLink,
+} from "@/lib/blog/routes";
+
+interface Props {
+  locale: Locale;
+  allPosts: BlogPost[];
+  pagination: PaginatedBlogPosts;
+  alternates: AlternateLink[];
+  categoryId?: BlogCategoryId;
+}
+
+const { locale, allPosts, pagination, alternates, categoryId } = Astro.props;
+const ui = BLOG_UI[locale];
+const category = categoryId ? BLOG_CATEGORIES[categoryId] : undefined;
+const availableCategories = getAvailableCategories(allPosts, locale);
+const footerCategoryLinks = availableCategories.map((item) => ({
+  label: item.labels[locale],
+  href: buildCategoryPath(locale, item.id),
+}));
+const canonicalPath = category
+  ? buildCategoryPagePath(locale, category.id, pagination.page)
+  : buildBlogPagePath(locale, pagination.page);
+const baseTitle = category ? `${category.labels[locale]} ${ui.blogLabel}` : ui.indexTitle;
+const title = pagination.page > 1 ? `${baseTitle} - ${ui.page} ${pagination.page}` : baseTitle;
+const description = category?.descriptions[locale] ?? ui.indexDescription;
+const nextHref =
+  pagination.page < pagination.totalPages
+    ? category
+      ? buildCategoryPagePath(locale, category.id, pagination.page + 1)
+      : buildBlogPagePath(locale, pagination.page + 1)
+    : undefined;
+const previousHref =
+  pagination.page > 1
+    ? category
+      ? buildCategoryPagePath(locale, category.id, pagination.page - 1)
+      : buildBlogPagePath(locale, pagination.page - 1)
+    : undefined;
+
+function getTool(post: BlogPost) {
+  return post.relatedTools[0] ?? { label: ui.readMore, href: post.path };
+}
+---
+
+<BlogLayout
+  title={`${title} | 4all.tools`}
+  description={description}
+  lang={locale}
+  canonicalPath={canonicalPath}
+  alternates={alternates}
+  categoryLinks={footerCategoryLinks}
+>
+  <section class="border-b border-slate-200 bg-slate-50 py-14 min-[900px]:py-20">
+    <div class="mx-auto w-[calc(100%-40px)] max-w-[1180px] min-[768px]:w-[calc(100%-64px)]">
+      <p class="mb-3 text-xs font-extrabold tracking-[0.11em] text-blue-600 uppercase">
+        {category ? ui.categoryEyebrow : ui.blogLabel}
+      </p>
+      <h1 class="m-0 max-w-[820px] text-[40px] leading-[1.05] font-extrabold text-slate-950 min-[900px]:text-[64px]">
+        {category ? category.labels[locale] : ui.indexTitle}
+      </h1>
+      <p class="mt-5 mb-0 max-w-[740px] text-lg leading-[1.7] text-slate-600 min-[900px]:text-xl">
+        {description}
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3 text-sm font-semibold">
+        <a class="rounded-full border border-blue-200 bg-white px-4 py-2 text-blue-700 no-underline hover:border-blue-300" href={buildBlogPagePath(locale, 1)}>
+          {ui.allArticles}
+        </a>
+        <a class="rounded-full border border-slate-200 bg-white px-4 py-2 text-slate-600 no-underline hover:border-blue-200 hover:text-blue-700" href={`${buildBlogPagePath(locale, 1)}/rss.xml`}>
+          {ui.rss}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 min-[900px]:py-16" aria-labelledby="blog-topics-title">
+    <div class="mx-auto w-[calc(100%-40px)] max-w-[1180px] min-[768px]:w-[calc(100%-64px)]">
+      <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="mb-2 text-xs font-extrabold tracking-[0.11em] text-blue-600 uppercase">{ui.browseTopics}</p>
+          <h2 id="blog-topics-title" class="m-0 text-2xl font-extrabold text-slate-950">Topics</h2>
+        </div>
+      </div>
+      <div class="grid gap-3 min-[640px]:grid-cols-2 min-[900px]:grid-cols-3">
+        {
+          availableCategories.map((item) => (
+            <a
+              class:list={[
+                "flex min-h-[112px] items-start gap-4 rounded-2xl border bg-white p-5 text-slate-900 no-underline transition-[border-color,transform,box-shadow] hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-[0_16px_40px_rgba(15,23,42,0.08)]",
+                category?.id === item.id ? "border-blue-300" : "border-slate-200",
+              ]}
+              href={buildCategoryPath(locale, item.id)}
+            >
+              <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-xs font-black text-blue-700">
+                {item.symbol}
+              </span>
+              <span>
+                <strong class="block text-base">{item.labels[locale]}</strong>
+                <span class="mt-1 block text-sm leading-6 text-slate-500">
+                  {getCategoryPostCount(allPosts, locale, item.id)} articles
+                </span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-slate-200 bg-white py-12 min-[900px]:py-16" aria-labelledby="blog-articles-title">
+    <div class="mx-auto w-[calc(100%-40px)] max-w-[1180px] min-[768px]:w-[calc(100%-64px)]">
+      <div class="mb-6">
+        <p class="mb-2 text-xs font-extrabold tracking-[0.11em] text-blue-600 uppercase">{ui.latestArticles}</p>
+        <h2 id="blog-articles-title" class="m-0 text-2xl font-extrabold text-slate-950">
+          {category ? category.labels[locale] : ui.allArticles}
+        </h2>
+      </div>
+
+      {
+        pagination.items.length > 0 ? (
+          <div class="grid gap-4 min-[720px]:grid-cols-2 min-[1024px]:grid-cols-3">
+            {pagination.items.map((post) => {
+              const tool = getTool(post);
+              return (
+                <ArticleCard
+                  category={post.category.labels[locale]}
+                  symbol={post.category.symbol}
+                  title={post.title}
+                  href={post.path}
+                  description={post.description}
+                  readTime={getReadingTimeLabel(post)}
+                  updated={`${ui.updated} ${formatBlogDate(locale, post.updatedAt)}`}
+                  toolLabel={tool.label}
+                  toolHref={tool.href}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <p class="m-0 rounded-2xl border border-slate-200 bg-slate-50 p-6 text-slate-600">{ui.empty}</p>
+        )
+      }
+
+      <PaginationNav
+        page={pagination.page}
+        totalPages={pagination.totalPages}
+        previousHref={previousHref}
+        nextHref={nextHref}
+        pageLabel={ui.page}
+      />
+    </div>
+  </section>
+</BlogLayout>
