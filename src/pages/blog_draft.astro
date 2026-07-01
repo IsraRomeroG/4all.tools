@@ -1,0 +1,11 @@
+---
+import BlogLanding from "@components/blog/BlogLanding.astro";
+import BlogLayout from "@layouts/BlogLayout_draft.astro";
+const title = "4all.tools Blog - Practical Guides for Online Tools";
+const description =
+  "Read practical guides, tutorials and explanations for calculators, converters, SEO tools, PDF utilities, developer tools and more.";
+---
+
+<BlogLayout title={title} description={description} canonical="/blog/">
+  <BlogLanding showHeader={false} showFooter={false} />
+</BlogLayout>

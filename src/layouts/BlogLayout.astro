@@ -1,0 +1,133 @@
+---
+import "@styles/global.css";
+import BlogFooter from "@components/blog/BlogFooter.astro";
+import BlogHeader from "@components/blog/BlogHeader.astro";
+import type { BlogLink, FooterGroup } from "@components/blog/types";
+import { BLOG_UI, type Locale } from "@/lib/blog/config";
+import { buildBlogIndexPath, toAbsoluteUrl, type AlternateLink } from "@/lib/blog/routes";
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Locale;
+  canonicalPath: string;
+  alternates?: AlternateLink[];
+  categoryLinks?: BlogLink[];
+  image?: string | URL;
+  type?: "website" | "article";
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  lang,
+  canonicalPath,
+  alternates = [],
+  categoryLinks = [],
+  image,
+  type = "website",
+  noindex = false,
+} = Astro.props;
+
+const ui = BLOG_UI[lang];
+const canonicalUrl = toAbsoluteUrl(canonicalPath);
+const imageUrl = image ? new URL(image, Astro.site ?? "https://4all.tools").toString() : undefined;
+
+const headerLinks: BlogLink[] = [
+  { label: "Tools", href: "/tools" },
+  { label: "Categories", href: "/categories" },
+  { label: ui.blogLabel, href: buildBlogIndexPath(lang) },
+  { label: "About", href: "/about" },
+];
+
+const footerGroups: FooterGroup[] = [
+  {
+    title: "Tools",
+    links: [
+      { label: "All tools", href: "/tools" },
+      { label: "Categories", href: "/categories" },
+      { label: "New tools", href: "/new-tools" },
+    ],
+  },
+  {
+    title: ui.blogLabel,
+    links: [{ label: ui.latestArticles, href: buildBlogIndexPath(lang) }, ...categoryLinks],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: ui.rss, href: `${buildBlogIndexPath(lang)}/rss.xml` },
+      { label: "Sitemap", href: "/sitemap" },
+      { label: "Privacy", href: "/privacy" },
+    ],
+  },
+];
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#ffffff" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <link rel="canonical" href={canonicalUrl} />
+    {alternates.map(({ locale, href }) => <link rel="alternate" hreflang={locale} href={href} />)}
+
+    <meta property="og:site_name" content="4all.tools" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    {imageUrl && <meta property="og:image" content={imageUrl} />}
+
+    <meta name="twitter:card" content={imageUrl ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>{title}</title>
+    <slot name="head" />
+  </head>
+  <body class="m-0 bg-white font-[Inter,ui-sans-serif,system-ui,sans-serif] text-slate-900 antialiased">
+    <a
+      class="fixed top-3 left-3 z-[100] -translate-y-20 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white no-underline transition-transform focus:translate-y-0"
+      href="#blog-content"
+    >
+      Skip to content
+    </a>
+
+    <div class="flex min-h-screen flex-col">
+      <BlogHeader
+        links={headerLinks}
+        blogHref={buildBlogIndexPath(lang)}
+        blogLabel={ui.blogLabel}
+        toolsHref="/tools"
+        toolsLabel="Browse tools"
+      />
+      <main class="flex-1" id="blog-content" tabindex="-1">
+        <slot />
+      </main>
+      <BlogFooter groups={footerGroups} />
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 96px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+</style>

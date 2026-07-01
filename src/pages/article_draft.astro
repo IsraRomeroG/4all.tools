@@ -1,0 +1,401 @@
+---
+import ArticleAuthorBox from "@components/article/ArticleAuthorBox.astro";
+import ArticleBreadcrumb from "@components/article/ArticleBreadcrumb.astro";
+import ArticleCallout from "@components/article/ArticleCallout.astro";
+import ArticleExampleCard from "@components/article/ArticleExampleCard.astro";
+import ArticleFaqList from "@components/article/ArticleFaqList.astro";
+import ArticleFormulaCard from "@components/article/ArticleFormulaCard.astro";
+import ArticleHero from "@components/article/ArticleHero.astro";
+import ArticleInlineCta from "@components/article/ArticleInlineCta.astro";
+import ArticleQuickAnswer from "@components/article/ArticleQuickAnswer.astro";
+import ArticleReadingLayout from "@components/article/ArticleReadingLayout.astro";
+import ArticleRelatedGuides from "@components/article/ArticleRelatedGuides.astro";
+import ArticleRelatedTools from "@components/article/ArticleRelatedTools.astro";
+import ArticleSearchCta from "@components/article/ArticleSearchCta.astro";
+import ArticleSidebar from "@components/article/ArticleSidebar.astro";
+import ArticleSteps from "@components/article/ArticleSteps.astro";
+import ArticleTable from "@components/article/ArticleTable.astro";
+import ArticleLayout from "@layouts/ArticleLayout.astro";
+import type {
+  ArticleAuthor,
+  ArticleBreadcrumbItem,
+  ArticleCalculationRow,
+  ArticleDefinitionItem,
+  ArticleFaqItem,
+  ArticleGuideCard,
+  ArticleStepItem,
+  ArticleTocItem,
+  ArticleTool,
+  ArticleToolCard,
+} from "@components/article/types";
+
+const pageTitle = "How to Calculate Percentage Increase | Formula and Examples";
+const pageDescription =
+  "Learn how to calculate percentage increase with a simple formula, step-by-step examples and a free online percentage calculator.";
+const canonical = "https://4all.tools/blog/calculators/how-to-calculate-percentage-increase/";
+const calculatorHref = "/tools/percentage-calculator/";
+
+const breadcrumbs: ArticleBreadcrumbItem[] = [
+  { label: "Home", href: "/" },
+  { label: "Blog", href: "/blog/" },
+  { label: "Math", href: "/blog/calculators/" },
+  { label: "How to Calculate Percentage Increase", href: canonical, current: true },
+];
+
+const toc: ArticleTocItem[] = [
+  { label: "Percentage increase formula", href: "#formula" },
+  { label: "Step-by-step method", href: "#steps" },
+  { label: "Example calculation", href: "#example" },
+  { label: "Common mistakes", href: "#mistakes" },
+  { label: "Increase vs. difference", href: "#comparison" },
+  { label: "When to use it", href: "#when-to-use" },
+  { label: "Frequently asked questions", href: "#faq" },
+];
+
+const featuredTool: ArticleTool = {
+  title: "Percentage Calculator",
+  description: "Calculate percentage increase, decrease, discounts, and more in seconds.",
+  href: calculatorHref,
+  ctaLabel: "Open free calculator",
+  icon: "calculator-circle",
+  trustNote: "Free to use. No sign up required.",
+};
+
+const formulaDefinitions: ArticleDefinitionItem[] = [
+  {
+    term: "Original value",
+    description: "The starting number before the increase.",
+  },
+  {
+    term: "New value",
+    description: "The number after the increase.",
+  },
+  {
+    term: "Result",
+    description: "The growth rate expressed as a percent.",
+  },
+];
+
+const steps: ArticleStepItem[] = [
+  {
+    title: "Find the increase",
+    description: "Subtract the original value from the new value to find the amount of growth.",
+  },
+  {
+    title: "Compare it with the original",
+    description: "Divide the increase by the original value, not by the new value.",
+  },
+  {
+    title: "Convert to a percentage",
+    description: "Multiply the decimal result by 100 and add the percent sign.",
+  },
+];
+
+const exampleRows: ArticleCalculationRow[] = [
+  { label: "Original value", value: "$50" },
+  { label: "New value", value: "$65" },
+  { label: "Difference", value: "$65 - $50 = $15" },
+  { label: "Divide by original", value: "$15 / $50 = 0.30" },
+  { label: "Multiply by 100", value: "0.30 x 100 = 30%" },
+];
+
+const faqs: ArticleFaqItem[] = [
+  {
+    question: "What is the formula for percentage increase?",
+    answer:
+      "Subtract the original value from the new value, divide the result by the original value, and multiply by 100: ((New - Original) / Original) x 100.",
+  },
+  {
+    question: "Do I divide by the original value or the new value?",
+    answer:
+      "Divide by the original value. Percentage increase measures the size of the change relative to the starting amount.",
+  },
+  {
+    question: "Can percentage increase be more than 100%?",
+    answer:
+      "Yes. If the new value is more than twice the original value, the percentage increase will be greater than 100%.",
+  },
+  {
+    question: "What if the original value is zero?",
+    answer:
+      "A percentage increase from zero is mathematically undefined because the formula would require division by zero. Report the absolute change instead.",
+  },
+  {
+    question: "How do I calculate percentage decrease?",
+    answer:
+      "Subtract the new value from the original value, divide by the original value, then multiply by 100.",
+  },
+];
+
+const author: ArticleAuthor = {
+  initials: "4A",
+  name: "Written by the 4all.tools Editorial Team",
+  description:
+    "We create clear, practical guides for calculations, conversions, file tasks, SEO workflows, and everyday productivity tools.",
+  reviewedLabel: "Reviewed for clarity and accuracy on June 10, 2026",
+};
+
+const relatedTools: ArticleToolCard[] = [
+  {
+    title: "Percentage Calculator",
+    description: "Calculate increases, decreases, and percentage changes.",
+    href: calculatorHref,
+    icon: "circle-plus",
+  },
+  {
+    title: "Discount Calculator",
+    description: "Find sale prices, savings, and discount percentages.",
+    href: "/tools/discount-calculator/",
+    icon: "discount",
+  },
+  {
+    title: "ROI Calculator",
+    description: "Measure return on investment and compare outcomes.",
+    href: "/tools/roi-calculator/",
+    icon: "chart-roi",
+  },
+  {
+    title: "Profit Margin Calculator",
+    description: "Calculate margin, markup, revenue, and profit.",
+    href: "/tools/profit-margin-calculator/",
+    icon: "trending-up",
+  },
+  {
+    title: "Fraction to Percentage",
+    description: "Convert any fraction into a percentage instantly.",
+    href: "/tools/fraction-to-percentage/",
+    icon: "list",
+  },
+  {
+    title: "Sales Tax Calculator",
+    description: "Add or remove sales tax from a purchase amount.",
+    href: "/tools/sales-tax-calculator/",
+    icon: "receipt",
+  },
+];
+
+const relatedGuides: ArticleGuideCard[] = [
+  {
+    category: "Calculators",
+    title: "Percentage Increase vs. Percentage Difference",
+    description: "Learn which formula to use and why the distinction matters.",
+    href: "/blog/calculators/percentage-increase-vs-percentage-difference/",
+    meta: "5 min read",
+  },
+  {
+    category: "Shopping",
+    title: "How to Calculate a Discount",
+    description: "Find the final price and understand exactly how much you save.",
+    href: "/blog/shopping/how-to-calculate-a-discount/",
+    meta: "4 min read",
+  },
+  {
+    category: "Finance",
+    title: "How to Calculate Profit Margin",
+    description: "Use revenue and cost to measure the profitability of a sale.",
+    href: "/blog/finance/how-to-calculate-profit-margin/",
+    meta: "7 min read",
+  },
+];
+---
+
+<ArticleLayout title={pageTitle} description={pageDescription} canonical={canonical}>
+  <ArticleBreadcrumb items={breadcrumbs} />
+
+  <article>
+    <ArticleHero
+      title="How to Calculate Percentage Increase"
+      description="Learn the percentage increase formula, see practical examples, avoid common mistakes, and get the result instantly with a free calculator."
+      featuredTool={featuredTool}
+    />
+
+    <ArticleQuickAnswer
+      description="Subtract the original value from the new value, divide the difference by the original value, then multiply by 100."
+      formula="Percentage Increase = ((New Value - Original Value) / Original Value) x 100"
+      actions={[
+        { label: "Use the Percentage Calculator", href: calculatorHref },
+        { label: "See how the formula works", href: "#formula", variant: "secondary" },
+      ]}
+    />
+
+    <ArticleReadingLayout toc={toc}>
+      <section id="formula">
+        <h2>Percentage increase formula</h2>
+        <p>
+          Percentage increase measures how much a value has grown compared with its original amount.
+          It is useful whenever you have a clear starting value and a newer, larger value.
+        </p>
+        <p>
+          The result expresses the increase as a percentage of the <strong>original value</strong>,
+          which is why the original value is always the denominator.
+        </p>
+        <ArticleFormulaCard
+          formula="((New Value - Original Value) / Original Value) x 100"
+          definitions={formulaDefinitions}
+        />
+        <ArticleCallout title="Useful shortcut">
+          <p>
+            Convert the original and new values to the same unit before calculating. For example,
+            do not compare dollars with cents or kilograms with pounds.
+          </p>
+        </ArticleCallout>
+      </section>
+
+      <section id="steps">
+        <h2>How to calculate percentage increase step by step</h2>
+        <p>
+          You can calculate the change reliably in three simple steps. Keep the original value
+          nearby because you will use it twice.
+        </p>
+        <ArticleSteps steps={steps} />
+      </section>
+
+      <section id="example">
+        <h2>Example calculation</h2>
+        <p>
+          Suppose a monthly subscription changes from $50 to $65. The price increased by $15,
+          but the percentage increase tells us how large that $15 change is relative to the
+          original price.
+        </p>
+        <ArticleExampleCard title="From $50 to $65" rows={exampleRows} />
+        <p>
+          The subscription price increased by <strong>30%</strong>. You can verify this result
+          or calculate a different change with the <a href={calculatorHref}>percentage calculator</a>.
+        </p>
+        <ArticleInlineCta
+          title="Need the answer faster?"
+          description="Enter any original and new value to get the percentage increase, decrease, and difference."
+          href={calculatorHref}
+          ctaLabel="Open Percentage Calculator"
+        />
+      </section>
+
+      <section id="mistakes">
+        <h2>Common percentage increase mistakes</h2>
+        <p>
+          The formula is short, but choosing the wrong denominator or mixing up related percentage
+          concepts can produce a misleading result.
+        </p>
+        <ArticleCallout title="Do not divide by the new value" variant="warning">
+          <p>
+            Percentage increase describes growth relative to where you started, so divide the
+            difference by the original value.
+          </p>
+        </ArticleCallout>
+        <ul>
+          <li>
+            <strong>Using the new value as the denominator.</strong> This understates the size of
+            the increase.
+          </li>
+          <li>
+            <strong>Forgetting to multiply by 100.</strong> A decimal of 0.30 is equal to 30%,
+            not 0.30%.
+          </li>
+          <li>
+            <strong>Confusing increase with percentage points.</strong> A rate moving from 20% to
+            30% rises by 10 percentage points but increases by 50%.
+          </li>
+          <li>
+            <strong>Using zero as the original value.</strong> Percentage increase from zero is
+            undefined because division by zero is impossible.
+          </li>
+        </ul>
+      </section>
+
+      <section id="comparison">
+        <h2>Percentage increase vs. percentage difference</h2>
+        <p>
+          Use percentage increase when one number is clearly the original. Use percentage difference
+          when the two values are peers and neither is a natural starting point.
+        </p>
+        <ArticleTable>
+          <table>
+            <thead>
+              <tr>
+                <th>Concept</th>
+                <th>Formula</th>
+                <th>Best used for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Percentage increase</strong></td>
+                <td><code>(New - Original) / Original x 100</code></td>
+                <td>Growth from an old value to a new value</td>
+              </tr>
+              <tr>
+                <td><strong>Percentage decrease</strong></td>
+                <td><code>(Original - New) / Original x 100</code></td>
+                <td>A drop from an old value to a new value</td>
+              </tr>
+              <tr>
+                <td><strong>Percentage difference</strong></td>
+                <td><code>Difference / Average x 100</code></td>
+                <td>Comparing two values with no clear original</td>
+              </tr>
+              <tr>
+                <td><strong>Percentage points</strong></td>
+                <td><code>New rate - Original rate</code></td>
+                <td>Describing the absolute change between percentages</td>
+              </tr>
+            </tbody>
+          </table>
+        </ArticleTable>
+      </section>
+
+      <section id="when-to-use">
+        <h2>When should you use percentage increase?</h2>
+        <p>
+          Percentage increase makes changes easier to compare across values of different sizes.
+          A $10 increase can be tiny or enormous depending on the starting amount.
+        </p>
+        <ul>
+          <li>Tracking revenue, profit, traffic, or audience growth over time</li>
+          <li>Measuring a price increase or cost change</li>
+          <li>Comparing test scores, productivity, or performance improvements</li>
+          <li>Understanding investment growth before accounting for time or compounding</li>
+          <li>Reporting changes in population, inventory, or demand</li>
+        </ul>
+        <h3>Can the increase be more than 100%?</h3>
+        <p>
+          Yes. An increase above 100% means the new value is more than double the original. For
+          example, a value rising from 40 to 100 increases by 150% because the increase of 60 is
+          one and a half times the original 40.
+        </p>
+      </section>
+
+      <section id="faq">
+        <h2>Frequently asked questions</h2>
+        <p>Quick answers to the most common questions about calculating percentage increases.</p>
+        <ArticleFaqList items={faqs} />
+      </section>
+
+      <ArticleAuthorBox slot="after-prose" author={author} />
+
+      <ArticleSidebar
+        slot="sidebar"
+        toc={toc}
+        tool={featuredTool}
+        relatedTools={[
+          { label: "Discount Calculator", href: "/tools/discount-calculator/" },
+          { label: "ROI Calculator", href: "/tools/roi-calculator/" },
+          { label: "Margin Calculator", href: "/tools/profit-margin-calculator/" },
+        ]}
+        shareLinks={[
+          { label: "Copy link", href: canonical, icon: "link", ariaLabel: "Copy article link" },
+          {
+            label: "Email",
+            href: `mailto:?subject=${encodeURIComponent(pageTitle)}&body=${encodeURIComponent(canonical)}`,
+            icon: "mail",
+            ariaLabel: "Share by email",
+          },
+          { label: "Print", href: "javascript:window.print()", icon: "printer", ariaLabel: "Print article" },
+        ]}
+      />
+    </ArticleReadingLayout>
+  </article>
+
+  <ArticleRelatedTools tools={relatedTools} />
+  <ArticleRelatedGuides guides={relatedGuides} />
+  <ArticleSearchCta />
+</ArticleLayout>

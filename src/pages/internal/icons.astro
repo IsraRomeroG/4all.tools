@@ -1,0 +1,200 @@
+---
+import Icon from "@components/icons/Icon.astro";
+import { iconNames } from "@components/icons/iconNames";
+import Logo from "@components/logos/Logo.astro";
+import "@styles/global.css";
+
+const title = "Icon Library | 4all.tools";
+const description = "Browse every icon available in the 4all.tools icon library.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>{title}</title>
+  </head>
+  <body class="m-0 min-h-screen bg-slate-50 font-[Inter,ui-sans-serif,system-ui,sans-serif] text-slate-900 antialiased">
+    <header class="border-b border-slate-200 bg-white">
+      <div class="mx-auto flex w-[calc(100%-32px)] max-w-[1440px] items-center justify-between gap-6 py-5">
+        <Logo markShadow={false} />
+        <a
+          class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 no-underline hover:bg-slate-100 hover:text-blue-600 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-blue-600/35"
+          href="/"
+        >
+          Back to site
+        </a>
+      </div>
+    </header>
+
+    <main class="mx-auto w-[calc(100%-32px)] max-w-[1440px] py-12">
+      <section class="mb-10">
+        <p class="mb-3 text-xs font-bold tracking-[0.14em] text-blue-600 uppercase">
+          Design reference
+        </p>
+        <div class="flex flex-wrap items-end justify-between gap-5">
+          <div>
+            <h1 class="m-0 text-4xl font-extrabold tracking-[-0.04em] text-slate-950 sm:text-5xl">
+              Icon library
+            </h1>
+            <p class="mt-4 mb-0 max-w-2xl text-base leading-7 text-slate-600">
+              Browse all <span data-total-count>{iconNames.length}</span> icons. Select an icon to copy its Astro usage.
+            </p>
+          </div>
+
+          <label class="relative block w-full max-w-md">
+            <span class="sr-only">Search icons</span>
+            <Icon
+              name="search"
+              class="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              class="w-full rounded-xl border border-slate-300 bg-white py-3.5 pr-4 pl-12 text-base text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+              id="icon-search"
+              type="search"
+              placeholder="Search by icon name..."
+              autocomplete="off"
+              data-icon-search
+            />
+          </label>
+        </div>
+      </section>
+
+      <div
+        class="mb-5 flex items-center justify-between gap-4 text-sm text-slate-500"
+        aria-live="polite"
+      >
+        <span><strong class="text-slate-800" data-visible-count>{iconNames.length}</strong> icons shown</span>
+        <span class="hidden font-medium text-blue-700 sm:inline" data-copy-status>
+          Click an icon to copy
+        </span>
+      </div>
+
+      <ul
+        class="icon-grid m-0 grid list-none gap-3 p-0"
+        data-icon-grid
+        style="grid-template-columns: repeat(8, minmax(0, 1fr));"
+      >
+        {
+          iconNames.map((name, index) => {
+            const hue = Math.round((index * 137.508) % 360);
+
+            return (
+              <li data-icon-card data-icon-name={name}>
+                <button
+                  class="icon-card group flex min-h-36 w-full cursor-pointer flex-col items-center justify-center gap-5 rounded-2xl border bg-white p-4 text-slate-900 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-blue-600/40 motion-reduce:transform-none motion-reduce:transition-none"
+                  type="button"
+                  data-copy-icon={name}
+                  style={`--icon-hue: ${hue}`}
+                  title={`Copy <Icon name="${name}" />`}
+                >
+                  <span class="icon-preview grid size-16 place-items-center rounded-2xl transition-colors">
+                    <Icon name={name} class="size-8" />
+                  </span>
+                  <code class="icon-label max-w-full overflow-hidden text-ellipsis whitespace-nowrap rounded-md px-2 py-1 text-xs font-semibold">
+                    {name}
+                  </code>
+                </button>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <div
+        class="hidden rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center text-slate-500"
+        data-empty-state
+      >
+        No icons match that search.
+      </div>
+    </main>
+
+    <script>
+      const search = document.querySelector<HTMLInputElement>("[data-icon-search]");
+      const cards = [...document.querySelectorAll<HTMLElement>("[data-icon-card]")];
+      const visibleCount = document.querySelector<HTMLElement>("[data-visible-count]");
+      const emptyState = document.querySelector<HTMLElement>("[data-empty-state]");
+      const copyStatus = document.querySelector<HTMLElement>("[data-copy-status]");
+
+      const filterIcons = () => {
+        const query = search?.value.trim().toLowerCase() ?? "";
+        let count = 0;
+
+        cards.forEach((card) => {
+          const matches = card.dataset.iconName?.includes(query) ?? false;
+          card.hidden = !matches;
+          if (matches) count += 1;
+        });
+
+        if (visibleCount) visibleCount.textContent = String(count);
+        emptyState?.classList.toggle("hidden", count !== 0);
+      };
+
+      search?.addEventListener("input", filterIcons);
+
+      document.querySelectorAll<HTMLButtonElement>("[data-copy-icon]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const name = button.dataset.copyIcon;
+          if (!name) return;
+
+          const usage = `<Icon name="${name}" />`;
+
+          try {
+            await navigator.clipboard.writeText(usage);
+            if (copyStatus) copyStatus.textContent = `Copied ${usage}`;
+          } catch {
+            if (copyStatus) copyStatus.textContent = usage;
+          }
+        });
+      });
+    </script>
+
+    <style>
+      .icon-grid {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+      }
+
+      .icon-card {
+        border-color: hsl(var(--icon-hue) 65% 85%);
+      }
+
+      .icon-card:hover {
+        border-color: hsl(var(--icon-hue) 70% 58%);
+        box-shadow: 0 18px 35px hsl(var(--icon-hue) 55% 30% / 0.13);
+      }
+
+      .icon-preview {
+        background: hsl(var(--icon-hue) 85% 96%);
+        color: hsl(var(--icon-hue) 72% 43%);
+      }
+
+      .icon-card:hover .icon-preview {
+        background: hsl(var(--icon-hue) 85% 91%);
+        color: hsl(var(--icon-hue) 78% 36%);
+      }
+
+      .icon-label {
+        background: hsl(var(--icon-hue) 70% 96%);
+        color: hsl(var(--icon-hue) 55% 35%);
+      }
+
+      @media (max-width: 720px) {
+        .icon-grid {
+          grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .icon-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
+      }
+    </style>
+  </body>
+</html>

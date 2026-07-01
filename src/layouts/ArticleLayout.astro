@@ -1,0 +1,110 @@
+---
+import "@styles/global.css";
+import ArticleFooter from "@components/article/ArticleFooter.astro";
+import ArticleHeader from "@components/article/ArticleHeader.astro";
+import type { ArticleFooterGroup, ArticleLink } from "@components/article/types";
+
+interface Props {
+  title: string;
+  description: string;
+  lang?: string;
+  canonical?: string | URL;
+  image?: string | URL;
+  type?: "website" | "article";
+  noindex?: boolean;
+  showHeader?: boolean;
+  showFooter?: boolean;
+  headerLinks?: ArticleLink[];
+  footerGroups?: ArticleFooterGroup[];
+}
+
+const {
+  title,
+  description,
+  lang = "en",
+  canonical,
+  image,
+  type = "article",
+  noindex = false,
+  showHeader = true,
+  showFooter = true,
+  headerLinks,
+  footerGroups,
+} = Astro.props;
+
+const baseUrl = Astro.site ?? Astro.url;
+const canonicalUrl = canonical ? new URL(canonical, baseUrl).toString() : undefined;
+const imageUrl = image ? new URL(image, baseUrl).toString() : undefined;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#ffffff" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    {imageUrl && <meta property="og:image" content={imageUrl} />}
+
+    <meta name="twitter:card" content={imageUrl ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>{title}</title>
+    <slot name="head" />
+  </head>
+  <body class="m-0 bg-white font-[Inter,ui-sans-serif,system-ui,sans-serif] text-slate-900 antialiased">
+    <a
+      class="fixed top-3 left-3 z-[100] -translate-y-20 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white no-underline transition-transform focus:translate-y-0"
+      href="#article-content"
+    >
+      Skip to content
+    </a>
+
+    <div class="flex min-h-screen flex-col">
+      {
+        showHeader && (
+          <slot name="header">
+            <ArticleHeader links={headerLinks} />
+          </slot>
+        )
+      }
+
+      <main class="flex-1" id="article-content" tabindex="-1">
+        <slot />
+      </main>
+
+      {
+        showFooter && (
+          <slot name="footer">
+            <ArticleFooter groups={footerGroups} />
+          </slot>
+        )
+      }
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 96px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+</style>
