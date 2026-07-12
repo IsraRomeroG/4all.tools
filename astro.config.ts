@@ -1,6 +1,7 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from './src/i18n/config';
 
 // https://astro.build/config
 export default defineConfig({
@@ -8,8 +9,8 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   i18n: {
-    locales: ['en', 'es', 'pt', 'fr'],
-    defaultLocale: 'en',
+    locales: [...SUPPORTED_LOCALES],
+    defaultLocale: DEFAULT_LOCALE,
     routing: {
       prefixDefaultLocale: false,
     },
