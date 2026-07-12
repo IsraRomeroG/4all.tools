@@ -1,43 +1,50 @@
-# Astro Starter Kit: Minimal
+# 4all.tools
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Astro project foundation for 4all.tools.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Commands
 
-## 🚀 Project Structure
+Run commands from the project root:
 
-Inside of your Astro project, you'll see the following folders and files:
+| Command | Action |
+| :-- | :-- |
+| `npm ci` | Install dependencies from the lockfile |
+| `npm run dev` | Start the Astro development server |
+| `npm run check` | Run Astro and TypeScript checks |
+| `npm run build` | Build the static site to `./dist/` |
+| `npm run preview` | Preview the production build |
+| `npm run astro -- --help` | Show Astro CLI help |
+
+## Source Boundaries
+
+The source tree reserves these top-level namespaces:
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/
+|-- pages/
+|-- templates/
+|-- layouts/
+|-- components/
+|-- features/
+|-- domain/
+|-- routing/
+|-- i18n/
+|-- services/
+|-- server/
+`-- styles/
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+`src/templates/` is the page-composition namespace. `src/views/` is prohibited.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## TypeScript Conventions
 
-Any static assets, like images, can be placed in the `public/` directory.
+- TypeScript strict mode is mandatory through `astro/tsconfigs/strict`.
+- `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` stay enabled.
+- `@/*` is the canonical source alias.
+- Cross-boundary imports should use `@/...`, not deep relative traversal.
+- Explicit `any` is exceptional and should be narrowly justified.
+- Test code follows the same TypeScript baseline where practical.
 
-## 🧞 Commands
+## Architecture Scope
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+P00 reserves the project shell only. Domain contracts, taxonomy, routing registries, localized content, templates, and feature implementations are introduced by later phases.
