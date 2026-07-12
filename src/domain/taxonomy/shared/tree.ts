@@ -10,12 +10,14 @@ import {
 
 type FrozenTaxonomyLocaleData = Readonly<TaxonomyLocaleData>;
 
+type FrozenLocalizedTaxonomyData<TId extends string> = {
+  readonly [TLocale in keyof TaxonomyNode<TId>['localized']]: FrozenTaxonomyLocaleData;
+};
+
 type FrozenTaxonomyNode<TId extends string> = Readonly<
   Omit<TaxonomyNode<TId>, 'localized'>
 > & {
-  readonly localized: {
-    readonly [TLocale in keyof TaxonomyNode<TId>['localized']]: FrozenTaxonomyLocaleData;
-  };
+  readonly localized: FrozenLocalizedTaxonomyData<TId>;
 };
 
 type VisitState = 'visiting' | 'visited';
@@ -161,20 +163,27 @@ export function createTaxonomyTree<TId extends string>(
 function snapshotNode<TId extends string>(
   node: TaxonomyNode<TId>,
 ): FrozenTaxonomyNode<TId> {
-  const localized = Object.freeze({
-    en: Object.freeze({ ...node.localized.en }),
-    es: Object.freeze({ ...node.localized.es }),
-    pt: Object.freeze({ ...node.localized.pt }),
-    fr: Object.freeze({ ...node.localized.fr }),
-  });
-
   return Object.freeze({
     id: node.id,
     parentId: node.parentId,
-    localized,
+    localized: snapshotLocalized(node.localized),
     status: node.status,
     sortOrder: node.sortOrder,
   }) as FrozenTaxonomyNode<TId>;
+}
+
+function snapshotLocalized<TId extends string>(
+  localized: TaxonomyNode<TId>['localized'],
+): FrozenLocalizedTaxonomyData<TId> {
+  const snapshot = {} as {
+    [TLocale in keyof TaxonomyNode<TId>['localized']]: FrozenTaxonomyLocaleData;
+  };
+
+  for (const locale of SUPPORTED_LOCALES) {
+    snapshot[locale] = Object.freeze({ ...localized[locale] });
+  }
+
+  return Object.freeze(snapshot);
 }
 
 function validateNodeFields<TId extends string>(
