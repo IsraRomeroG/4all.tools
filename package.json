@@ -10,6 +10,11 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:build": "npm run build && vitest run tests/build",
+    "verify": "npm run check && npm run test && npm run test:build",
     "astro": "astro"
   },
   "dependencies": {
@@ -19,6 +24,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
-    "typescript": "^6.0.3"
+    "@types/node": "^26.1.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
   }
 }

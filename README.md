@@ -11,6 +11,11 @@ Run commands from the project root:
 | `npm ci` | Install dependencies from the lockfile |
 | `npm run dev` | Start the Astro development server |
 | `npm run check` | Run Astro and TypeScript checks |
+| `npm run test:unit` | Run unit tests |
+| `npm run test:integration` | Run integration tests |
+| `npm run test` | Run unit and integration tests |
+| `npm run test:build` | Build the site and run static output smoke tests |
+| `npm run verify` | Run the full local verification workflow |
 | `npm run build` | Build the static site to `./dist/` |
 | `npm run preview` | Preview the production build |
 | `npm run astro -- --help` | Show Astro CLI help |
