@@ -62,9 +62,8 @@ P09 Build Validation
 
 - query service modules;
 - typed content lookup by stable ID + locale;
-- nullable lookup APIs;
-- required lookup APIs;
-- published-only lookup APIs;
+- published-only nullable lookup APIs;
+- published-only required lookup APIs;
 - explicit cardinality validation;
 - typed errors;
 - tests;
@@ -163,25 +162,11 @@ entry.id
 
 ---
 
-## 7. Required tool query APIs
+## 7. Required published tool query APIs
+
+The public P03 tool query baseline MUST be published-only.
 
 Provide functions equivalent to:
-
-```ts
-getToolContent(
-  toolId: ToolId,
-  locale: Locale,
-): Promise<ToolContentEntry | null>
-```
-
-```ts
-requireToolContent(
-  toolId: ToolId,
-  locale: Locale,
-): Promise<ToolContentEntry>
-```
-
-Published-specific APIs SHOULD be explicit:
 
 ```ts
 getPublishedToolContent(
@@ -197,59 +182,76 @@ requirePublishedToolContent(
 ): Promise<ToolContentEntry>
 ```
 
+P03 MUST NOT expose generic all-status APIs such as:
+
+```ts
+getToolContent(toolId, locale)
+requireToolContent(toolId, locale)
+```
+
+unless a concrete draft-aware editorial tooling requirement defines exact status semantics.
+
 Exact names MAY differ if semantics remain obvious.
 
 ---
 
-## 8. Required tool-category query APIs
+## 8. Required published tool-category query APIs
 
 Provide equivalents to:
 
 ```ts
-getToolCategoryContent(
+getPublishedToolCategoryContent(
   categoryId: ToolCategoryId,
   locale: Locale,
 ): Promise<ToolCategoryContentEntry | null>
 ```
 
-and required/published variants as justified.
+```ts
+requirePublishedToolCategoryContent(
+  categoryId: ToolCategoryId,
+  locale: Locale,
+): Promise<ToolCategoryContentEntry>
+```
 
 ---
 
-## 9. Required article query APIs
+## 9. Required published article query APIs
 
 Provide equivalents to:
 
 ```ts
-getArticleContent(
+getPublishedArticleContent(
   articleId: ArticleId,
   locale: Locale,
 ): Promise<ArticleContentEntry | null>
 ```
 
 ```ts
-requireArticleContent(
+requirePublishedArticleContent(
   articleId: ArticleId,
   locale: Locale,
 ): Promise<ArticleContentEntry>
 ```
 
-Published-specific variants SHOULD exist for route generation and public pages.
-
 ---
 
-## 10. Required blog-category query APIs
+## 10. Required published blog-category query APIs
 
 Provide equivalents to:
 
 ```ts
-getBlogCategoryContent(
+getPublishedBlogCategoryContent(
   categoryId: BlogCategoryId,
   locale: Locale,
 ): Promise<BlogCategoryContentEntry | null>
 ```
 
-with required/published variants where appropriate.
+```ts
+requirePublishedBlogCategoryContent(
+  categoryId: BlogCategoryId,
+  locale: Locale,
+): Promise<BlogCategoryContentEntry>
+```
 
 ---
 
@@ -460,15 +462,17 @@ matches = 2
 → semantics must be explicitly defined
 ```
 
-The task SHOULD avoid ambiguous all-status APIs unless needed.
+The task MUST avoid ambiguous all-status APIs in P03.
+
+Draft-aware or all-status APIs MAY be added later only when a concrete editorial-preview or content-management requirement defines exact status semantics.
 
 ---
 
-## 19. Recommended public API minimalism
+## 19. Required public API minimalism
 
 Prefer a small set of strongly named functions over every possible combination.
 
-Recommended public baseline:
+Required public baseline:
 
 ```text
 getPublishedToolContent
@@ -483,7 +487,21 @@ requirePublishedBlogCategoryContent
 
 Draft-aware editorial tooling MAY be added later.
 
-If non-published query APIs are implemented, names MUST make semantics clear.
+If non-published query APIs are implemented later, names MUST make semantics clear.
+
+Acceptable future examples:
+
+```text
+getToolContentByStatus
+listToolContentVariants
+```
+
+Avoid generic names whose status behavior is unclear:
+
+```text
+getToolContent
+requireToolContent
+```
 
 ---
 
@@ -996,10 +1014,13 @@ inside content retrieval unless a clearly separate composition function owns tha
 - [ ] Create typed query errors.
 - [ ] Create exact-match helper.
 - [ ] Create published tool lookup.
-- [ ] Create required tool lookup.
-- [ ] Create tool-category lookup.
-- [ ] Create article lookup.
-- [ ] Create blog-category lookup.
+- [ ] Create required published tool lookup.
+- [ ] Create published tool-category lookup.
+- [ ] Create required published tool-category lookup.
+- [ ] Create published article lookup.
+- [ ] Create required published article lookup.
+- [ ] Create published blog-category lookup.
+- [ ] Create required published blog-category lookup.
 - [ ] Add no-fallback behavior.
 - [ ] Add duplicate detection.
 - [ ] Add tests.
@@ -1045,7 +1066,15 @@ Tool category and blog category queries remain separate.
 
 No query API constructs public URLs.
 
-### AC08 — Tests
+### AC08 - Published-only public baseline
+
+Public semantic APIs use explicit published-specific names.
+
+Generic all-status APIs are absent from P03.
+
+Any future draft-aware APIs must use names that explicitly define status semantics.
+
+### AC09 — Tests
 
 All required query tests pass.
 
@@ -1061,6 +1090,7 @@ The task is not complete if:
 - query services construct routes;
 - templates are the primary location for repeated raw collection filtering;
 - tool and blog category queries are conflated;
+- generic all-status query APIs are exposed without explicit status semantics;
 - errors lack enough context to diagnose ambiguity;
 - tests omit duplicate scenarios.
 
@@ -1070,7 +1100,7 @@ The task is not complete if:
 
 P03-T04 is `Verified` only when:
 
-- semantic query APIs exist;
+- published-specific semantic query APIs exist;
 - stable ID + locale is the lookup contract;
 - zero/one/many cardinality is explicit;
 - typed errors exist;
