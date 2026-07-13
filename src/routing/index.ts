@@ -1,3 +1,4 @@
+export * from './builders';
 export * from './definitions';
 export * from './errors';
 export * from './registry';
