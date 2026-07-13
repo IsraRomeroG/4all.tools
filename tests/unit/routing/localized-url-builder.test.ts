@@ -105,31 +105,13 @@ describe('localized URL builder', () => {
     );
   });
 
-  it('rejects locale namespaces inside localized segments', () => {
-    expectRouteError(
-      () =>
-        buildLocalizedPath({
-          locale: 'es',
-          segments: ['es', 'blog', 'que-es-json'],
-        }),
-      'INVALID_SEGMENT',
-    );
-    expectRouteError(
-      () =>
-        buildLocalizedPath({
-          locale: 'en',
-          segments: ['en', 'developer'],
-        }),
-      'INVALID_SEGMENT',
-    );
-    expectRouteError(
-      () =>
-        buildLocalizedPath({
-          locale: 'en',
-          segments: ['fr', 'developpement'],
-        }),
-      'INVALID_SEGMENT',
-    );
+  it('formats locale-code segments without owning namespace policy', () => {
+    expect(
+      buildLocalizedPath({
+        locale: 'es',
+        segments: ['fr', 'example-tool'],
+      }),
+    ).toBe('/es/fr/example-tool/');
   });
 
   it('does not duplicate locale prefixes or generate an English prefix', () => {

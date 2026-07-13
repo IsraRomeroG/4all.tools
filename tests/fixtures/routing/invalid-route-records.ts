@@ -77,6 +77,24 @@ export const LOCALE_PREFIX_ROOT = [
   }),
 ] satisfies readonly RouteRecord[];
 
+export const DUPLICATE_CURRENT_LOCALE_PREFIX = [
+  toolRecord({
+    locale: 'es',
+    toolId: 'duplicate-locale-prefix-tool',
+    segments: ['es', 'example-tool'],
+    sourceId: 'fixture:duplicate-current-locale-prefix',
+  }),
+] satisfies readonly RouteRecord[];
+
+export const OTHER_LOCALE_CODE_IN_PREFIXED_LOCALE = [
+  toolRecord({
+    locale: 'es',
+    toolId: 'other-locale-code-tool',
+    segments: ['fr', 'example-tool'],
+    sourceId: 'fixture:other-locale-code',
+  }),
+] satisfies readonly RouteRecord[];
+
 export const RESERVED_BLOG_TOOL_ROOT = [
   toolRecord({
     toolId: 'blog-tool',

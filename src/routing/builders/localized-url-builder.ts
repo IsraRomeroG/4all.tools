@@ -1,7 +1,6 @@
 import { SITE_URL, TRAILING_SLASH_POLICY } from '@/config/site';
-import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
+import { LOCALES } from '@/i18n/config';
 import type { Locale } from '@/i18n/types';
-import { RoutingInvariantError } from '@/routing/errors';
 
 import { assertValidRouteSegment } from './segment-validation';
 
@@ -33,7 +32,8 @@ export function buildLocalizedPath(input: BuildLocalizedPathInput): string {
   assertValidLocalizedPathInput(input);
 
   const prefix = LOCALES[input.locale].pathPrefix;
-  const pathSegments = prefix.length > 0 ? [prefix, ...input.segments] : input.segments;
+  const pathSegments =
+    prefix.length > 0 ? [prefix, ...input.segments] : input.segments;
   const path = `/${pathSegments.join('/')}`;
 
   return applyTrailingSlash(path);
@@ -57,20 +57,6 @@ function assertValidLocalizedPathInput(
       source: 'localized-url-builder',
     });
   }
-
-  const rootSegment = input.segments[0];
-
-  if (rootSegment !== undefined && getLocaleNamespaceSegments().has(rootSegment)) {
-    throw new RoutingInvariantError(
-      'INVALID_SEGMENT',
-      `Route segments for locale ${input.locale} must not include locale namespace ${rootSegment}.`,
-      {
-        locale: input.locale,
-        localeNamespace: rootSegment,
-        segments: input.segments,
-      },
-    );
-  }
 }
 
 function applyTrailingSlash(path: string): string {
@@ -79,20 +65,4 @@ function applyTrailingSlash(path: string): string {
   }
 
   return path.endsWith('/') ? path : `${path}/`;
-}
-
-function getLocaleNamespaceSegments(): ReadonlySet<string> {
-  const segments = new Set<string>();
-
-  for (const locale of SUPPORTED_LOCALES) {
-    segments.add(locale);
-
-    const pathPrefix = LOCALES[locale].pathPrefix;
-
-    if (pathPrefix.length > 0) {
-      segments.add(pathPrefix);
-    }
-  }
-
-  return segments;
 }

@@ -82,6 +82,31 @@ describe('routing reserved namespaces', () => {
     });
   });
 
+  it('rejects a prefixed locale route that includes its own locale prefix', () => {
+    const conflict = getReservedNamespaceConflict(
+      toolInput('es', ['es', 'example-tool']),
+    );
+
+    expect(conflict).toMatchObject({
+      code: 'RESERVED_ROOT_SEGMENT',
+      locale: 'es',
+      segment: 'es',
+      scope: 'locale-root',
+      reservedOwner: 'i18n',
+      routeArea: 'tools',
+      reason:
+        'Locale prefix is applied by URL builder and must not be included in locale-relative route segments',
+    });
+  });
+
+  it('allows another locale code inside an already-prefixed locale namespace', () => {
+    expect(
+      getReservedNamespaceConflict(
+        toolInput('es', ['fr', 'example-tool']),
+      ),
+    ).toBeNull();
+  });
+
   it('allows English article routes to use the blog-owned namespace', () => {
     expect(
       getReservedNamespaceConflict(

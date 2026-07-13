@@ -100,6 +100,27 @@ function getLocaleRootConflict(
   input: ReservedPathValidationInput,
   rootSegment: string,
 ): ReservedNamespaceConflict | null {
+  const currentLocalePrefix = getLocalePrefix(input.locale);
+
+  if (
+    currentLocalePrefix.length > 0 &&
+    normalizeReservedSegment(rootSegment) ===
+      normalizeReservedSegment(currentLocalePrefix)
+  ) {
+    return {
+      code: 'RESERVED_ROOT_SEGMENT',
+      locale: input.locale,
+      segment: rootSegment,
+      scope: 'locale-root',
+      reservedOwner: 'i18n',
+      routeArea: input.area,
+      target: input.target,
+      reason:
+        'Locale prefix is applied by URL builder and must not be included in locale-relative route segments',
+      ...(input.sourceId !== undefined ? { sourceId: input.sourceId } : {}),
+    };
+  }
+
   const entry = findReservedEntry('locale-root', rootSegment, input.locale);
 
   return getUnauthorizedConflict(entry, input, rootSegment);

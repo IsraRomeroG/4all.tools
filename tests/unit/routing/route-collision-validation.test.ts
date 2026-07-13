@@ -12,6 +12,7 @@ import {
 import {
   AREA_TARGET_MISMATCH,
   BLOG_OWNS_BLOG_ROOT,
+  DUPLICATE_CURRENT_LOCALE_PREFIX,
   DUPLICATE_IDENTICAL_RECORD,
   DUPLICATE_PATH_CROSS_KIND,
   DUPLICATE_PATH_TWO_TOOLS,
@@ -20,6 +21,7 @@ import {
   INVALID_SEGMENT_SLASH,
   INVALID_SEGMENT_UPPERCASE,
   LOCALE_PREFIX_ROOT,
+  OTHER_LOCALE_CODE_IN_PREFIXED_LOCALE,
   RESERVED_BLOG_TOOL_ROOT,
   SAME_TARGET_DIFFERENT_LOCALES,
   SAME_TEXT_PATH_DIFFERENT_LOCALES,
@@ -61,6 +63,24 @@ describe('route collision validation', () => {
   it('rejects an English route claiming a locale prefix at site root', () => {
     expect(issueCodes(LOCALE_PREFIX_ROOT)).toContain(
       'RESERVED_ROOT_SEGMENT',
+    );
+  });
+
+  it('rejects a prefixed locale route that duplicates its own locale prefix', () => {
+    const issues = inspectRouteRecords(DUPLICATE_CURRENT_LOCALE_PREFIX);
+
+    expect(issues).toContainEqual(
+      expect.objectContaining({
+        code: 'RESERVED_ROOT_SEGMENT',
+        locale: 'es',
+        path: 'es/example-tool',
+      }),
+    );
+  });
+
+  it('allows another locale code inside an already-prefixed locale namespace', () => {
+    expect(inspectRouteRecords(OTHER_LOCALE_CODE_IN_PREFIXED_LOCALE)).toEqual(
+      [],
     );
   });
 
