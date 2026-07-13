@@ -17,7 +17,6 @@ import type {
 import type { RouteDefinitionProvider } from '@/routing/definitions/providers';
 import { assertNever } from '@/routing/types';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
-import { assertNoReservedNamespaceConflict } from '@/routing/validation';
 
 import { createRouteRegistryFromRecords, type RouteRegistry } from './route-index';
 
@@ -82,14 +81,6 @@ export async function createRouteRegistry(
         target,
         toolTaxonomy: input.toolTaxonomy,
         blogTaxonomy: input.blogTaxonomy,
-      });
-
-      assertNoReservedNamespaceConflict({
-        locale: record.locale,
-        area: record.area,
-        segments: record.segments,
-        target: record.target,
-        sourceId: record.sourceId,
       });
 
       records.push(record);

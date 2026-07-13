@@ -33,15 +33,15 @@ describe('route resolver', () => {
   it('respects locale when the same raw path text exists in different locales', () => {
     const resolver = createRouteResolver(
       createRouteRegistryFromRecords([
-        toolRecord({
+        articleRecord({
           locale: 'en',
           segments: ['blog', 'json'],
-          toolId: 'json-tool',
+          articleId: 'json-article-en',
         }),
         articleRecord({
           locale: 'es',
           segments: ['blog', 'json'],
-          articleId: 'json-article',
+          articleId: 'json-article-es',
         }),
       ]),
     );
@@ -51,13 +51,13 @@ describe('route resolver', () => {
         resolver.resolve({ locale: 'en', segments: ['blog', 'json'] })
           ?.target ?? missingTarget(),
       ),
-    ).toBe('tool:json-tool');
+    ).toBe('article:json-article-en');
     expect(
       getRouteTargetKey(
         resolver.resolve({ locale: 'es', segments: ['blog', 'json'] })
           ?.target ?? missingTarget(),
       ),
-    ).toBe('article:json-article');
+    ).toBe('article:json-article-es');
   });
 
   it('returns null for unknown paths and throws typed errors for required paths', () => {

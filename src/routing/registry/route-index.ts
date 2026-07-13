@@ -1,5 +1,4 @@
 import { SUPPORTED_LOCALES, type Locale } from '@/i18n/types';
-import { RoutingInvariantError } from '@/routing/errors';
 import {
   ROUTE_AREAS,
   getLocalizedPathKey,
@@ -11,6 +10,7 @@ import {
   type RouteTarget,
   type RouteTargetKey,
 } from '@/routing/types';
+import { assertValidRouteRecords } from '@/routing/validation';
 
 export interface RouteRegistry {
   getAll(): readonly RouteRecord[];
@@ -56,6 +56,8 @@ export function createRouteRegistryFromRecords(
 export function createRouteIndex(
   inputRecords: readonly RouteRecord[],
 ): RouteIndex {
+  assertValidRouteRecords(inputRecords);
+
   const records = Object.freeze(
     [...inputRecords].map(freezeRouteRecord).sort(compareRouteRecords),
   );
@@ -65,28 +67,12 @@ export function createRouteIndex(
 
   for (const record of records) {
     const pathKey = getLocalizedPathKey(record.locale, record.segments);
-    const existingPathOwner = pathIndex.get(pathKey);
-
-    if (existingPathOwner) {
-      throw createDuplicatePathError(pathKey, existingPathOwner, record);
-    }
-
     pathIndex.set(pathKey, record);
 
     const localizedTargetKey = getLocalizedTargetKey(
       record.locale,
       record.target,
     );
-    const existingTargetOwner = localizedTargetIndex.get(localizedTargetKey);
-
-    if (existingTargetOwner) {
-      throw createDuplicateTargetError(
-        localizedTargetKey,
-        existingTargetOwner,
-        record,
-      );
-    }
-
     localizedTargetIndex.set(localizedTargetKey, record);
 
     const targetKey = getRouteTargetKey(record.target);
@@ -142,49 +128,6 @@ function freezeRouteRecord(record: RouteRecord): RouteRecord {
     target: Object.freeze({ ...record.target }) as RouteRecord['target'],
     sourceId: record.sourceId,
   });
-}
-
-function createDuplicatePathError(
-  pathKey: LocalizedPathKey,
-  first: RouteRecord,
-  second: RouteRecord,
-): RoutingInvariantError {
-  const firstTargetKey = getRouteTargetKey(first.target);
-  const secondTargetKey = getRouteTargetKey(second.target);
-  const code =
-    firstTargetKey === secondTargetKey
-      ? 'DUPLICATE_ROUTE_RECORD'
-      : 'DUPLICATE_PUBLIC_PATH';
-
-  return new RoutingInvariantError(
-    code,
-    `Duplicate route path ${pathKey} claimed by ${firstTargetKey} and ${secondTargetKey}.`,
-    {
-      pathKey,
-      locale: first.locale,
-      path: first.segments.join('/'),
-      targetKeys: [firstTargetKey, secondTargetKey],
-      sourceIds: [first.sourceId, second.sourceId],
-    },
-  );
-}
-
-function createDuplicateTargetError(
-  localizedTargetKey: LocalizedTargetKey,
-  first: RouteRecord,
-  second: RouteRecord,
-): RoutingInvariantError {
-  return new RoutingInvariantError(
-    'DUPLICATE_CANONICAL_TARGET',
-    `Duplicate canonical target ${localizedTargetKey} claimed by ${first.segments.join('/')} and ${second.segments.join('/')}.`,
-    {
-      localizedTargetKey,
-      locale: first.locale,
-      targetKey: getRouteTargetKey(first.target),
-      paths: [first.segments.join('/'), second.segments.join('/')],
-      sourceIds: [first.sourceId, second.sourceId],
-    },
-  );
 }
 
 function compareNumeric(first: number, second: number): number {

@@ -9,6 +9,7 @@ import {
   getBlogStaticPathEntries,
   getRootCategoryStaticPathEntries,
   getToolAreaStaticPathEntries,
+  type RouteRegistry,
   type StaticPathFactory,
 } from '@/routing';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
@@ -220,7 +221,7 @@ describe('static path factories', () => {
   });
 
   it('throws explicit projection errors for invalid blog namespace records', () => {
-    const registry = createRouteRegistryFromRecords([
+    const registry = rawRegistry([
       articleRecord({
         locale: 'en',
         segments: ['development', 'what-is-json'],
@@ -385,6 +386,15 @@ function record(input: {
   return {
     ...input,
     sourceId: 'fixture:static-paths',
+  };
+}
+
+function rawRegistry(records: readonly RouteRecord[]): RouteRegistry {
+  return {
+    getAll: () => records,
+    findByPath: () => null,
+    getCanonical: () => null,
+    getByTarget: () => [],
   };
 }
 
