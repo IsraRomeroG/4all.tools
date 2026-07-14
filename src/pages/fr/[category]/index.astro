@@ -1,0 +1,25 @@
+---
+import CategoryTemplate from '@/templates/CategoryTemplate.astro';
+import {
+  composeRootCategoryAdapterPage,
+  getDeliveryRouteRegistry,
+} from '@/templates/composers';
+import { createRootCategoryStaticPaths } from '@/routing/static-paths';
+import type { StaticPathProps } from '@/routing/static-paths';
+
+export const getStaticPaths = createRootCategoryStaticPaths({
+  locale: 'fr',
+  getRegistry: getDeliveryRouteRegistry,
+});
+
+interface Props extends StaticPathProps {}
+
+const locale = 'fr' as const;
+const { routeTarget } = Astro.props;
+const routeRegistry = await getDeliveryRouteRegistry();
+const page = await composeRootCategoryAdapterPage(locale, routeTarget, {
+  routeRegistry,
+});
+---
+
+<CategoryTemplate page={page} />

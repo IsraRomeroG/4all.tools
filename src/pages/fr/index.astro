@@ -1,0 +1,9 @@
+---
+import HomeTemplate from '@/templates/HomeTemplate.astro';
+import { composeHomePageModel } from '@/templates/composers/home';
+
+const locale = 'fr' as const;
+const page = composeHomePageModel(locale);
+---
+
+<HomeTemplate page={page} />
