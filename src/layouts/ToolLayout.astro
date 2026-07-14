@@ -1,0 +1,41 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+import type { Locale } from '@/i18n/types';
+
+interface Props {
+  locale: Locale;
+  documentTitle?: string;
+}
+
+const { locale, documentTitle } = Astro.props;
+const baseLayoutProps =
+  documentTitle === undefined
+    ? { locale, mainClass: 'min-h-screen bg-slate-50' }
+    : { locale, documentTitle, mainClass: 'min-h-screen bg-slate-50' };
+---
+
+<BaseLayout {...baseLayoutProps}>
+  <slot name="head" slot="head" />
+  <slot name="site-header" slot="site-header" />
+  <slot name="site-footer" slot="site-footer" />
+
+  <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-8 sm:px-6 lg:px-8">
+    <header class="grid gap-4" data-layout-region="tool-page-header">
+      <slot name="page-header" />
+    </header>
+
+    <section class="grid gap-4" aria-labelledby="tool-workspace-heading" data-layout-region="tool-workspace">
+      <h2 id="tool-workspace-heading" class="sr-only">Tool workspace</h2>
+      <slot name="tool" />
+    </section>
+
+    <section class="grid gap-6" data-layout-region="tool-content">
+      <slot name="content" />
+    </section>
+
+    <aside class="grid gap-4" data-layout-region="tool-related">
+      <slot name="related" />
+    </aside>
+  </div>
+</BaseLayout>

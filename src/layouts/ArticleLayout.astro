@@ -1,0 +1,40 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+import type { Locale } from '@/i18n/types';
+
+interface Props {
+  locale: Locale;
+  documentTitle?: string;
+}
+
+const { locale, documentTitle } = Astro.props;
+const baseLayoutProps =
+  documentTitle === undefined
+    ? { locale, mainClass: 'min-h-screen bg-white' }
+    : { locale, documentTitle, mainClass: 'min-h-screen bg-white' };
+---
+
+<BaseLayout {...baseLayoutProps}>
+  <slot name="head" slot="head" />
+  <slot name="site-header" slot="site-header" />
+  <slot name="site-footer" slot="site-footer" />
+
+  <article class="mx-auto grid w-full max-w-3xl gap-8 px-4 py-8 sm:px-6 lg:px-8" data-layout-region="article">
+    <header class="grid gap-4" data-layout-region="article-header">
+      <slot name="article-header" />
+    </header>
+
+    <div class="grid gap-3 text-sm text-slate-600" data-layout-region="article-metadata">
+      <slot name="metadata" />
+    </div>
+
+    <div class="grid gap-6" data-layout-region="article-body">
+      <slot />
+    </div>
+
+    <aside class="grid gap-4" data-layout-region="article-related">
+      <slot name="related" />
+    </aside>
+  </article>
+</BaseLayout>
