@@ -11,6 +11,7 @@ const layoutProps =
   page.documentTitle === undefined
     ? { locale: page.locale }
     : { locale: page.locale, documentTitle: page.documentTitle };
+const EditorialContent = page.content.editorial.Content;
 ---
 
 <BaseLayout {...layoutProps} mainClass="min-h-screen bg-slate-50">
@@ -19,11 +20,12 @@ const layoutProps =
   <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:px-8" data-template="tool-category">
     <header class="grid max-w-3xl gap-4" data-template-region="category-header">
       <p class="text-sm font-medium text-slate-600" data-template-identity={page.categoryId}>{page.categoryId}</p>
-      <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{page.title}</h1>
-      {page.description && <p class="text-lg leading-8 text-slate-700">{page.description}</p>}
+      <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{page.content.title}</h1>
+      <p class="text-lg leading-8 text-slate-700">{page.content.description}</p>
     </header>
 
     <section class="grid gap-6" data-template-region="category-content">
+      <EditorialContent />
       <slot name="content" />
     </section>
 

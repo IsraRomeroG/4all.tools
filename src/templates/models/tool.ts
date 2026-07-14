@@ -1,1 +1,1 @@
-export type { ToolPageModel } from './shared';
+export type { ToolPageModel, ToolPresentationDefinition } from './shared';

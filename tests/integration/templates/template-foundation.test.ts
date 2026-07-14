@@ -8,6 +8,10 @@ import BlogIndexTemplate from '@/templates/BlogIndexTemplate.astro';
 import CategoryTemplate from '@/templates/CategoryTemplate.astro';
 import HomeTemplate from '@/templates/HomeTemplate.astro';
 import ToolTemplate from '@/templates/ToolTemplate.astro';
+import { getGlobalMessages } from '@/i18n/messages/registry';
+import type { RouteRecord, RouteTarget } from '@/routing/types';
+
+import FixtureContent from '../../fixtures/templates/FixtureContent.astro';
 
 const PROJECT_ROOT = new URL('../../../', import.meta.url);
 const TEMPLATE_FILES = [
@@ -41,10 +45,26 @@ describe('template foundation', () => {
         page: {
           kind: 'tool',
           locale: 'es',
+          route: route({
+            locale: 'es',
+            segments: ['desarrollo', 'validador-json'],
+            target: {
+              kind: 'tool',
+              toolId: 'json-validator',
+            },
+          }),
           documentTitle: 'Documento de herramienta',
           toolId: 'json-validator',
           title: 'Validador JSON',
           description: 'Valida documentos JSON desde un modelo preparado.',
+          content: {
+            title: 'Validador JSON',
+            description: 'Valida documentos JSON desde un modelo preparado.',
+            editorial: {
+              Content: FixtureContent,
+              headings: [],
+            },
+          },
         },
       },
       slots: {
@@ -57,6 +77,7 @@ describe('template foundation', () => {
     expect(html).toContain('<html lang="es" dir="ltr">');
     expect(html).toContain('data-template-identity="json-validator"');
     expect(html).toContain('Validador JSON');
+    expect(html).toContain('data-fixture-rendered-content');
     expect(html).not.toContain('unrelated');
   });
 
@@ -68,8 +89,24 @@ describe('template foundation', () => {
         page: {
           kind: 'tool',
           locale: 'en',
+          route: route({
+            locale: 'en',
+            segments: ['developer', 'json-validator'],
+            target: {
+              kind: 'tool',
+              toolId: 'json-validator',
+            },
+          }),
           toolId: 'json-validator',
           title: 'JSON Validator',
+          content: {
+            title: 'JSON Validator',
+            description: 'Validate JSON.',
+            editorial: {
+              Content: FixtureContent,
+              headings: [],
+            },
+          },
         },
       },
       slots: {
@@ -93,10 +130,29 @@ describe('template foundation', () => {
         page: {
           kind: 'tool-category',
           locale: 'es',
+          route: route({
+            locale: 'es',
+            segments: ['desarrollo'],
+            target: {
+              kind: 'tool-category',
+              categoryId: 'developer',
+            },
+          }),
           documentTitle: 'Desarrollo',
           categoryId: 'developer',
           title: 'Desarrollo',
           description: 'Herramientas para desarrolladores.',
+          category: {
+            label: 'Herramientas para desarrolladores',
+          },
+          content: {
+            title: 'Desarrollo',
+            description: 'Herramientas para desarrolladores.',
+            editorial: {
+              Content: FixtureContent,
+              headings: [],
+            },
+          },
         },
       },
       slots: {
@@ -108,6 +164,7 @@ describe('template foundation', () => {
     expect(html).toContain('<html lang="es" dir="ltr">');
     expect(html).toContain('data-template-identity="developer"');
     expect(html).toContain('Desarrollo');
+    expect(html).toContain('data-fixture-rendered-content');
     expect(html).toContain('data-fixture-category-body');
     expect(html).not.toContain('categoryId =');
   });
@@ -120,8 +177,10 @@ describe('template foundation', () => {
         page: {
           kind: 'home',
           locale: 'en',
+          route: null,
           title: '4all.tools',
           description: 'Useful tools for everyday work.',
+          messages: getGlobalMessages('en'),
         },
       },
       slots: {
@@ -134,6 +193,7 @@ describe('template foundation', () => {
         page: {
           kind: 'blog-index',
           locale: 'fr',
+          route: null,
           title: 'Guides',
         },
       },
@@ -147,6 +207,7 @@ describe('template foundation', () => {
         page: {
           kind: 'article',
           locale: 'pt',
+          route: null,
           articleId: 'what-is-json',
           title: 'O que e JSON?',
         },
@@ -203,3 +264,17 @@ describe('template foundation', () => {
     expect(await projectPathExists('src/views')).toBe(false);
   });
 });
+
+function route(input: {
+  readonly locale: RouteRecord['locale'];
+  readonly segments: readonly string[];
+  readonly target: RouteTarget;
+}): RouteRecord {
+  return {
+    area: input.target.kind === 'article' || input.target.kind === 'blog-category' ? 'blog' : 'tools',
+    locale: input.locale,
+    segments: input.segments,
+    target: input.target,
+    sourceId: 'fixture:template',
+  };
+}
