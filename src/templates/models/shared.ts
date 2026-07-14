@@ -44,7 +44,7 @@ export interface ToolPageModel extends PageDocumentModel {
     readonly description: string;
     readonly editorial: RenderedContentModel;
   };
-  readonly presentation?: ToolPresentationDefinition;
+  readonly presentation: ToolPresentationDefinition;
 }
 
 export interface ToolCategoryPageModel extends PageDocumentModel {

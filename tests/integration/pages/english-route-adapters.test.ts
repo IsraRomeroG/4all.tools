@@ -260,6 +260,10 @@ function fixtureToolModel(): ToolPageModel {
         headings: [],
       },
     },
+    presentation: {
+      toolId: 'json-validator',
+      primaryCategoryId: 'developer',
+    },
   };
 }
 

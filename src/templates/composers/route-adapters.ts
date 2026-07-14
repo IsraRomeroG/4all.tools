@@ -14,10 +14,12 @@ import {
 import {
   composeToolPageModel,
   type ToolPageComposerDependencies,
+  type ToolPresentationProvider,
 } from './tool';
 
 export interface RouteAdapterComposerDependencies {
   readonly routeRegistry: RouteRegistry;
+  readonly toolPresentationProvider?: ToolPresentationProvider;
   readonly composeCategoryPageModel?: (
     locale: Locale,
     categoryId: string,
@@ -63,6 +65,9 @@ export async function composeToolAreaAdapterPage(
         routeTarget.toolId,
         {
           routeRegistry: dependencies.routeRegistry,
+          toolPresentationProvider:
+            dependencies.toolPresentationProvider ??
+            missingToolPresentationProvider,
         },
       );
 
@@ -84,3 +89,7 @@ export async function composeToolAreaAdapterPage(
       return assertNever(routeTarget);
   }
 }
+
+const missingToolPresentationProvider: ToolPresentationProvider = {
+  getToolPresentation: () => null,
+};

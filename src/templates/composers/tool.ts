@@ -12,6 +12,7 @@ import type {
 
 import {
   MissingCanonicalRouteError,
+  MissingToolPresentationError,
   wrapCompositionCause,
 } from './errors';
 import {
@@ -32,7 +33,7 @@ export interface ToolPageComposerDependencies {
     locale: Locale,
   ) => Promise<ToolContentEntry>;
   readonly renderContent?: RenderContent;
-  readonly toolPresentationProvider?: ToolPresentationProvider;
+  readonly toolPresentationProvider: ToolPresentationProvider;
 }
 
 export async function composeToolPageModel(
@@ -67,10 +68,13 @@ export async function composeToolPageModel(
     () => renderContent(contentEntry),
     'Failed to render tool editorial content.',
   );
-  const presentation = await dependencies.toolPresentationProvider?.getToolPresentation(
-    toolId,
-  );
-  const modelBase = {
+  const presentation = await dependencies.toolPresentationProvider.getToolPresentation(toolId);
+
+  if (presentation === null) {
+    throw new MissingToolPresentationError(context);
+  }
+
+  return Object.freeze({
     kind: 'tool',
     locale,
     route,
@@ -83,16 +87,8 @@ export async function composeToolPageModel(
       description: contentEntry.data.description,
       editorial,
     },
-  } as const;
-
-  return Object.freeze(
-    presentation === undefined || presentation === null
-      ? modelBase
-      : {
-          ...modelBase,
-          presentation: normalizePresentation(presentation),
-        },
-  );
+    presentation: normalizePresentation(presentation),
+  });
 }
 
 function normalizePresentation(

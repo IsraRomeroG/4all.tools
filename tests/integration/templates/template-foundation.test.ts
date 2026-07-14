@@ -65,6 +65,10 @@ describe('template foundation', () => {
               headings: [],
             },
           },
+          presentation: {
+            toolId: 'json-validator',
+            primaryCategoryId: 'developer',
+          },
         },
       },
       slots: {
@@ -106,6 +110,10 @@ describe('template foundation', () => {
               Content: FixtureContent,
               headings: [],
             },
+          },
+          presentation: {
+            toolId: 'json-validator',
+            primaryCategoryId: 'developer',
           },
         },
       },

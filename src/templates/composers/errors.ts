@@ -3,6 +3,7 @@ import type { Locale } from '@/i18n/types';
 export type PageModelCompositionErrorCode =
   | 'PAGE_MODEL_COMPOSITION_FAILED'
   | 'MISSING_CANONICAL_ROUTE'
+  | 'MISSING_TOOL_PRESENTATION'
   | 'MISSING_TAXONOMY_NODE'
   | 'UNSUPPORTED_LOCALE'
   | 'UNSUPPORTED_PAGE_TARGET';
@@ -49,6 +50,17 @@ export class MissingTaxonomyNodeError extends PageModelCompositionError {
       context,
     );
     this.name = 'MissingTaxonomyNodeError';
+  }
+}
+
+export class MissingToolPresentationError extends PageModelCompositionError {
+  constructor(context: Required<PageModelCompositionContext>) {
+    super(
+      'MISSING_TOOL_PRESENTATION',
+      `No tool presentation metadata found for ${context.entityId}:${context.locale}.`,
+      context,
+    );
+    this.name = 'MissingToolPresentationError';
   }
 }
 

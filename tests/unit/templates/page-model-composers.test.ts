@@ -12,6 +12,7 @@ import type { ToolContentEntry } from '@/content/queries/tools';
 import type { Locale } from '@/i18n/types';
 import {
   MissingCanonicalRouteError,
+  MissingToolPresentationError,
   MissingTaxonomyNodeError,
   PageModelCompositionError,
   UnsupportedLocaleError,
@@ -79,6 +80,7 @@ describe('page model composers', () => {
           throw missing;
         },
         renderContent: fixtureRenderContent,
+        toolPresentationProvider: fixtureToolPresentationProvider,
       }),
       PageModelCompositionError,
       missing,
@@ -102,6 +104,7 @@ describe('page model composers', () => {
           throw ambiguous;
         },
         renderContent: fixtureRenderContent,
+        toolPresentationProvider: fixtureToolPresentationProvider,
       }),
       PageModelCompositionError,
       ambiguous,
@@ -118,10 +121,30 @@ describe('page model composers', () => {
             locale,
             title: 'Missing',
             description: 'Missing.',
-          }),
+        }),
         renderContent: fixtureRenderContent,
+        toolPresentationProvider: fixtureToolPresentationProvider,
       }),
     ).rejects.toBeInstanceOf(MissingCanonicalRouteError);
+  });
+
+  it('fails explicitly when tool presentation metadata is missing', async () => {
+    await expect(
+      composeToolPageModel('es', 'json-validator', {
+        routeRegistry: fixtureRouteRegistry(),
+        requirePublishedToolContent: async (toolId, locale) =>
+          toolContentEntry({
+            toolId,
+            locale,
+            title: 'Validador JSON',
+            description: 'Valida JSON.',
+          }),
+        renderContent: fixtureRenderContent,
+        toolPresentationProvider: {
+          getToolPresentation: () => null,
+        },
+      }),
+    ).rejects.toBeInstanceOf(MissingToolPresentationError);
   });
 
   it('does not fall back to English when localized tool content is missing', async () => {
@@ -142,6 +165,7 @@ describe('page model composers', () => {
           throw missing;
         },
         renderContent: fixtureRenderContent,
+        toolPresentationProvider: fixtureToolPresentationProvider,
       }),
       PageModelCompositionError,
       missing,
@@ -245,6 +269,7 @@ describe('page model composers', () => {
               description: `${contentLocale} description`,
             }),
           renderContent: fixtureRenderContent,
+          toolPresentationProvider: fixtureToolPresentationProvider,
         }),
       ),
     );
@@ -274,6 +299,7 @@ describe('page model composers', () => {
     expect(combinedSource).toContain('requirePublishedToolContent');
     expect(combinedSource).toContain('requirePublishedToolCategoryContent');
     expect(combinedSource).toContain('getCanonical');
+    expect(combinedSource).toContain('toolPresentationProvider');
     expect(combinedSource).not.toContain('getCollection');
     expect(combinedSource).not.toContain('getEntry');
     expect(combinedSource).not.toContain('Astro.params');
@@ -287,6 +313,13 @@ const fixtureRenderContent: RenderContent = async () => ({
   Content: FixtureContent as AstroComponentFactory,
   headings: [],
 });
+
+const fixtureToolPresentationProvider = {
+  getToolPresentation: (toolId: ToolId) => ({
+    toolId,
+    primaryCategoryId: 'developer',
+  }),
+};
 
 function fixtureRouteRegistry() {
   return createRouteRegistryFromRecords([

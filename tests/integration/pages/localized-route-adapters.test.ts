@@ -353,5 +353,9 @@ function fixtureToolModel(locale: Locale): ToolPageModel {
         headings: [],
       },
     },
+    presentation: {
+      toolId: 'json-validator',
+      primaryCategoryId: 'developer',
+    },
   };
 }
