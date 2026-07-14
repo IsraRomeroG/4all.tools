@@ -1,0 +1,30 @@
+---
+import CategoryTemplate from '@/templates/CategoryTemplate.astro';
+import ToolTemplate from '@/templates/ToolTemplate.astro';
+import {
+  composeToolAreaAdapterPage,
+  getDeliveryRouteRegistry,
+} from '@/templates/composers';
+import { createToolAreaStaticPaths } from '@/routing/static-paths';
+import type { StaticPathProps } from '@/routing/static-paths';
+
+export const getStaticPaths = createToolAreaStaticPaths({
+  locale: 'en',
+  getRegistry: getDeliveryRouteRegistry,
+});
+
+interface Props extends StaticPathProps {}
+
+const locale = 'en' as const;
+const { routeTarget } = Astro.props;
+const routeRegistry = await getDeliveryRouteRegistry();
+const page = await composeToolAreaAdapterPage(locale, routeTarget, {
+  routeRegistry,
+});
+---
+
+{
+  page.kind === 'tool'
+    ? <ToolTemplate page={page} />
+    : <CategoryTemplate page={page} />
+}

@@ -1,18 +1,8 @@
 ---
-import '@/styles/global.css';
+import HomeTemplate from '@/templates/HomeTemplate.astro';
+import { composeHomePageModel } from '@/templates/composers/home';
+
+const page = composeHomePageModel('en');
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>4all.tools</title>
-  </head>
-  <body>
-    <main class="min-h-screen p-6">
-      <h1 class="text-2xl font-semibold">4all.tools</h1>
-      <p data-foundation-status="ready">Foundation ready</p>
-    </main>
-  </body>
-</html>
+<HomeTemplate page={page} />
