@@ -1,0 +1,36 @@
+---
+import ArticleLayout from '@/layouts/ArticleLayout.astro';
+import type { ArticlePageModel } from './models/blog';
+
+interface Props {
+  page: ArticlePageModel;
+}
+
+const { page } = Astro.props;
+const layoutProps =
+  page.documentTitle === undefined
+    ? { locale: page.locale }
+    : { locale: page.locale, documentTitle: page.documentTitle };
+---
+
+<ArticleLayout {...layoutProps}>
+  <slot name="head" slot="head" />
+
+  <Fragment slot="article-header">
+    <p class="text-sm font-medium text-slate-600" data-template-identity={page.articleId}>{page.articleId}</p>
+    <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{page.title}</h1>
+    {page.description && <p class="text-lg leading-8 text-slate-700">{page.description}</p>}
+  </Fragment>
+
+  <div slot="metadata" class="grid gap-2" data-template-region="article-metadata">
+    <slot name="metadata" />
+  </div>
+
+  <div class="grid gap-6" data-template-region="article-content">
+    <slot />
+  </div>
+
+  <div slot="related" class="grid gap-4" data-template-region="article-related">
+    <slot name="related" />
+  </div>
+</ArticleLayout>

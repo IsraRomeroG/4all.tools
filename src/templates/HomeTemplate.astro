@@ -1,0 +1,45 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { HomePageModel } from './models/home';
+
+interface Props {
+  page: HomePageModel;
+}
+
+const { page } = Astro.props;
+const layoutProps =
+  page.documentTitle === undefined
+    ? { locale: page.locale }
+    : { locale: page.locale, documentTitle: page.documentTitle };
+---
+
+<BaseLayout {...layoutProps}>
+  <slot name="head" slot="head" />
+
+  <div class="mx-auto grid w-full max-w-6xl gap-10 px-4 py-10 sm:px-6 lg:px-8" data-template="home">
+    <header class="grid max-w-3xl gap-4" data-template-region="home-hero">
+      <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{page.title}</h1>
+      {page.description && <p class="text-lg leading-8 text-slate-700">{page.description}</p>}
+    </header>
+
+    <section class="grid gap-4" aria-labelledby="home-search-heading" data-template-region="home-search">
+      <h2 id="home-search-heading" class="sr-only">Search</h2>
+      <slot name="search" />
+    </section>
+
+    <section class="grid gap-4" aria-labelledby="home-featured-categories-heading" data-template-region="home-featured-categories">
+      <h2 id="home-featured-categories-heading" class="sr-only">Featured categories</h2>
+      <slot name="featured-categories" />
+    </section>
+
+    <section class="grid gap-4" aria-labelledby="home-popular-tools-heading" data-template-region="home-popular-tools">
+      <h2 id="home-popular-tools-heading" class="sr-only">Popular tools</h2>
+      <slot name="popular-tools" />
+    </section>
+
+    <section class="grid gap-4" aria-labelledby="home-recent-editorial-heading" data-template-region="home-recent-editorial">
+      <h2 id="home-recent-editorial-heading" class="sr-only">Recent editorial content</h2>
+      <slot name="recent-editorial" />
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,40 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { ToolCategoryPageModel } from './models/category';
+
+interface Props {
+  page: ToolCategoryPageModel;
+}
+
+const { page } = Astro.props;
+const layoutProps =
+  page.documentTitle === undefined
+    ? { locale: page.locale }
+    : { locale: page.locale, documentTitle: page.documentTitle };
+---
+
+<BaseLayout {...layoutProps} mainClass="min-h-screen bg-slate-50">
+  <slot name="head" slot="head" />
+
+  <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:px-8" data-template="tool-category">
+    <header class="grid max-w-3xl gap-4" data-template-region="category-header">
+      <p class="text-sm font-medium text-slate-600" data-template-identity={page.categoryId}>{page.categoryId}</p>
+      <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{page.title}</h1>
+      {page.description && <p class="text-lg leading-8 text-slate-700">{page.description}</p>}
+    </header>
+
+    <section class="grid gap-6" data-template-region="category-content">
+      <slot name="content" />
+    </section>
+
+    <section class="grid gap-4" aria-labelledby="category-children-heading" data-template-region="category-children">
+      <h2 id="category-children-heading" class="sr-only">Subcategories</h2>
+      <slot name="child-categories" />
+    </section>
+
+    <section class="grid gap-4" aria-labelledby="category-tools-heading" data-template-region="category-tools">
+      <h2 id="category-tools-heading" class="sr-only">Tools</h2>
+      <slot name="tools" />
+    </section>
+  </div>
+</BaseLayout>
