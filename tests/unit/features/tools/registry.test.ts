@@ -116,6 +116,13 @@ describe('tool feature registry', () => {
     expect(() => getToolComponent('missing-tool')).toThrow(
       MissingToolComponentError,
     );
-    expect(getToolMessages('json-validator', 'en')).toBeNull();
+    expect(getToolMessages('json-validator', 'en')).toMatchObject({
+      input: {
+        label: 'Input JSON',
+      },
+      actions: {
+        validate: 'Validate JSON',
+      },
+    });
   });
 });

@@ -1,12 +1,102 @@
 ---
-/**
- * P06-T01 placeholder only.
- *
- * P06-T03 owns the real interactive JSON Validator UI and localized feature
- * messages. Keep this component intentionally minimal until then.
- */
+import type { Locale } from '@/i18n/types';
+import type { JsonValidatorMessages } from './messages/types';
+
+interface Props {
+  locale: Locale;
+  messages: JsonValidatorMessages;
+  instanceId?: string;
+}
+
+const { locale, messages } = Astro.props;
+const instanceId =
+  Astro.props.instanceId ??
+  `json-validator-${locale}-${Math.random().toString(36).slice(2, 10)}`;
+const helpId = `${instanceId}-help`;
+const statusId = `${instanceId}-status`;
 ---
 
-<section data-tool-component="json-validator" data-tool-state="p06-t01-placeholder">
-  <p>JSON Validator interactive tool placeholder. P06-T03 replaces this component.</p>
+<section
+  class="grid gap-4"
+  data-json-validator
+  data-locale={locale}
+  data-state="idle"
+  data-message-input-label={messages.input.label}
+  data-message-input-placeholder={messages.input.placeholder}
+  data-message-input-help={messages.input.help}
+  data-message-actions-label={messages.actions.label}
+  data-message-action-validate={messages.actions.validate}
+  data-message-action-format={messages.actions.format}
+  data-message-action-minify={messages.actions.minify}
+  data-message-action-copy={messages.actions.copy}
+  data-message-action-clear={messages.actions.clear}
+  data-message-status-idle={messages.status.idle}
+  data-message-status-valid={messages.status.valid}
+  data-message-status-invalid={messages.status.invalid}
+  data-message-status-empty={messages.status.empty}
+  data-message-status-formatted={messages.status.formatted}
+  data-message-status-minified={messages.status.minified}
+  data-message-status-copied={messages.status.copied}
+  data-message-status-copy-empty={messages.status.copyEmpty}
+  data-message-status-copy-failed={messages.status.copyFailed}
+  data-message-status-cleared={messages.status.cleared}
+  data-message-error-syntax={messages.error.syntax}
+  data-message-error-at-line-column={messages.error.atLineColumn}
+>
+  <div class="grid gap-2">
+    <label class="grid gap-2 text-sm font-medium text-slate-900">
+      <span>{messages.input.label}</span>
+      <textarea
+        class="min-h-72 w-full resize-y rounded border border-slate-300 bg-white p-3 font-mono text-sm leading-6 text-slate-950 shadow-sm outline-none transition focus:border-slate-950 focus:ring-2 focus:ring-slate-300"
+        data-json-input
+        aria-describedby={`${helpId} ${statusId}`}
+        placeholder={messages.input.placeholder}
+        spellcheck="false"
+        autocomplete="off"
+        autocapitalize="off"
+      ></textarea>
+    </label>
+    <p id={helpId} class="text-sm leading-6 text-slate-600">{messages.input.help}</p>
+  </div>
+
+  <div
+    class="flex flex-wrap gap-2"
+    aria-label={messages.actions.label}
+    data-json-actions
+  >
+    <button class="rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-950 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400" type="button" data-action="validate">
+      {messages.actions.validate}
+    </button>
+    <button class="rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-950 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400" type="button" data-action="format">
+      {messages.actions.format}
+    </button>
+    <button class="rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-950 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400" type="button" data-action="minify">
+      {messages.actions.minify}
+    </button>
+    <button class="rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-950 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400" type="button" data-action="copy">
+      {messages.actions.copy}
+    </button>
+    <button class="rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-950 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400" type="button" data-action="clear">
+      {messages.actions.clear}
+    </button>
+  </div>
+
+  <div class="grid gap-1 text-sm leading-6">
+    <p
+      id={statusId}
+      data-json-status
+      role="status"
+      aria-live="polite"
+      class="font-medium text-slate-900"
+    >
+      {messages.status.idle}
+    </p>
+    <p data-json-diagnostic hidden class="text-slate-600"></p>
+  </div>
 </section>
+
+<script>
+  import { initializeAllJsonValidators } from './client';
+
+  initializeAllJsonValidators();
+</script>

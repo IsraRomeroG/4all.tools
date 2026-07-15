@@ -1,13 +1,19 @@
 import type { ToolId } from '@/domain/shared/ids';
 import type { Locale } from '@/i18n/types';
+import { getJsonValidatorMessages } from '@/features/tools/developer/json-validator/messages/registry';
+import { JSON_VALIDATOR_TOOL_ID } from '@/features/tools/developer/json-validator/types';
 
-export type ToolMessageDictionary = Readonly<Record<string, unknown>>;
+export type ToolMessageDictionary = Readonly<object>;
 
 export interface ToolMessageProvider<TMessages extends ToolMessageDictionary> {
   getMessages(locale: Locale): TMessages | null;
 }
 
-const TOOL_MESSAGE_PROVIDERS = {} as const satisfies Readonly<
+const TOOL_MESSAGE_PROVIDERS = {
+  [JSON_VALIDATOR_TOOL_ID]: {
+    getMessages: getJsonValidatorMessages,
+  },
+} as const satisfies Readonly<
   Record<ToolId, ToolMessageProvider<ToolMessageDictionary>>
 >;
 
