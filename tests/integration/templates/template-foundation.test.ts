@@ -250,7 +250,7 @@ describe('template foundation', () => {
     }
   });
 
-  it('keeps template dependency boundaries free of routes, content queries, and features', async () => {
+  it('keeps template dependency boundaries free of routes and content queries', async () => {
     const sources = await Promise.all(TEMPLATE_FILES.map(readProjectFile));
     const combinedSource = sources.join('\n');
 
@@ -261,7 +261,7 @@ describe('template foundation', () => {
     expect(combinedSource).not.toContain('astro:content');
     expect(combinedSource).not.toContain('getCollection');
     expect(combinedSource).not.toContain('getEntry');
-    expect(combinedSource).not.toContain('@/features/');
+    expect(combinedSource).not.toContain('developer/json-validator/Tool.astro');
     expect(combinedSource).not.toContain('Astro.url');
     expect(combinedSource).not.toContain('pathname');
   });

@@ -1,9 +1,11 @@
-import type { ToolCategoryId } from '@/domain/shared/ids';
+import type { ToolCategoryId, ToolId } from '@/domain/shared/ids';
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { getPublishedToolCategoryContent } from '@/content/queries/tool-categories';
+import { getPublishedToolContent } from '@/content/queries/tools';
 import type { Locale } from '@/i18n/types';
 import type { RouteDefinition, RouteDefinitionProvider } from '@/routing/definitions';
+import { toolRouteProvider } from '@/routing/providers/tool-route-provider';
 import {
   createRouteRegistry,
   type RoutePublicationAvailability,
@@ -15,7 +17,7 @@ let deliveryRouteRegistryPromise: Promise<RouteRegistry> | undefined;
 
 export function getDeliveryRouteRegistry(): Promise<RouteRegistry> {
   deliveryRouteRegistryPromise ??= createRouteRegistry({
-    providers: [toolCategoryRouteDefinitions],
+    providers: [toolRouteProvider, toolCategoryRouteDefinitions],
     toolTaxonomy,
     blogTaxonomy,
     publicationAvailability: publishedDeliveryContentAvailability,
@@ -57,6 +59,8 @@ const publishedDeliveryContentAvailability: RoutePublicationAvailability = {
         return hasPublishedToolCategoryContent(target.categoryId, locale);
 
       case 'tool':
+        return hasPublishedToolContent(target.toolId, locale);
+
       case 'article':
       case 'blog-category':
         return false;
@@ -69,4 +73,11 @@ async function hasPublishedToolCategoryContent(
   locale: Locale,
 ): Promise<boolean> {
   return (await getPublishedToolCategoryContent(categoryId, locale)) !== null;
+}
+
+async function hasPublishedToolContent(
+  toolId: ToolId,
+  locale: Locale,
+): Promise<boolean> {
+  return (await getPublishedToolContent(toolId, locale)) !== null;
 }

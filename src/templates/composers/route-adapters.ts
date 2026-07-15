@@ -1,6 +1,7 @@
 import type { Locale } from '@/i18n/types';
 import type { RouteRegistry } from '@/routing/registry';
 import { assertNever, type RouteTarget } from '@/routing/types';
+import { toolPresentationProvider } from '@/templates/page-models/providers/tool-presentation-provider';
 import type {
   ToolCategoryPageModel,
   ToolPageModel,
@@ -67,7 +68,7 @@ export async function composeToolAreaAdapterPage(
           routeRegistry: dependencies.routeRegistry,
           toolPresentationProvider:
             dependencies.toolPresentationProvider ??
-            missingToolPresentationProvider,
+            toolPresentationProvider,
         },
       );
 
@@ -89,7 +90,3 @@ export async function composeToolAreaAdapterPage(
       return assertNever(routeTarget);
   }
 }
-
-const missingToolPresentationProvider: ToolPresentationProvider = {
-  getToolPresentation: () => null,
-};

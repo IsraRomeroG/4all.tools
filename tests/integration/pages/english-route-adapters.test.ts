@@ -178,11 +178,22 @@ describe('English route adapters', () => {
     expect(combinedSource).not.toContain('@/features/');
   });
 
-  it('does not publish tool catch-all routes before P06 production tool data exists', async () => {
+  it('publishes the production json-validator catch-all route through registry data', async () => {
     const registry = await getDeliveryRouteRegistry();
     const entries = getToolAreaStaticPathEntries(registry, 'en');
 
-    expect(entries).toEqual([]);
+    expect(entries).toContainEqual({
+      params: {
+        category: 'developer',
+        path: 'json-validator',
+      },
+      props: {
+        routeTarget: {
+          kind: 'tool',
+          toolId: 'json-validator',
+        },
+      },
+    });
   });
 });
 
