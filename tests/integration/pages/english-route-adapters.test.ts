@@ -263,6 +263,7 @@ function fixtureToolModel(): ToolPageModel {
     presentation: {
       toolId: 'json-validator',
       primaryCategoryId: 'developer',
+      executionType: 'client',
     },
   };
 }

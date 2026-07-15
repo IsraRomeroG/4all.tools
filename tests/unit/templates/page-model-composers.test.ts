@@ -49,6 +49,7 @@ describe('page model composers', () => {
         getToolPresentation: (toolId) => ({
           toolId,
           primaryCategoryId: 'developer',
+          executionType: 'client',
         }),
       },
     });
@@ -61,6 +62,7 @@ describe('page model composers', () => {
     expect(model.presentation).toEqual({
       toolId: 'json-validator',
       primaryCategoryId: 'developer',
+      executionType: 'client',
     });
   });
 
@@ -318,6 +320,7 @@ const fixtureToolPresentationProvider = {
   getToolPresentation: (toolId: ToolId) => ({
     toolId,
     primaryCategoryId: 'developer',
+    executionType: 'client' as const,
   }),
 };
 

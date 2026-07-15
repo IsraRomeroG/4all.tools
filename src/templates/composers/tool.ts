@@ -94,14 +94,11 @@ export async function composeToolPageModel(
 function normalizePresentation(
   presentation: ToolPresentationDefinition,
 ): ToolPresentationDefinition {
-  return presentation.primaryCategoryId === undefined
-    ? Object.freeze({
-        toolId: presentation.toolId,
-      })
-    : Object.freeze({
-        toolId: presentation.toolId,
-        primaryCategoryId: presentation.primaryCategoryId as ToolCategoryId,
-      });
+  return Object.freeze({
+    toolId: presentation.toolId,
+    primaryCategoryId: presentation.primaryCategoryId as ToolCategoryId,
+    executionType: presentation.executionType,
+  });
 }
 
 async function withToolCompositionContext<T>(

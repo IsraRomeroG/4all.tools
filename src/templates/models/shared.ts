@@ -7,6 +7,7 @@ import type {
   ToolCategoryId,
   ToolId,
 } from '@/domain/shared/ids';
+import type { ToolExecutionType } from '@/domain/tools';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import type { Locale } from '@/i18n/types';
 import type { RouteRecord } from '@/routing/types';
@@ -26,7 +27,8 @@ export interface RenderedContentModel {
 
 export interface ToolPresentationDefinition {
   readonly toolId: ToolId;
-  readonly primaryCategoryId?: ToolCategoryId;
+  readonly primaryCategoryId: ToolCategoryId;
+  readonly executionType: ToolExecutionType;
 }
 
 export interface HomePageModel extends PageDocumentModel {
