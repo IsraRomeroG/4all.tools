@@ -54,6 +54,16 @@ describe('tool content query services', () => {
           locale: 'es',
           status: 'published',
         }),
+        entry('tools/pt/developer/json-validator', {
+          toolId: 'json-validator',
+          locale: 'pt',
+          status: 'published',
+        }),
+        entry('tools/fr/developer/json-validator', {
+          toolId: 'json-validator',
+          locale: 'fr',
+          status: 'published',
+        }),
         entry('tools/es/drafts/json-validator', {
           toolId: 'json-validator',
           locale: 'es',
@@ -118,12 +128,21 @@ describe('tool content query services', () => {
     });
   });
 
-  it('returns null for missing French tool content', async () => {
-    await expect(getPublishedToolContent('json-validator', 'fr')).resolves.toBeNull();
+  it('finds one published json-validator entry for each supported locale', async () => {
+    for (const locale of ['en', 'es', 'pt', 'fr'] as const) {
+      await expect(getPublishedToolContent('json-validator', locale)).resolves.toMatchObject({
+        id: `tools/${locale}/developer/json-validator`,
+        data: {
+          toolId: 'json-validator',
+          locale,
+          status: 'published',
+        },
+      });
+    }
   });
 
-  it('throws not found for required missing French tool content', async () => {
-    await expect(requirePublishedToolContent('json-validator', 'fr')).rejects.toThrow(
+  it('throws not found for required missing tool content', async () => {
+    await expect(requirePublishedToolContent('missing-tool', 'fr')).rejects.toThrow(
       ContentNotFoundError,
     );
   });
