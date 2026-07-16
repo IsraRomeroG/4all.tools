@@ -2,6 +2,10 @@
 
 Astro project foundation for 4all.tools.
 
+## Runtime
+
+Use Node.js 24. The canonical project version is defined in `.nvmrc`, and CI reads that file through `actions/setup-node`.
+
 ## Commands
 
 Run commands from the project root:
@@ -12,7 +16,7 @@ Run commands from the project root:
 | `npm run dev` | Start the Astro development server |
 | `npm run check` | Run Astro and TypeScript checks |
 | `npm run test:unit` | Run unit tests |
-| `npm run test:integration` | Run integration tests |
+| `npm run test:integration` | Prepare the Astro content store and run integration tests |
 | `npm run test` | Run unit and integration tests |
 | `npm run test:build` | Build the site and run static output smoke tests |
 | `npm run verify` | Run the full local verification workflow |

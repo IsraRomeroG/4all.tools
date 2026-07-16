@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=24.0.0 <25"
   },
   "scripts": {
     "dev": "astro dev",
@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "test:unit": "vitest run tests/unit",
-    "test:integration": "vitest run tests/integration",
+    "test:integration:prepare": "astro sync --force && node scripts/prepare-vitest-content-store.mjs",
+    "test:integration": "npm run test:integration:prepare && vitest run tests/integration",
     "test": "npm run test:unit && npm run test:integration",
     "test:build": "npm run build && vitest run tests/build",
     "verify": "npm run check && npm run test && npm run test:build",
@@ -24,7 +25,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
-    "@types/node": "^26.1.1",
+    "@types/node": "^24.0.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
   }
