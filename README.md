@@ -19,6 +19,7 @@ Run commands from the project root:
 | `npm run test:integration` | Prepare the Astro content store and run integration tests |
 | `npm run test` | Run unit and integration tests |
 | `npm run test:build` | Build the site and run static output smoke tests |
+| `npm run test:e2e` | Run Playwright browser tests against the existing production build |
 | `npm run verify` | Run the full local verification workflow |
 | `npm run build` | Build the static site to `./dist/` |
 | `npm run preview` | Preview the production build |
@@ -32,8 +33,11 @@ The local equivalent is:
 
 ```sh
 npm ci
+npx playwright install chromium
 npm run verify
 ```
+
+`npm run verify` runs `test:build` before `test:e2e`, so local browser tests use the production output already emitted to `./dist/`. CI uses `npx playwright install --with-deps chromium` before running the same verification command.
 
 The `Verify / verify` check is expected to be configured as a required check before merging to `main`. Branch protection and ruleset settings are stored in GitHub repository settings, not in this repository; this change adds the workflow, but manual GitHub settings configuration still needs to be confirmed.
 
