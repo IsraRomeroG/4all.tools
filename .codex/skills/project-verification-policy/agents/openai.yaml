@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Verification Policy"
+  short_description: "Avoid unmanaged servers; allow required finite verification"
+  default_prompt: "Use $project-verification-policy so unmanaged long-running dev or preview servers are not launched, while finite check, test, and build commands are run when required by a task spec or phase gate."

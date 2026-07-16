@@ -20,6 +20,19 @@ Run commands from the project root:
 | `npm run preview` | Preview the production build |
 | `npm run astro -- --help` | Show Astro CLI help |
 
+## Verification Gate
+
+GitHub Actions runs the `Verify` workflow for pushes and pull requests targeting `main`.
+
+The local equivalent is:
+
+```sh
+npm ci
+npm run verify
+```
+
+The `Verify / verify` check is expected to be configured as a required check before merging to `main`. Branch protection and ruleset settings are stored in GitHub repository settings, not in this repository; this change adds the workflow, but manual GitHub settings configuration still needs to be confirmed.
+
 ## Source Boundaries
 
 The source tree reserves these top-level namespaces:

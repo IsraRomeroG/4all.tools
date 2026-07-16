@@ -1,4 +1,0 @@
-interface:
-  display_name: "Avoid npm Validation Commands"
-  short_description: "Never run npm dev/build unless explicit"
-  default_prompt: "Use $avoid-npm-validation-commands so npm run dev and npm run build are never run unless I explicitly ask."
