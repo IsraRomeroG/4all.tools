@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dependency Artifact Policy"
+  short_description: "Treat lockfiles as generated artifacts"
+  default_prompt: "Use $dependency-artifact-policy before changing package managers, lockfiles, Node versions, or dependency metadata."
