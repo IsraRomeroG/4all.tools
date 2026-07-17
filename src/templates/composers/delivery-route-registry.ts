@@ -4,7 +4,7 @@ import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { getPublishedToolCategoryContent } from '@/content/queries/tool-categories';
 import { getPublishedToolContent } from '@/content/queries/tools';
 import type { Locale } from '@/i18n/types';
-import type { RouteDefinition, RouteDefinitionProvider } from '@/routing/definitions';
+import { toolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
 import { toolRouteProvider } from '@/routing/providers/tool-route-provider';
 import {
   createRouteRegistry,
@@ -17,39 +17,13 @@ let deliveryRouteRegistryPromise: Promise<RouteRegistry> | undefined;
 
 export function getDeliveryRouteRegistry(): Promise<RouteRegistry> {
   deliveryRouteRegistryPromise ??= createRouteRegistry({
-    providers: [toolRouteProvider, toolCategoryRouteDefinitions],
+    providers: [toolRouteProvider, toolCategoryRouteProvider],
     toolTaxonomy,
     blogTaxonomy,
     publicationAvailability: publishedDeliveryContentAvailability,
   });
 
   return deliveryRouteRegistryPromise;
-}
-
-const toolCategoryRouteDefinitions: RouteDefinitionProvider = {
-  sourceId: 'delivery:tool-categories',
-  getRouteDefinitions: () =>
-    getPublishedToolCategoryRouteDefinitions().map((definition) => ({
-      kind: 'tool-category',
-      definition,
-    })),
-};
-
-function getPublishedToolCategoryRouteDefinitions(): readonly Extract<
-  RouteDefinition,
-  { readonly kind: 'tool-category' }
->['definition'][] {
-  const roots = toolTaxonomy.getRoots();
-  const descendants = roots.flatMap((node) => toolTaxonomy.getDescendants(node.id));
-  const categories = [...roots, ...descendants].filter(
-    (node) => node.status === 'published',
-  );
-
-  return categories.map((node) => ({
-    categoryId: node.id,
-    strategy: node.parentId === null ? 'root' : 'hierarchical',
-    status: node.status,
-  }));
 }
 
 const publishedDeliveryContentAvailability: RoutePublicationAvailability = {

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   RoutingInvariantError,
   createBlogStaticPaths,
+  createRouteRegistry,
   createRootCategoryStaticPaths,
   createRouteRegistryFromRecords,
   createToolAreaStaticPaths,
@@ -12,6 +13,9 @@ import {
   type RouteRegistry,
   type StaticPathFactory,
 } from '@/routing';
+import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
+import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
+import { toolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
 
 describe('static path factories', () => {
@@ -54,6 +58,43 @@ describe('static path factories', () => {
       kind: 'tool-category',
       categoryId: 'developer',
     });
+  });
+
+  it('projects root category static paths from explicit routable category definitions only', async () => {
+    const registry = await createRouteRegistry({
+      providers: [toolCategoryRouteProvider],
+      toolTaxonomy,
+      blogTaxonomy,
+      publicationAvailability: {
+        isPublishable: () => true,
+      },
+    });
+
+    expect(getRootCategoryStaticPathEntries(registry, 'en')).toEqual([
+      {
+        params: {
+          category: 'developer',
+        },
+        props: {
+          routeTarget: {
+            kind: 'tool-category',
+            categoryId: 'developer',
+          },
+        },
+      },
+    ]);
+    expect(
+      registry.getByTarget({
+        kind: 'tool-category',
+        categoryId: 'data-formats',
+      }),
+    ).toEqual([]);
+    expect(
+      registry.getByTarget({
+        kind: 'tool-category',
+        categoryId: 'json',
+      }),
+    ).toEqual([]);
   });
 
   it('projects flat and hierarchical tool-area catch-all paths', () => {

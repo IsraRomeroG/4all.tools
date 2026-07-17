@@ -8,12 +8,17 @@ import type { TaxonomyNode, TaxonomyTree } from '@/domain/taxonomy/shared/types'
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { RoutingInvariantError } from '@/routing';
 import type { RouteDefinition, RouteDefinitionProvider } from '@/routing/definitions';
+import {
+  createToolCategoryRouteProvider,
+  toolCategoryRouteProvider,
+} from '@/routing/providers/tool-category-route-provider';
 import type {
   RoutePublicationAvailability,
   RouteRegistry,
 } from '@/routing/registry';
 import { createRouteRegistry } from '@/routing/registry';
 import { getRouteTargetKey, type RouteTarget } from '@/routing/types';
+import { getDeliveryRouteRegistry } from '@/templates/composers';
 
 import {
   JSON_VALIDATOR_ROUTE_FIXTURE,
@@ -266,6 +271,85 @@ describe('route registry integration', () => {
     expect(registry.getAll()).toEqual([]);
   });
 
+  it('generates explicit tool category routes only when localized content is publishable', async () => {
+    const registry = await fixtureRegistry({
+      providers: [toolCategoryRouteProvider],
+      availability: missingLocales({
+        'tool-category:developer': ['es', 'pt', 'fr'],
+      }),
+    });
+
+    expect(paths(registry)).toEqual(['en:developer']);
+  });
+
+  it('does not route published classification-only tool category nodes', async () => {
+    const registry = await fixtureRegistry({
+      providers: [toolCategoryRouteProvider],
+    });
+
+    expect(toolTaxonomy.getNode('data-formats').status).toBe('published');
+    expect(toolTaxonomy.getNode('json').status).toBe('published');
+    expect(toolCategoryTargets(registry)).toEqual(['developer']);
+    expect(
+      registry.getByTarget({
+        kind: 'tool-category',
+        categoryId: 'data-formats',
+      }),
+    ).toEqual([]);
+    expect(
+      registry.getByTarget({
+        kind: 'tool-category',
+        categoryId: 'json',
+      }),
+    ).toEqual([]);
+  });
+
+  it('rejects explicit tool category routes for unknown category IDs', async () => {
+    await expectRouteRegistryError(
+      () =>
+        fixtureRegistry({
+          providers: [
+            createToolCategoryRouteProvider(() => [
+              categoryRouteDefinition('missing-category', 'root'),
+            ]),
+          ],
+        }),
+      'UNKNOWN_TAXONOMY_NODE',
+    );
+  });
+
+  it('rejects root strategy for non-root explicit tool category routes', async () => {
+    await expectRouteRegistryError(
+      () =>
+        fixtureRegistry({
+          providers: [
+            createToolCategoryRouteProvider(() => [
+              categoryRouteDefinition('data-formats', 'root'),
+            ]),
+          ],
+        }),
+      'ROOT_CATEGORY_MISMATCH',
+    );
+  });
+
+  it('keeps production JSON Validator routes unchanged', async () => {
+    const registry = await getDeliveryRouteRegistry();
+
+    expect(
+      registry
+        .getByTarget({
+          kind: 'tool',
+          toolId: 'json-validator',
+        })
+        .map((record) => `${record.locale}:${record.segments.join('/')}`),
+    ).toEqual([
+      'en:developer/json-validator',
+      'es:desarrollo/validador-json',
+      'pt:desenvolvedor/validador-json',
+      'fr:developpement/validateur-json',
+    ]);
+  });
+
   it('propagates publication availability errors without swallowing them', async () => {
     const error = new AmbiguousContentError({
       collection: 'tools',
@@ -335,6 +419,29 @@ function paths(registry: RouteRegistry): string[] {
   return registry
     .getAll()
     .map((record) => `${record.locale}:${record.segments.join('/')}`);
+}
+
+function toolCategoryTargets(registry: RouteRegistry): string[] {
+  return [
+    ...new Set(
+      registry.getAll().flatMap((record) =>
+        record.target.kind === 'tool-category'
+          ? [record.target.categoryId]
+          : [],
+      ),
+    ),
+  ].sort();
+}
+
+function categoryRouteDefinition(
+  categoryId: ToolCategoryId,
+  strategy: 'root' | 'hierarchical',
+): Extract<RouteDefinition, { readonly kind: 'tool-category' }>['definition'] {
+  return {
+    categoryId,
+    strategy,
+    status: 'published',
+  };
 }
 
 function toolNode(params: {
