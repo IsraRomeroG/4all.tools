@@ -15,6 +15,7 @@ import {
   MissingToolPresentationError,
   MissingTaxonomyNodeError,
   PageModelCompositionError,
+  ToolPresentationMismatchError,
   UnsupportedLocaleError,
   composeCategoryPageModel,
   composeHomePageModel,
@@ -48,7 +49,7 @@ describe('page model composers', () => {
       toolPresentationProvider: {
         getToolPresentation: (toolId) => ({
           toolId,
-          primaryCategoryId: 'developer',
+          primaryCategoryId: 'json',
           executionType: 'client',
         }),
       },
@@ -61,7 +62,7 @@ describe('page model composers', () => {
     expect(model.content.title).toBe('Validador JSON');
     expect(model.presentation).toEqual({
       toolId: 'json-validator',
-      primaryCategoryId: 'developer',
+      primaryCategoryId: 'json',
       executionType: 'client',
     });
   });
@@ -147,6 +148,47 @@ describe('page model composers', () => {
         },
       }),
     ).rejects.toBeInstanceOf(MissingToolPresentationError);
+  });
+
+  it('fails explicitly when tool presentation metadata belongs to another tool', async () => {
+    let caughtError: unknown;
+
+    try {
+      await composeToolPageModel('es', 'json-validator', {
+        routeRegistry: fixtureRouteRegistry(),
+        requirePublishedToolContent: async (toolId, locale) =>
+          toolContentEntry({
+            toolId,
+            locale,
+            title: 'Validador JSON',
+            description: 'Valida JSON.',
+          }),
+        renderContent: fixtureRenderContent,
+        toolPresentationProvider: {
+          getToolPresentation: () => ({
+            toolId: 'other-tool',
+            primaryCategoryId: 'json',
+            executionType: 'client',
+          }),
+        },
+      });
+    } catch (error) {
+      caughtError = error;
+    }
+
+    expect(caughtError).toBeInstanceOf(ToolPresentationMismatchError);
+    expect(caughtError).not.toBeInstanceOf(MissingToolPresentationError);
+    expect((caughtError as ToolPresentationMismatchError)).toMatchObject({
+      code: 'TOOL_PRESENTATION_MISMATCH',
+      requestedToolId: 'json-validator',
+      presentationToolId: 'other-tool',
+      locale: 'es',
+      context: {
+        locale: 'es',
+        targetKind: 'tool',
+        entityId: 'json-validator',
+      },
+    });
   });
 
   it('does not fall back to English when localized tool content is missing', async () => {
@@ -319,7 +361,7 @@ const fixtureRenderContent: RenderContent = async () => ({
 const fixtureToolPresentationProvider = {
   getToolPresentation: (toolId: ToolId) => ({
     toolId,
-    primaryCategoryId: 'developer',
+    primaryCategoryId: 'json',
     executionType: 'client' as const,
   }),
 };

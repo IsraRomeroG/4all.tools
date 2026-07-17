@@ -1,4 +1,4 @@
-import type { ToolCategoryId, ToolId } from '@/domain/shared/ids';
+import type { ToolId } from '@/domain/shared/ids';
 import {
   requirePublishedToolContent,
   type ToolContentEntry,
@@ -13,6 +13,7 @@ import type {
 import {
   MissingCanonicalRouteError,
   MissingToolPresentationError,
+  ToolPresentationMismatchError,
   wrapCompositionCause,
 } from './errors';
 import {
@@ -74,6 +75,14 @@ export async function composeToolPageModel(
     throw new MissingToolPresentationError(context);
   }
 
+  if (presentation.toolId !== toolId) {
+    throw new ToolPresentationMismatchError({
+      requestedToolId: toolId,
+      presentationToolId: presentation.toolId,
+      locale,
+    });
+  }
+
   return Object.freeze({
     kind: 'tool',
     locale,
@@ -96,7 +105,7 @@ function normalizePresentation(
 ): ToolPresentationDefinition {
   return Object.freeze({
     toolId: presentation.toolId,
-    primaryCategoryId: presentation.primaryCategoryId as ToolCategoryId,
+    primaryCategoryId: presentation.primaryCategoryId,
     executionType: presentation.executionType,
   });
 }

@@ -1,10 +1,12 @@
 import type { Locale } from '@/i18n/types';
+import type { ToolId } from '@/domain/shared/ids';
 
 export type PageModelCompositionErrorCode =
   | 'PAGE_MODEL_COMPOSITION_FAILED'
   | 'MISSING_CANONICAL_ROUTE'
   | 'MISSING_TOOL_PRESENTATION'
   | 'MISSING_TAXONOMY_NODE'
+  | 'TOOL_PRESENTATION_MISMATCH'
   | 'UNSUPPORTED_LOCALE'
   | 'UNSUPPORTED_PAGE_TARGET';
 
@@ -61,6 +63,32 @@ export class MissingToolPresentationError extends PageModelCompositionError {
       context,
     );
     this.name = 'MissingToolPresentationError';
+  }
+}
+
+export class ToolPresentationMismatchError extends PageModelCompositionError {
+  readonly requestedToolId: ToolId;
+  readonly presentationToolId: ToolId;
+  readonly locale: Locale;
+
+  constructor(params: {
+    readonly requestedToolId: ToolId;
+    readonly presentationToolId: ToolId;
+    readonly locale: Locale;
+  }) {
+    super(
+      'TOOL_PRESENTATION_MISMATCH',
+      `Tool presentation metadata for ${params.requestedToolId}:${params.locale} returned tool ID ${params.presentationToolId}.`,
+      {
+        locale: params.locale,
+        targetKind: 'tool',
+        entityId: params.requestedToolId,
+      },
+    );
+    this.name = 'ToolPresentationMismatchError';
+    this.requestedToolId = params.requestedToolId;
+    this.presentationToolId = params.presentationToolId;
+    this.locale = params.locale;
   }
 }
 

@@ -67,7 +67,7 @@ describe('template foundation', () => {
           },
           presentation: {
             toolId: 'json-validator',
-            primaryCategoryId: 'developer',
+            primaryCategoryId: 'json',
             executionType: 'client',
           },
         },
@@ -114,7 +114,7 @@ describe('template foundation', () => {
           },
           presentation: {
             toolId: 'json-validator',
-            primaryCategoryId: 'developer',
+            primaryCategoryId: 'json',
             executionType: 'client',
           },
         },

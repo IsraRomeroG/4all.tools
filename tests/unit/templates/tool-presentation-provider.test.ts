@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { getToolDefinition as getCanonicalToolDefinition } from '@/features/tools/registry';
 import {
   getToolPresentation,
   toolPresentationProvider,
@@ -18,6 +19,18 @@ describe('tool presentation provider', () => {
         primaryCategoryId: 'json',
         executionType: 'client',
       });
+  });
+
+  it('derives JSON Validator presentation from the canonical tool definition', () => {
+    const definition = getCanonicalToolDefinition('json-validator');
+    const presentation = getToolPresentation('json-validator');
+
+    expect(presentation).toEqual({
+      toolId: definition.id,
+      primaryCategoryId: definition.taxonomy.primaryCategoryId,
+      executionType: definition.execution.type,
+    });
+    expect(presentation?.toolId).toBe('json-validator');
   });
 
   it('returns null explicitly for unknown tools', () => {
