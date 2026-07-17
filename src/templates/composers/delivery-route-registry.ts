@@ -16,16 +16,40 @@ export interface DeliveryRouteRegistryDependencies {
   readonly getPublishedContentIndexes: () => Promise<PublishedContentIndexes>;
 }
 
+export interface DeliveryRouteRegistryLifecycleOptions {
+  readonly development: boolean;
+  readonly createRegistry: () => Promise<RouteRegistry>;
+}
+
 const productionDependencies: DeliveryRouteRegistryDependencies = {
   getPublishedContentIndexes,
 };
 
-let deliveryRouteRegistryPromise: Promise<RouteRegistry> | undefined;
+let deliveryRouteRegistryAccessor: (() => Promise<RouteRegistry>) | undefined;
 
 export function getDeliveryRouteRegistry(): Promise<RouteRegistry> {
-  deliveryRouteRegistryPromise ??= createDeliveryRouteRegistry();
+  deliveryRouteRegistryAccessor ??= createDeliveryRouteRegistryAccessor({
+    development: import.meta.env.DEV,
+    createRegistry: () => createDeliveryRouteRegistry(),
+  });
 
-  return deliveryRouteRegistryPromise;
+  return deliveryRouteRegistryAccessor();
+}
+
+export function createDeliveryRouteRegistryAccessor(
+  options: DeliveryRouteRegistryLifecycleOptions,
+): () => Promise<RouteRegistry> {
+  let registryPromise: Promise<RouteRegistry> | undefined;
+
+  return () => {
+    if (options.development) {
+      return options.createRegistry();
+    }
+
+    registryPromise ??= options.createRegistry();
+
+    return registryPromise;
+  };
 }
 
 async function createDeliveryRouteRegistry(
@@ -48,5 +72,5 @@ export function createDeliveryRouteRegistryForTesting(
 }
 
 export function resetDeliveryRouteRegistryForTesting(): void {
-  deliveryRouteRegistryPromise = undefined;
+  deliveryRouteRegistryAccessor = undefined;
 }
