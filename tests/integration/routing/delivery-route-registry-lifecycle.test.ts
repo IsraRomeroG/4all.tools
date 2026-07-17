@@ -16,10 +16,7 @@ import {
   type ContentCollectionSource,
 } from '@/content/queries';
 import type { Locale } from '@/i18n/types';
-import {
-  createRouteRegistryFromRecords,
-  type RouteRegistry,
-} from '@/routing/registry';
+import type { RouteRegistry } from '@/routing/registry';
 import {
   createDeliveryRouteRegistryAccessor,
   createDeliveryRouteRegistryForTesting,
@@ -36,187 +33,85 @@ describe('delivery route registry content-index lifecycle', () => {
     resetLifecycleState();
   });
 
-  it('memoizes production registry creation', async () => {
-    const registry = createRouteRegistryFromRecords([]);
-    const createRegistry = vi.fn(async () => registry);
-    const getRegistry = createDeliveryRouteRegistryAccessor({
+  it('spans mutable source changes across DEV and production lifecycle boundaries', async () => {
+    const source = createMutableTestContentSource({
+      tools: [publishedTool('en'), publishedTool('pt'), publishedTool('fr')],
+      toolCategories: [publishedToolCategory('en')],
+    });
+    const createRegistryFromCurrentSource = () =>
+      createDeliveryRouteRegistryForTesting({
+        getPublishedContentIndexes: () => createPublishedContentIndexes(source),
+      });
+    const createDevelopmentRegistry = vi.fn(createRegistryFromCurrentSource);
+    const createProductionRegistry = vi.fn(createRegistryFromCurrentSource);
+    const developmentRegistry = createDeliveryRouteRegistryAccessor({
+      development: true,
+      createRegistry: createDevelopmentRegistry,
+    });
+    const productionRegistry = createDeliveryRouteRegistryAccessor({
       development: false,
-      createRegistry,
+      createRegistry: createProductionRegistry,
     });
 
-    const firstPromise = getRegistry();
-    const secondPromise = getRegistry();
-    const [firstRegistry, secondRegistry] = await Promise.all([
-      firstPromise,
-      secondPromise,
-    ]);
+    const firstDevelopmentRegistry = await developmentRegistry();
+    const firstProductionRegistry = await productionRegistry();
 
-    expect(secondPromise).toBe(firstPromise);
-    expect(createRegistry).toHaveBeenCalledTimes(1);
-    expect(secondRegistry).toBe(firstRegistry);
-    expect(firstRegistry).toBe(registry);
-  });
-
-  it('reconstructs the registry for each development access', async () => {
-    const firstRegistry = createRouteRegistryFromRecords([]);
-    const secondRegistry = createRouteRegistryFromRecords([]);
-    const registries = [firstRegistry, secondRegistry];
-    const createRegistry = vi.fn(async () => {
-      const registry = registries.shift();
-
-      if (registry === undefined) {
-        throw new Error('Missing test registry.');
-      }
-
-      return registry;
-    });
-    const getRegistry = createDeliveryRouteRegistryAccessor({
-      development: true,
-      createRegistry,
-    });
-
-    const firstPromise = getRegistry();
-    const secondPromise = getRegistry();
-
-    await expect(firstPromise).resolves.toBe(firstRegistry);
-    await expect(secondPromise).resolves.toBe(secondRegistry);
-    expect(secondPromise).not.toBe(firstPromise);
-    expect(createRegistry).toHaveBeenCalledTimes(2);
-  });
-
-  it('observes changed route publication availability in development', async () => {
-    const firstIndexes = await createPublishedContentIndexes(
-      contentSource({
-        tools: [publishedTool('en')],
-        toolCategories: [publishedToolCategory('en')],
-      }),
-    );
-    const secondIndexes = await createPublishedContentIndexes(
-      contentSource({
-        tools: [publishedTool('en'), publishedTool('es')],
-        toolCategories: [publishedToolCategory('en')],
-      }),
-    );
-    const snapshots = [firstIndexes, secondIndexes];
-    const getPublishedContentIndexes = vi.fn(async () => {
-      const indexes = snapshots.shift();
-
-      if (indexes === undefined) {
-        throw new Error('Missing test content snapshot.');
-      }
-
-      return indexes;
-    });
-    const getRegistry = createDeliveryRouteRegistryAccessor({
-      development: true,
-      createRegistry: () =>
-        createDeliveryRouteRegistryForTesting({
-          getPublishedContentIndexes,
-        }),
-    });
-
-    const firstRegistry = await getRegistry();
-    const secondRegistry = await getRegistry();
-
-    expect(paths(firstRegistry)).toEqual([
+    expect(paths(firstDevelopmentRegistry)).toEqual([
       'en:developer',
       'en:developer/json-validator',
+      'pt:desenvolvedor/validador-json',
+      'fr:developpement/validateur-json',
     ]);
-    expect(paths(secondRegistry)).toEqual([
+    expect(paths(firstProductionRegistry)).toEqual(
+      paths(firstDevelopmentRegistry),
+    );
+    expectLoadCounters(source.counters, 2);
+
+    source.replace({
+      tools: [
+        publishedTool('en'),
+        publishedTool('es'),
+        publishedTool('pt'),
+        publishedTool('fr'),
+      ],
+      toolCategories: [publishedToolCategory('en')],
+    });
+
+    const secondDevelopmentRegistry = await developmentRegistry();
+    const secondProductionRegistry = await productionRegistry();
+
+    expect(paths(secondDevelopmentRegistry)).toEqual([
       'en:developer',
       'en:developer/json-validator',
       'es:desarrollo/validador-json',
+      'pt:desenvolvedor/validador-json',
+      'fr:developpement/validateur-json',
     ]);
-    expect(getPublishedContentIndexes).toHaveBeenCalledTimes(2);
-  });
-
-  it('keeps the first production snapshot stable', async () => {
-    const firstIndexes = await createPublishedContentIndexes(
-      contentSource({
-        tools: [publishedTool('en')],
-        toolCategories: [publishedToolCategory('en')],
-      }),
-    );
-    const secondIndexes = await createPublishedContentIndexes(
-      contentSource({
-        tools: [publishedTool('en'), publishedTool('es')],
-        toolCategories: [publishedToolCategory('en')],
-      }),
-    );
-    const snapshots = [firstIndexes, secondIndexes];
-    const getPublishedContentIndexes = vi.fn(async () => {
-      const indexes = snapshots.shift();
-
-      if (indexes === undefined) {
-        throw new Error('Missing test content snapshot.');
-      }
-
-      return indexes;
-    });
-    const getRegistry = createDeliveryRouteRegistryAccessor({
-      development: false,
-      createRegistry: () =>
-        createDeliveryRouteRegistryForTesting({
-          getPublishedContentIndexes,
-        }),
-    });
-
-    const firstRegistry = await getRegistry();
-    const secondRegistry = await getRegistry();
-
-    expect(secondRegistry).toBe(firstRegistry);
-    expect(paths(secondRegistry)).toEqual([
+    expect(secondProductionRegistry).toBe(firstProductionRegistry);
+    expect(paths(secondProductionRegistry)).toEqual([
       'en:developer',
       'en:developer/json-validator',
+      'pt:desenvolvedor/validador-json',
+      'fr:developpement/validateur-json',
     ]);
-    expect(getPublishedContentIndexes).toHaveBeenCalledTimes(1);
-  });
+    expect(createDevelopmentRegistry).toHaveBeenCalledTimes(2);
+    expect(createProductionRegistry).toHaveBeenCalledTimes(1);
+    expectLoadCounters(source.counters, 3);
 
-  it('can recover from failed development registry creation', async () => {
-    const failure = new Error('Failed test registry creation.');
-    const registry = createRouteRegistryFromRecords([]);
-    let attempt = 0;
-    const createRegistry = vi.fn(async () => {
-      attempt += 1;
-
-      if (attempt === 1) {
-        throw failure;
-      }
-
-      return registry;
-    });
-    const getRegistry = createDeliveryRouteRegistryAccessor({
-      development: true,
-      createRegistry,
-    });
-
-    await expect(getRegistry()).rejects.toBe(failure);
-    await expect(getRegistry()).resolves.toBe(registry);
-    expect(createRegistry).toHaveBeenCalledTimes(2);
-  });
-
-  it('shares concurrent production registry requests', async () => {
-    const registry = createRouteRegistryFromRecords([]);
-    const pending = deferred<RouteRegistry>();
-    const createRegistry = vi.fn(() => pending.promise);
-    const getRegistry = createDeliveryRouteRegistryAccessor({
+    const newProductionRegistry = createDeliveryRouteRegistryAccessor({
       development: false,
-      createRegistry,
+      createRegistry: createRegistryFromCurrentSource,
     });
+    const updatedProductionRegistry = await newProductionRegistry();
 
-    const firstPromise = getRegistry();
-    const secondPromise = getRegistry();
-    const thirdPromise = getRegistry();
-
-    expect(secondPromise).toBe(firstPromise);
-    expect(thirdPromise).toBe(firstPromise);
-    expect(createRegistry).toHaveBeenCalledTimes(1);
-
-    pending.resolve(registry);
-
-    await expect(firstPromise).resolves.toBe(registry);
-    await expect(secondPromise).resolves.toBe(registry);
-    await expect(thirdPromise).resolves.toBe(registry);
+    expect(paths(updatedProductionRegistry)).toEqual([
+      'en:developer',
+      'en:developer/json-validator',
+      'es:desarrollo/validador-json',
+      'pt:desenvolvedor/validador-json',
+      'fr:developpement/validateur-json',
+    ]);
+    expectLoadCounters(source.counters, 4);
   });
 
   it('uses an injected published-content snapshot for route publication', async () => {
@@ -313,8 +208,22 @@ describe('delivery route registry content-index lifecycle', () => {
 });
 
 type CollectionFixtures = Partial<
-  Record<'tools' | 'toolCategories' | 'blog' | 'blogCategories', unknown[]>
+  Record<CollectionName, unknown[]>
 >;
+
+type CollectionName = keyof CollectionLoadCounters;
+
+interface CollectionLoadCounters {
+  tools: number;
+  toolCategories: number;
+  blog: number;
+  blogCategories: number;
+}
+
+interface MutableTestContentSource extends ContentCollectionSource {
+  readonly counters: CollectionLoadCounters;
+  replace(fixtures: CollectionFixtures): void;
+}
 
 function resetLifecycleState(): void {
   resetDeliveryRouteRegistryForTesting();
@@ -324,20 +233,47 @@ function resetLifecycleState(): void {
 }
 
 function contentSource(fixtures: CollectionFixtures = {}): ContentCollectionSource {
+  return createMutableTestContentSource(fixtures);
+}
+
+function createMutableTestContentSource(
+  fixtures: CollectionFixtures = {},
+): MutableTestContentSource {
+  let collections = normalizeCollectionFixtures(fixtures);
+  const counters: CollectionLoadCounters = {
+    tools: 0,
+    toolCategories: 0,
+    blog: 0,
+    blogCategories: 0,
+  };
+  const getCollection: ContentCollectionSource['getCollection'] = vi.fn(
+    async (collection) => {
+      const collectionName = collection as CollectionName;
+
+      counters[collectionName] += 1;
+
+      return [...collections[collectionName]] as never;
+    },
+  );
+
+  return {
+    counters,
+    getCollection,
+    replace: (nextFixtures) => {
+      collections = normalizeCollectionFixtures(nextFixtures);
+    },
+  };
+}
+
+function normalizeCollectionFixtures(fixtures: CollectionFixtures) {
   const collections: Required<CollectionFixtures> = {
     tools: fixtures.tools ?? [],
     toolCategories: fixtures.toolCategories ?? [],
     blog: fixtures.blog ?? [],
     blogCategories: fixtures.blogCategories ?? [],
   };
-  const getCollection: ContentCollectionSource['getCollection'] = vi.fn(
-    async (collection) =>
-      collections[collection as keyof typeof collections] as never,
-  );
 
-  return {
-    getCollection,
-  };
+  return collections;
 }
 
 function mockAstroCollections(fixtures: CollectionFixtures): void {
@@ -368,16 +304,16 @@ function paths(registry: RouteRegistry): string[] {
     .map((record) => `${record.locale}:${record.segments.join('/')}`);
 }
 
-function deferred<T>() {
-  let resolve!: (value: T) => void;
-  const promise = new Promise<T>((promiseResolve) => {
-    resolve = promiseResolve;
+function expectLoadCounters(
+  counters: CollectionLoadCounters,
+  expected: number,
+): void {
+  expect(counters).toEqual({
+    tools: expected,
+    toolCategories: expected,
+    blog: expected,
+    blogCategories: expected,
   });
-
-  return {
-    promise,
-    resolve,
-  };
 }
 
 function entry(id: string, data: Record<string, unknown>) {
