@@ -64,6 +64,9 @@ describe('page model composers', () => {
       primaryCategoryId: 'json',
       executionType: 'client',
     });
+    expect(model.messages.sections.toolWorkspace).toBe(
+      'Espacio de trabajo de la herramienta',
+    );
   });
 
   it('fails explicitly when tool content is missing', async () => {
@@ -235,6 +238,7 @@ describe('page model composers', () => {
     expect(model.route.segments).toEqual(['desarrollo']);
     expect(model.category.label).toBe('Herramientas para desarrolladores');
     expect(model.content.title).toBe('Desarrollo');
+    expect(model.messages.sections.tools).toBe('Herramientas');
   });
 
   it('fails explicitly when localized category content is missing', async () => {
@@ -438,7 +442,7 @@ function fixtureToolTaxonomy() {
         },
         fr: {
           slug: 'developpement',
-          label: 'Outils pour developpeurs',
+          label: 'Outils pour développeurs',
         },
       },
       status: 'published',

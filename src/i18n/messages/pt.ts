@@ -2,7 +2,7 @@ import type { GlobalMessages } from './types';
 
 export const pt = {
   nav: {
-    home: 'In\u00edcio',
+    home: 'Início',
     categories: 'Categorias',
     blog: 'Blog',
   },
@@ -16,6 +16,15 @@ export const pt = {
   search: {
     label: 'Buscar ferramentas',
     placeholder: 'Buscar ferramentas...',
+  },
+  sections: {
+    search: 'Buscar',
+    featuredCategories: 'Categorias em destaque',
+    popularTools: 'Ferramentas populares',
+    recentEditorial: 'Conteúdo editorial recente',
+    subcategories: 'Subcategorias',
+    tools: 'Ferramentas',
+    toolWorkspace: 'Espaço de trabalho da ferramenta',
   },
   language: {
     label: 'Idioma',

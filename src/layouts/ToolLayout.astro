@@ -6,9 +6,10 @@ import type { Locale } from '@/i18n/types';
 interface Props {
   locale: Locale;
   documentTitle?: string;
+  workspaceLabel: string;
 }
 
-const { locale, documentTitle } = Astro.props;
+const { locale, documentTitle, workspaceLabel } = Astro.props;
 const baseLayoutProps =
   documentTitle === undefined
     ? { locale, mainClass: 'min-h-screen bg-slate-50' }
@@ -26,7 +27,7 @@ const baseLayoutProps =
     </header>
 
     <section class="grid gap-4" aria-labelledby="tool-workspace-heading" data-layout-region="tool-workspace">
-      <h2 id="tool-workspace-heading" class="sr-only">Tool workspace</h2>
+      <h2 id="tool-workspace-heading" class="sr-only">{workspaceLabel}</h2>
       <slot name="tool" />
     </section>
 

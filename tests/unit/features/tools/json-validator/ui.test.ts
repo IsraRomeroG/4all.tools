@@ -27,6 +27,9 @@ describe('json validator tool UI', () => {
     expect(html).toContain('data-json-diagnostic');
     expect(html).toContain('id="json-validator-es-test-help"');
     expect(html).toContain('id="json-validator-es-test-status"');
+    expect(html).toContain('<fieldset');
+    expect(html).toContain('data-json-actions');
+    expect(html).toContain('<legend class="sr-only">Acciones de JSON</legend>');
   });
 
   it('renders native non-submitting buttons for every tool action', async () => {
@@ -61,6 +64,8 @@ describe('json validator tool UI', () => {
     );
 
     expect(source).toContain('locale: Locale');
+    expect(source).toContain('instanceId: string');
+    expect(source).not.toContain('Math.random');
     expect(source).not.toContain('Astro.url');
     expect(source).not.toContain('pathname');
     expect(source).not.toContain('@/routing');

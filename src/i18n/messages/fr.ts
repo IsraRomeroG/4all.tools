@@ -3,26 +3,35 @@ import type { GlobalMessages } from './types';
 export const fr = {
   nav: {
     home: 'Accueil',
-    categories: 'Cat\u00e9gories',
+    categories: 'Catégories',
     blog: 'Blog',
   },
   common: {
     copy: 'Copier',
-    copied: 'Copi\u00e9',
-    download: 'T\u00e9l\u00e9charger',
-    reset: 'R\u00e9initialiser',
+    copied: 'Copié',
+    download: 'Télécharger',
+    reset: 'Réinitialiser',
     close: 'Fermer',
   },
   search: {
     label: 'Rechercher des outils',
     placeholder: 'Rechercher des outils...',
   },
+  sections: {
+    search: 'Recherche',
+    featuredCategories: 'Catégories en vedette',
+    popularTools: 'Outils populaires',
+    recentEditorial: 'Contenu éditorial récent',
+    subcategories: 'Sous-catégories',
+    tools: 'Outils',
+    toolWorkspace: 'Espace de travail de l’outil',
+  },
   language: {
     label: 'Langue',
     changeLanguage: 'Changer de langue',
   },
   footer: {
-    privacy: 'Confidentialit\u00e9',
+    privacy: 'Confidentialité',
     terms: 'Conditions',
   },
   accessibility: {

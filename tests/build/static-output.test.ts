@@ -40,7 +40,7 @@ const EXPECTED_JSON_VALIDATOR_PAGES = [
     title: 'Validador JSON',
     inputLabel: 'JSON de entrada',
     validateLabel: 'Validar JSON',
-    editorialMarker: 'C\u00f3mo usar el Validador JSON',
+    editorialMarker: 'Cómo usar el Validador JSON',
     instanceId: 'tool-json-validator-es',
     forbiddenMetadataFragments: [
       '/en/developer/json-validator/',
@@ -66,7 +66,7 @@ const EXPECTED_JSON_VALIDATOR_PAGES = [
     relativeFile: 'fr/developpement/validateur-json/index.html',
     htmlLang: 'fr',
     title: 'Validateur JSON',
-    inputLabel: 'JSON d\u2019entr\u00e9e',
+    inputLabel: 'JSON d’entrée',
     validateLabel: 'Valider le JSON',
     editorialMarker: 'Comment utiliser le Validateur JSON',
     instanceId: 'tool-json-validator-fr',

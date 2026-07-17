@@ -5,13 +5,10 @@ import type { JsonValidatorMessages } from './messages/types';
 interface Props {
   locale: Locale;
   messages: JsonValidatorMessages;
-  instanceId?: string;
+  instanceId: string;
 }
 
-const { locale, messages } = Astro.props;
-const instanceId =
-  Astro.props.instanceId ??
-  `json-validator-${locale}-${Math.random().toString(36).slice(2, 10)}`;
+const { locale, messages, instanceId } = Astro.props;
 const helpId = `${instanceId}-help`;
 const statusId = `${instanceId}-status`;
 ---
@@ -59,11 +56,11 @@ const statusId = `${instanceId}-status`;
     <p id={helpId} class="text-sm leading-6 text-slate-600">{messages.input.help}</p>
   </div>
 
-  <div
+  <fieldset
     class="flex flex-wrap gap-2"
-    aria-label={messages.actions.label}
     data-json-actions
   >
+    <legend class="sr-only">{messages.actions.label}</legend>
     <button class="rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-950 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400" type="button" data-action="validate">
       {messages.actions.validate}
     </button>
@@ -79,7 +76,7 @@ const statusId = `${instanceId}-status`;
     <button class="rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-950 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400" type="button" data-action="clear">
       {messages.actions.clear}
     </button>
-  </div>
+  </fieldset>
 
   <div class="grid gap-1 text-sm leading-6">
     <p

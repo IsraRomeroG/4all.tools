@@ -4,6 +4,8 @@ import {
   type ToolContentEntry,
 } from '@/content/queries/tools';
 import type { Locale } from '@/i18n/types';
+import { getGlobalMessages } from '@/i18n/messages/registry';
+import type { GlobalMessages } from '@/i18n/messages/types';
 import type { RouteRegistry } from '@/routing/registry';
 import type {
   ToolPageModel,
@@ -35,6 +37,7 @@ export interface ToolPageComposerDependencies {
   ) => Promise<ToolContentEntry>;
   readonly renderContent?: RenderContent;
   readonly toolPresentationProvider: ToolPresentationProvider;
+  readonly getGlobalMessages?: (locale: Locale) => GlobalMessages;
 }
 
 export async function composeToolPageModel(
@@ -59,6 +62,7 @@ export async function composeToolPageModel(
   const contentQuery =
     dependencies.requirePublishedToolContent ?? requirePublishedToolContent;
   const renderContent = dependencies.renderContent ?? renderContentEntry;
+  const globalMessages = dependencies.getGlobalMessages ?? getGlobalMessages;
   const contentEntry = await withToolCompositionContext(
     context,
     () => contentQuery(toolId, locale),
@@ -91,6 +95,7 @@ export async function composeToolPageModel(
     title: contentEntry.data.title,
     description: contentEntry.data.description,
     toolId,
+    messages: globalMessages(locale),
     content: {
       title: contentEntry.data.title,
       description: contentEntry.data.description,

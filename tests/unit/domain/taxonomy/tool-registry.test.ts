@@ -81,6 +81,17 @@ describe('tool taxonomy registry', () => {
     ]);
   });
 
+  it('uses corrected user-facing labels while preserving ASCII slugs', () => {
+    expect(toolTaxonomy.getNode('developer').localized.fr).toEqual({
+      slug: 'developpement',
+      label: 'Outils pour développeurs',
+    });
+    expect(toolTaxonomy.getNode('data-formats').localized.fr).toEqual({
+      slug: 'formats-de-donnees',
+      label: 'Formats de données',
+    });
+  });
+
   it('exposes tool-specific selectors over the shared engine', () => {
     expect(hasToolCategory('json')).toBe(true);
     expect(hasToolCategory('missing')).toBe(false);

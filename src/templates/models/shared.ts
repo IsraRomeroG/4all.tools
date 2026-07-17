@@ -41,6 +41,7 @@ export interface ToolPageModel extends PageDocumentModel {
   readonly kind: 'tool';
   readonly route: RouteRecord;
   readonly toolId: ToolId;
+  readonly messages: GlobalMessages;
   readonly content: {
     readonly title: string;
     readonly description: string;
@@ -53,6 +54,7 @@ export interface ToolCategoryPageModel extends PageDocumentModel {
   readonly kind: 'tool-category';
   readonly route: RouteRecord;
   readonly categoryId: ToolCategoryId;
+  readonly messages: GlobalMessages;
   readonly category: {
     readonly label: string;
     readonly shortLabel?: string;

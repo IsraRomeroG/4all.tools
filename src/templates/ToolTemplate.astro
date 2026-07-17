@@ -10,8 +10,8 @@ interface Props {
 const { page } = Astro.props;
 const layoutProps =
   page.documentTitle === undefined
-    ? { locale: page.locale }
-    : { locale: page.locale, documentTitle: page.documentTitle };
+    ? { locale: page.locale, workspaceLabel: page.messages.sections.toolWorkspace }
+    : { locale: page.locale, documentTitle: page.documentTitle, workspaceLabel: page.messages.sections.toolWorkspace };
 const EditorialContent = page.content.editorial.Content;
 const toolModule = getToolModule(page.toolId);
 const ToolComponent = toolModule.component;
@@ -23,8 +23,7 @@ const toolInstanceId = `tool-${page.toolId}-${page.locale}`;
   <slot name="head" slot="head" />
 
   <Fragment slot="page-header">
-    <p class="text-sm font-medium text-slate-600" data-template-identity={page.toolId}>{page.toolId}</p>
-    <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{page.content.title}</h1>
+    <h1 class="text-3xl font-semibold tracking-normal text-slate-950" data-template-identity={page.toolId}>{page.content.title}</h1>
     <p class="max-w-3xl text-lg leading-8 text-slate-700">{page.content.description}</p>
   </Fragment>
 

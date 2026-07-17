@@ -6,6 +6,8 @@ import {
   type ToolCategoryContentEntry,
 } from '@/content/queries/tool-categories';
 import type { Locale } from '@/i18n/types';
+import { getGlobalMessages } from '@/i18n/messages/registry';
+import type { GlobalMessages } from '@/i18n/messages/types';
 import type { RouteRegistry } from '@/routing/registry';
 import type { ToolCategoryPageModel } from '@/templates/models/category';
 
@@ -27,6 +29,7 @@ export interface CategoryPageComposerDependencies {
     locale: Locale,
   ) => Promise<ToolCategoryContentEntry>;
   readonly renderContent?: RenderContent;
+  readonly getGlobalMessages?: (locale: Locale) => GlobalMessages;
 }
 
 export async function composeCategoryPageModel(
@@ -59,6 +62,7 @@ export async function composeCategoryPageModel(
     dependencies.requirePublishedToolCategoryContent ??
     requirePublishedToolCategoryContent;
   const renderContent = dependencies.renderContent ?? renderContentEntry;
+  const globalMessages = dependencies.getGlobalMessages ?? getGlobalMessages;
   const contentEntry = await withCategoryCompositionContext(
     context,
     () => contentQuery(categoryId, locale),
@@ -86,6 +90,7 @@ export async function composeCategoryPageModel(
     title: contentEntry.data.title,
     description: contentEntry.data.description,
     categoryId,
+    messages: globalMessages(locale),
     category,
     content: {
       title: contentEntry.data.title,

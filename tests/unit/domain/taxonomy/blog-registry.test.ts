@@ -74,6 +74,17 @@ describe('blog taxonomy registry', () => {
     ]);
   });
 
+  it('uses corrected user-facing labels while preserving ASCII slugs', () => {
+    expect(blogTaxonomy.getNode('development').localized.fr).toEqual({
+      slug: 'developpement',
+      label: 'Développement',
+    });
+    expect(blogTaxonomy.getNode('json-guides').localized.es).toEqual({
+      slug: 'guias-json',
+      label: 'Guías de JSON',
+    });
+  });
+
   it('exposes blog-specific selectors over the shared engine', () => {
     expect(hasBlogCategory('json-guides')).toBe(true);
     expect(hasBlogCategory('json')).toBe(false);

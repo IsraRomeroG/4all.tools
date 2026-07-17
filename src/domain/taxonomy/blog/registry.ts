@@ -21,7 +21,7 @@ export const BLOG_CATEGORY_NODES = [
       },
       fr: {
         slug: 'developpement',
-        label: 'Developpement',
+        label: 'Développement',
       },
     },
     status: 'published',
@@ -37,7 +37,7 @@ export const BLOG_CATEGORY_NODES = [
       },
       es: {
         slug: 'guias-json',
-        label: 'Guias de JSON',
+        label: 'Guías de JSON',
       },
       pt: {
         slug: 'guias-json',

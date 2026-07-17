@@ -3,7 +3,7 @@ import type { GlobalMessages } from './types';
 export const es = {
   nav: {
     home: 'Inicio',
-    categories: 'Categor\u00edas',
+    categories: 'Categorías',
     blog: 'Blog',
   },
   common: {
@@ -17,16 +17,25 @@ export const es = {
     label: 'Buscar herramientas',
     placeholder: 'Buscar herramientas...',
   },
+  sections: {
+    search: 'Buscar',
+    featuredCategories: 'Categorías destacadas',
+    popularTools: 'Herramientas populares',
+    recentEditorial: 'Contenido editorial reciente',
+    subcategories: 'Subcategorías',
+    tools: 'Herramientas',
+    toolWorkspace: 'Espacio de trabajo de la herramienta',
+  },
   language: {
     label: 'Idioma',
     changeLanguage: 'Cambiar idioma',
   },
   footer: {
     privacy: 'Privacidad',
-    terms: 'T\u00e9rminos',
+    terms: 'Términos',
   },
   accessibility: {
-    openMenu: 'Abrir men\u00fa',
-    closeMenu: 'Cerrar men\u00fa',
+    openMenu: 'Abrir menú',
+    closeMenu: 'Cerrar menú',
   },
 } as const satisfies GlobalMessages;

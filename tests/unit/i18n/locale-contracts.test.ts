@@ -44,6 +44,24 @@ describe('locale contracts', () => {
     expect(LOCALES.fr.pathPrefix).toBe('fr');
   });
 
+  it('uses correct localized display labels without changing locale codes or prefixes', () => {
+    expect(LOCALES.es).toMatchObject({
+      code: 'es',
+      pathPrefix: 'es',
+      label: 'Español',
+    });
+    expect(LOCALES.pt).toMatchObject({
+      code: 'pt',
+      pathPrefix: 'pt',
+      label: 'Português',
+    });
+    expect(LOCALES.fr).toMatchObject({
+      code: 'fr',
+      pathPrefix: 'fr',
+      label: 'Français',
+    });
+  });
+
   it('declares left-to-right direction for every initial locale', () => {
     expect(SUPPORTED_LOCALES.map((locale) => LOCALES[locale].direction)).toEqual([
       'ltr',

@@ -17,9 +17,8 @@ const EditorialContent = page.content.editorial.Content;
 <BaseLayout {...layoutProps} mainClass="min-h-screen bg-slate-50">
   <slot name="head" slot="head" />
 
-  <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:px-8" data-template="tool-category">
+  <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:px-8" data-template="tool-category" data-template-identity={page.categoryId}>
     <header class="grid max-w-3xl gap-4" data-template-region="category-header">
-      <p class="text-sm font-medium text-slate-600" data-template-identity={page.categoryId}>{page.categoryId}</p>
       <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{page.content.title}</h1>
       <p class="text-lg leading-8 text-slate-700">{page.content.description}</p>
     </header>
@@ -30,12 +29,12 @@ const EditorialContent = page.content.editorial.Content;
     </section>
 
     <section class="grid gap-4" aria-labelledby="category-children-heading" data-template-region="category-children">
-      <h2 id="category-children-heading" class="sr-only">Subcategories</h2>
+      <h2 id="category-children-heading" class="sr-only">{page.messages.sections.subcategories}</h2>
       <slot name="child-categories" />
     </section>
 
     <section class="grid gap-4" aria-labelledby="category-tools-heading" data-template-region="category-tools">
-      <h2 id="category-tools-heading" class="sr-only">Tools</h2>
+      <h2 id="category-tools-heading" class="sr-only">{page.messages.sections.tools}</h2>
       <slot name="tools" />
     </section>
   </div>

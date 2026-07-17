@@ -47,7 +47,41 @@ describe('global messages', () => {
       expect(messages.language.changeLanguage).toBeTruthy();
       expect(messages.footer.privacy).toBeTruthy();
       expect(messages.accessibility.openMenu).toBeTruthy();
+      expect(messages.sections.search).toBeTruthy();
+      expect(messages.sections.featuredCategories).toBeTruthy();
+      expect(messages.sections.popularTools).toBeTruthy();
+      expect(messages.sections.recentEditorial).toBeTruthy();
+      expect(messages.sections.subcategories).toBeTruthy();
+      expect(messages.sections.tools).toBeTruthy();
+      expect(messages.sections.toolWorkspace).toBeTruthy();
     }
+  });
+
+  it('localizes shared section labels for screen-reader users', () => {
+    expect(en.sections).toMatchObject({
+      search: 'Search',
+      featuredCategories: 'Featured categories',
+      popularTools: 'Popular tools',
+      recentEditorial: 'Recent editorial content',
+      subcategories: 'Subcategories',
+      tools: 'Tools',
+      toolWorkspace: 'Tool workspace',
+    });
+    expect(es.sections).toMatchObject({
+      featuredCategories: 'Categorías destacadas',
+      popularTools: 'Herramientas populares',
+      toolWorkspace: 'Espacio de trabajo de la herramienta',
+    });
+    expect(pt.sections).toMatchObject({
+      featuredCategories: 'Categorias em destaque',
+      popularTools: 'Ferramentas populares',
+      toolWorkspace: 'Espaço de trabalho da ferramenta',
+    });
+    expect(fr.sections).toMatchObject({
+      featuredCategories: 'Catégories en vedette',
+      popularTools: 'Outils populaires',
+      toolWorkspace: 'Espace de travail de l’outil',
+    });
   });
 
   it('does not include tool-specific namespaces in global messages', () => {

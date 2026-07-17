@@ -47,6 +47,7 @@ const EXPECTED = {
     title: 'JSON Validator',
     label: 'Input JSON',
     validate: 'Validate JSON',
+    workspace: 'Tool workspace',
     editorial: 'How to use the JSON Validator',
   },
   es: {
@@ -61,6 +62,7 @@ const EXPECTED = {
     title: 'Validador JSON',
     label: 'JSON de entrada',
     validate: 'Validar JSON',
+    workspace: 'Espacio de trabajo de la herramienta',
     editorial: 'Cómo usar el Validador JSON',
   },
   pt: {
@@ -75,6 +77,7 @@ const EXPECTED = {
     title: 'Validador JSON',
     label: 'JSON de entrada',
     validate: 'Validar JSON',
+    workspace: 'Espaço de trabalho da ferramenta',
     editorial: 'Como usar o Validador JSON',
   },
   fr: {
@@ -89,6 +92,7 @@ const EXPECTED = {
     title: 'Validateur JSON',
     label: 'JSON d’entrée',
     validate: 'Valider le JSON',
+    workspace: 'Espace de travail de l’outil',
     editorial: 'Comment utiliser le Validateur JSON',
   },
 } as const;
@@ -171,7 +175,11 @@ describe('json-validator end-to-end route integration', () => {
       expect(html).toContain(expected.title);
       expect(html).toContain(expected.label);
       expect(html).toContain(expected.validate);
+      expect(html).toContain(expected.workspace);
       expect(html).toContain(expected.editorial);
+      if (locale !== 'en') {
+        expect(html).not.toContain('Tool workspace');
+      }
       expect(html).not.toContain('data-formats/json/json-validator');
       expect(html).not.toContain('/en/developer/json-validator/');
     }

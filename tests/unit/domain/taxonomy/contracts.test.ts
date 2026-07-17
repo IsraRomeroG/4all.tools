@@ -46,7 +46,7 @@ describe('taxonomy contracts', () => {
         en: { slug: 'developer', label: 'Developer Tools' },
         es: { slug: 'desarrollo', label: 'Herramientas para desarrolladores' },
         pt: { slug: 'desenvolvimento', label: 'Ferramentas para desenvolvedores' },
-        fr: { slug: 'developpement', label: 'Outils pour developpeurs' },
+        fr: { slug: 'developpement', label: 'Outils pour développeurs' },
       },
       status: 'published',
       sortOrder: 100,
@@ -57,7 +57,7 @@ describe('taxonomy contracts', () => {
       parentId: 'development',
       localized: {
         en: { slug: 'json-guides', label: 'JSON Guides' },
-        es: { slug: 'guias-json', label: 'Guias de JSON' },
+        es: { slug: 'guias-json', label: 'Guías de JSON' },
         pt: { slug: 'guias-json', label: 'Guias de JSON' },
         fr: { slug: 'guides-json', label: 'Guides JSON' },
       },

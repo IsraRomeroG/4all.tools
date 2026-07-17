@@ -21,7 +21,7 @@ export const TOOL_CATEGORY_NODES = [
       },
       fr: {
         slug: 'developpement',
-        label: 'Outils pour developpeurs',
+        label: 'Outils pour développeurs',
       },
     },
     status: 'published',
@@ -45,7 +45,7 @@ export const TOOL_CATEGORY_NODES = [
       },
       fr: {
         slug: 'formats-de-donnees',
-        label: 'Formats de donnees',
+        label: 'Formats de données',
       },
     },
     status: 'published',

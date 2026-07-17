@@ -15,6 +15,15 @@ export const en = {
     label: 'Search tools',
     placeholder: 'Search tools...',
   },
+  sections: {
+    search: 'Search',
+    featuredCategories: 'Featured categories',
+    popularTools: 'Popular tools',
+    recentEditorial: 'Recent editorial content',
+    subcategories: 'Subcategories',
+    tools: 'Tools',
+    toolWorkspace: 'Tool workspace',
+  },
   language: {
     label: 'Language',
     changeLanguage: 'Change language',

@@ -57,6 +57,7 @@ describe('template foundation', () => {
           toolId: 'json-validator',
           title: 'Validador JSON',
           description: 'Valida documentos JSON desde un modelo preparado.',
+          messages: getGlobalMessages('es'),
           content: {
             title: 'Validador JSON',
             description: 'Valida documentos JSON desde un modelo preparado.',
@@ -82,7 +83,9 @@ describe('template foundation', () => {
     expect(html).toContain('<html lang="es" dir="ltr">');
     expect(html).toContain('data-template-identity="json-validator"');
     expect(html).toContain('Validador JSON');
+    expect(html).toContain('Espacio de trabajo de la herramienta');
     expect(html).toContain('data-fixture-rendered-content');
+    expect(html).not.toContain('text-slate-600" data-template-identity="json-validator">json-validator</p>');
     expect(html).not.toContain('unrelated');
   });
 
@@ -104,6 +107,7 @@ describe('template foundation', () => {
           }),
           toolId: 'json-validator',
           title: 'JSON Validator',
+          messages: getGlobalMessages('en'),
           content: {
             title: 'JSON Validator',
             description: 'Validate JSON.',
@@ -152,6 +156,7 @@ describe('template foundation', () => {
           categoryId: 'developer',
           title: 'Desarrollo',
           description: 'Herramientas para desarrolladores.',
+          messages: getGlobalMessages('es'),
           category: {
             label: 'Herramientas para desarrolladores',
           },
@@ -174,8 +179,11 @@ describe('template foundation', () => {
     expect(html).toContain('<html lang="es" dir="ltr">');
     expect(html).toContain('data-template-identity="developer"');
     expect(html).toContain('Desarrollo');
+    expect(html).toContain('Subcategorías');
+    expect(html).toContain('Herramientas');
     expect(html).toContain('data-fixture-rendered-content');
     expect(html).toContain('data-fixture-category-body');
+    expect(html).not.toContain('text-slate-600" data-template-identity="developer">developer</p>');
     expect(html).not.toContain('categoryId =');
   });
 
@@ -229,6 +237,8 @@ describe('template foundation', () => {
 
     expect(home).toContain('data-template="home"');
     expect(home).toContain('data-fixture-home-search');
+    expect(home).toContain('Featured categories');
+    expect(home).toContain('Popular tools');
     expect(blog).toContain('<html lang="fr" dir="ltr">');
     expect(blog).toContain('data-fixture-blog-articles');
     expect(article).toContain('<html lang="pt" dir="ltr">');

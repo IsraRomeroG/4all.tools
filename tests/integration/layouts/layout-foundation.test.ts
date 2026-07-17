@@ -78,6 +78,7 @@ describe('layout foundation', () => {
       props: {
         locale: 'en',
         documentTitle: 'Tool document',
+        workspaceLabel: 'Tool workspace',
       },
       slots: {
         head: '<meta name="tool-head-slot" content="rendered" />',

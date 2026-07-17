@@ -10,6 +10,7 @@ import {
   composeToolAreaAdapterPage,
   UnsupportedPageTargetError,
 } from '@/templates/composers';
+import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { ToolPageModel } from '@/templates/models/shared';
 import {
   getRootCategoryStaticPathEntries,
@@ -40,6 +41,10 @@ describe('localized route adapters', () => {
 
     expect(html).toContain('<html lang="es" dir="ltr">');
     expect(html).toContain('data-template="home"');
+    expect(html).toContain('Categorías destacadas');
+    expect(html).toContain('Herramientas populares');
+    expect(html).not.toContain('Featured categories');
+    expect(html).not.toContain('Popular tools');
   });
 
   it('renders the Portuguese home adapter with Portuguese document metadata', async () => {
@@ -47,6 +52,10 @@ describe('localized route adapters', () => {
 
     expect(html).toContain('<html lang="pt" dir="ltr">');
     expect(html).toContain('data-template="home"');
+    expect(html).toContain('Categorias em destaque');
+    expect(html).toContain('Ferramentas populares');
+    expect(html).not.toContain('Featured categories');
+    expect(html).not.toContain('Popular tools');
   });
 
   it('renders the French home adapter with French document metadata', async () => {
@@ -54,6 +63,10 @@ describe('localized route adapters', () => {
 
     expect(html).toContain('<html lang="fr" dir="ltr">');
     expect(html).toContain('data-template="home"');
+    expect(html).toContain('Catégories en vedette');
+    expect(html).toContain('Outils populaires');
+    expect(html).not.toContain('Featured categories');
+    expect(html).not.toContain('Popular tools');
   });
 
   it('projects localized category slugs while preserving stable category identity', () => {
@@ -345,6 +358,7 @@ function fixtureToolModel(locale: Locale): ToolPageModel {
     }),
     toolId: 'json-validator',
     title: 'JSON Validator',
+    messages: getGlobalMessages(locale),
     content: {
       title: 'JSON Validator',
       description: 'Validate JSON.',

@@ -12,6 +12,7 @@ import {
   getDeliveryRouteRegistry,
   UnsupportedPageTargetError,
 } from '@/templates/composers';
+import { getGlobalMessages } from '@/i18n/messages/registry';
 import type {
   ToolCategoryPageModel,
   ToolPageModel,
@@ -263,6 +264,7 @@ function fixtureToolModel(): ToolPageModel {
     }),
     toolId: 'json-validator',
     title: 'JSON Validator',
+    messages: getGlobalMessages('en'),
     content: {
       title: 'JSON Validator',
       description: 'Validate JSON.',
@@ -293,6 +295,7 @@ function fixtureCategoryModel(): ToolCategoryPageModel {
     }),
     categoryId: 'developer',
     title: 'Developer Tools',
+    messages: getGlobalMessages('en'),
     category: {
       label: 'Developer Tools',
     },
