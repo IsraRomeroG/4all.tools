@@ -39,14 +39,9 @@ Do not start unmanaged long-running dev or preview servers for verification.
 
 ## Routing and i18n Invariants
 
-The canonical JSON Validator routes must remain unchanged:
+English remains unprefixed. Do not introduce `/en/` output for localized routes.
 
-- `/developer/json-validator/`
-- `/es/desarrollo/validador-json/`
-- `/pt/desenvolvedor/validador-json/`
-- `/fr/developpement/validateur-json/`
-
-English remains unprefixed. Do not introduce `/en/developer/json-validator/` output.
+Canonical route changes must be intentional and update route definitions, localized metadata, internal links, canonical URLs, specs, tests, and redirects where applicable.
 
 Taxonomy nodes do not automatically receive public category URLs. Category routes require explicit route definitions and published content availability.
 
