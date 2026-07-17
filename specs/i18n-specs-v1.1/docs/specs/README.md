@@ -52,7 +52,12 @@ P03-content
 P04-routing
 P05-delivery
 P06-json-validator-vertical-slice
+P06R-p00-p06-remediation
 ```
+
+## Implementation status
+
+Historical task specs retain their original dependency and status metadata. The repository implementation ledger is maintained at `../../../IMPLEMENTATION-STATUS.md` so completed implementation work is visible without rewriting historical spec meaning.
 
 ## Normative precedence
 

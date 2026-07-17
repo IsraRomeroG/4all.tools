@@ -1,4 +1,4 @@
 interface:
   display_name: "Preserve Canonical Routes"
-  short_description: "Avoid legacy routes and prepare 301 redirects"
-  default_prompt: "Use $preserve-canonical-routes to rename a public route without leaving legacy pages and provide .htaccess 301 redirects."
+  short_description: "Avoid legacy routes and ask before 301 redirects"
+  default_prompt: "Use $preserve-canonical-routes to rename a public route without leaving legacy pages, then ask whether .htaccess 301 redirects are necessary."

@@ -1,12 +1,64 @@
 # 4all.tools
 
-Astro project foundation for 4all.tools.
+Astro static site for localized web tools.
+
+## Project Status
+
+P00-P06 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, and the first JSON Validator vertical slice exist in source.
+
+P06R remediation has implemented the local verification workflow, static build-output checks, browser E2E coverage, explicit category route ownership, tool presentation invariants, typed tool module registration, localized accessibility fixes, indexed content queries, and repository hygiene updates. The local phase gate is `npm run verify`; remote GitHub Actions confirmation is recorded in `specs/P06R-VERIFICATION-REPORT.md` when observable.
+
+P07 remains blocked until the P06R gate is complete. P07 must build on the corrected contracts and must not reintroduce implicit category routing, generic untyped tool wiring, or silent locale fallback.
+
+## Canonical JSON Validator Routes
+
+These routes are canonical and must remain unchanged:
+
+```text
+/developer/json-validator/
+/es/desarrollo/validador-json/
+/pt/desenvolvedor/validador-json/
+/fr/developpement/validateur-json/
+```
+
+English is intentionally unprefixed. `/en/developer/json-validator/` is forbidden output and is covered by build tests.
+
+## Architecture Entry Points
+
+- `src/i18n/config.ts` defines supported locales, prefixes, and locale display metadata.
+- `src/domain/taxonomy/` owns immutable taxonomy trees and selectors.
+- `src/content.config.ts` defines Astro content collections and schemas.
+- `src/content/queries/` owns published-content lookup, exact-match semantics, ambiguity errors, and build-time indexes.
+- `src/routing/` owns route targets, localized path builders, explicit route providers, route registry construction, collision validation, and resolvers.
+- `src/templates/` owns page model composition and Astro templates. `src/views/` is prohibited.
+- `src/features/tools/` owns tool modules, typed tool registration, feature components, engines, and localized feature messages.
+
+Taxonomy nodes do not automatically receive public category URLs. Category pages require explicit route definitions plus published content availability.
+
+## Adding a Tool
+
+Adding a production tool requires all of the following:
+
+- a typed tool module in `src/features/tools/`;
+- localized tool messages for every supported locale;
+- tool content entries and any required category content entries;
+- explicit route definitions for every public URL;
+- registry coverage for module, component, messages, and presentation identity;
+- unit, integration, build, and browser coverage appropriate to the feature.
+
+Published content queries must not silently fall back to another locale. Missing localized content is either `null` or a `ContentNotFoundError` for required APIs; duplicate exact matches remain `AmbiguousContentError`.
+
+## Client Privacy
+
+The JSON Validator core actions run locally in the browser. Browser tests verify that validate, format, minify, clear, and copy workflows make zero application network requests during core actions.
+
+This statement applies to the current JSON Validator implementation only. Future tools must document and test their own network behavior.
 
 ## Runtime
 
 Use Node.js 24. The canonical project version is defined in `.nvmrc`, and CI reads that file through `actions/setup-node`.
 
-## Commands
+## Verification Commands
 
 Run commands from the project root:
 
@@ -18,18 +70,14 @@ Run commands from the project root:
 | `npm run test:unit` | Run unit tests |
 | `npm run test:integration` | Prepare the Astro content store and run integration tests |
 | `npm run test` | Run unit and integration tests |
-| `npm run test:build` | Build the site and run static output smoke tests |
-| `npm run test:e2e` | Run Playwright browser tests against the existing production build |
-| `npm run verify` | Run the full local verification workflow |
+| `npm run test:build` | Build the site and run static output tests against `./dist/` |
+| `npm run test:e2e` | Run Playwright browser tests against the production build |
+| `npm run verify` | Run `check`, `test`, `test:build`, and `test:e2e` |
 | `npm run build` | Build the static site to `./dist/` |
 | `npm run preview` | Preview the production build |
 | `npm run astro -- --help` | Show Astro CLI help |
 
-## Verification Gate
-
-GitHub Actions runs the `Verify` workflow for pushes and pull requests targeting `main`.
-
-The local equivalent is:
+Local phase-gate verification:
 
 ```sh
 npm ci
@@ -37,9 +85,13 @@ npx playwright install chromium
 npm run verify
 ```
 
-`npm run verify` runs `test:build` before `test:e2e`, so local browser tests use the production output already emitted to `./dist/`. CI uses `npx playwright install --with-deps chromium` before running the same verification command.
+CI uses `npx playwright install --with-deps chromium` before `npm run verify`.
 
-The `Verify / verify` check is expected to be configured as a required check before merging to `main`. Branch protection and ruleset settings are stored in GitHub repository settings, not in this repository; this change adds the workflow, but manual GitHub settings configuration still needs to be confirmed.
+## Verification Gate
+
+GitHub Actions runs the `Verify` workflow for pushes and pull requests targeting `main`.
+
+`npm run verify` runs `test:build` before `test:e2e`, so local browser tests use the production output already emitted to `./dist/`. The `Verify / verify` check is expected to be configured as a required check before merging to `main`; branch protection and ruleset settings live in GitHub repository settings.
 
 ## Source Boundaries
 
@@ -60,7 +112,7 @@ src/
 `-- styles/
 ```
 
-`src/templates/` is the page-composition namespace. `src/views/` is prohibited.
+`src/components/`, `src/services/`, and `src/server/` are currently empty reserved boundaries and retain `.gitkeep` markers intentionally. Populated boundaries must not keep stale `.gitkeep` files.
 
 ## TypeScript Conventions
 
@@ -70,7 +122,3 @@ src/
 - Cross-boundary imports should use `@/...`, not deep relative traversal.
 - Explicit `any` is exceptional and should be narrowly justified.
 - Test code follows the same TypeScript baseline where practical.
-
-## Architecture Scope
-
-P00 reserves the project shell only. Domain contracts, taxonomy, routing registries, localized content, templates, and feature implementations are introduced by later phases.
