@@ -1,14 +1,14 @@
 # Implementation Status Ledger
 
-> Last updated: 2026-07-16  
+> Last updated: 2026-07-17  
 > Repository: `IsraRomeroG/4all.tools`  
-> Implementation reference: working tree based on `897fd656068d54d6534bd658ff86c043570cd5b0`
+> Implementation reference: P06R-F verified commit `60bf9eb812adc19f4f3965fc6b01f4f436dda935`
 
 This ledger records implementation state without rewriting historical task specs. Some historical P06 task files still carry `Blocked` metadata because their original dependency order was written before the vertical slice existed in this repository; the implementation state below is the current repository truth.
 
 ## Verification Status
 
-The local verification gate is `npm run verify`. The P06R closure report records the latest command result and CI observability.
+The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. The GitHub Actions `Verify` workflow completed successfully for final commit `60bf9eb812adc19f4f3965fc6b01f4f436dda935` after push.
 
 ## P00-P06
 
@@ -63,3 +63,11 @@ The local verification gate is `npm run verify`. The P06R closure report records
 | P06R-T07 | Working tree based on `897fd656068d54d6534bd658ff86c043570cd5b0` | Covered by `npm run verify` | Accessibility labels, language quality, deterministic IDs, and visible stable ID fixes exist. |
 | P06R-T08 | Working tree based on `897fd656068d54d6534bd658ff86c043570cd5b0` | Covered by `npm run verify` | Published content indexes avoid repeated collection scans and preserve ambiguity semantics. |
 | P06R-T09 | Working tree based on `897fd656068d54d6534bd658ff86c043570cd5b0` | `npm.cmd run verify` passed on 2026-07-16 | Repository hygiene, README, agent docs, status ledger, and verification report. |
+
+## P06R-F
+
+| Task ID | Implementation reference | Verification status | Notes |
+|---|---|---|---|
+| P06R-F-T01 | Commit `60bf9eb812adc19f4f3965fc6b01f4f436dda935` | `npm.cmd run verify` passed locally; GitHub Actions `Verify` passed after push | Delivery routing consumes `getPublishedContentIndexes()` and shares the same production/build published-content snapshot as content query APIs. |
+| P06R-F-T02 | Commit `60bf9eb812adc19f4f3965fc6b01f4f436dda935` | `npm.cmd run verify` passed locally; GitHub Actions `Verify` passed after push | Delivery route-registry access remains memoized in production/build and reconstructs in development so content-derived route availability can refresh. |
+| P06R-F-T03 | Commit `60bf9eb812adc19f4f3965fc6b01f4f436dda935` | `npm.cmd ci`, `npm.cmd run verify`, and GitHub Actions `Verify` passed on 2026-07-17 | Lifecycle regression coverage proves source-load counts, shared routing/query snapshot use, DEV freshness, production stability, concurrent production memoization, and failed DEV recovery. |

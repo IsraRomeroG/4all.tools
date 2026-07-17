@@ -6,9 +6,9 @@ Astro static site for localized web tools.
 
 P00-P06 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, and the first JSON Validator vertical slice exist in source.
 
-P06R remediation has implemented the local verification workflow, static build-output checks, browser E2E coverage, explicit category route ownership, tool presentation invariants, typed tool module registration, localized accessibility fixes, indexed content queries, and repository hygiene updates. The local phase gate is `npm run verify`; remote GitHub Actions confirmation is recorded in `specs/P06R-VERIFICATION-REPORT.md` when observable.
+P06R remediation has implemented the local verification workflow, static build-output checks, browser E2E coverage, explicit category route ownership, tool presentation invariants, typed tool module registration, localized accessibility fixes, indexed content queries, repository hygiene updates, and P06R-F content-index lifecycle closure. P06R-F is verified on commit `60bf9eb812adc19f4f3965fc6b01f4f436dda935`; the GitHub Actions `Verify` workflow completed successfully for that pushed commit.
 
-P07 remains blocked until the P06R gate is complete. P07 must build on the corrected contracts and must not reintroduce implicit category routing, generic untyped tool wiring, or silent locale fallback.
+P07 may build on the corrected contracts and must not reintroduce implicit category routing, generic untyped tool wiring, stale content-derived route registries, duplicate published-content snapshots, or silent locale fallback.
 
 ## Canonical JSON Validator Routes
 
@@ -47,6 +47,8 @@ Adding a production tool requires all of the following:
 - unit, integration, build, and browser coverage appropriate to the feature.
 
 Published content queries must not silently fall back to another locale. Missing localized content is either `null` or a `ContentNotFoundError` for required APIs; duplicate exact matches remain `AmbiguousContentError`.
+
+Production and static-build route composition shares the same memoized published-content snapshot used by content query APIs. Development route-registry access reconstructs from the current content snapshot so newly published localized content can affect route availability without a process restart.
 
 ## Client Privacy
 
