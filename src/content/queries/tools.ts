@@ -3,9 +3,8 @@ import type { CollectionEntry } from 'astro:content';
 import type { ToolId } from '@/domain/shared/ids';
 import type { Locale } from '@/i18n/types';
 
-import { getCollection } from './astro-content';
 import { ContentNotFoundError, type ContentQueryContext } from './errors';
-import { resolveExactMatch } from './shared';
+import { getPublishedContentIndexes } from './indexed-content-source';
 
 export type ToolContentEntry = CollectionEntry<'tools'>;
 
@@ -23,22 +22,17 @@ export async function getPublishedToolContent(
   toolId: ToolId,
   locale: Locale,
 ): Promise<ToolContentEntry | null> {
-  const matches = await getCollection(
-    'tools',
-    ({ data }) =>
-      data.toolId === toolId &&
-      data.locale === locale &&
-      data.status === 'published',
-  );
+  const indexes = await getPublishedContentIndexes();
 
-  return resolveExactMatch(matches, toolContext(toolId, locale));
+  return indexes.tools.find({ toolId, locale });
 }
 
 export async function requirePublishedToolContent(
   toolId: ToolId,
   locale: Locale,
 ): Promise<ToolContentEntry> {
-  const entry = await getPublishedToolContent(toolId, locale);
+  const indexes = await getPublishedContentIndexes();
+  const entry = indexes.tools.find({ toolId, locale });
 
   if (entry === null) {
     throw new ContentNotFoundError(toolContext(toolId, locale));

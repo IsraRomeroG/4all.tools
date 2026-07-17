@@ -3,9 +3,8 @@ import type { CollectionEntry } from 'astro:content';
 import type { ArticleId } from '@/domain/shared/ids';
 import type { Locale } from '@/i18n/types';
 
-import { getCollection } from './astro-content';
 import { ContentNotFoundError, type ContentQueryContext } from './errors';
-import { resolveExactMatch } from './shared';
+import { getPublishedContentIndexes } from './indexed-content-source';
 
 export type ArticleContentEntry = CollectionEntry<'blog'>;
 
@@ -23,22 +22,17 @@ export async function getPublishedArticleContent(
   articleId: ArticleId,
   locale: Locale,
 ): Promise<ArticleContentEntry | null> {
-  const matches = await getCollection(
-    'blog',
-    ({ data }) =>
-      data.articleId === articleId &&
-      data.locale === locale &&
-      data.status === 'published',
-  );
+  const indexes = await getPublishedContentIndexes();
 
-  return resolveExactMatch(matches, articleContext(articleId, locale));
+  return indexes.blog.find({ articleId, locale });
 }
 
 export async function requirePublishedArticleContent(
   articleId: ArticleId,
   locale: Locale,
 ): Promise<ArticleContentEntry> {
-  const entry = await getPublishedArticleContent(articleId, locale);
+  const indexes = await getPublishedContentIndexes();
+  const entry = indexes.blog.find({ articleId, locale });
 
   if (entry === null) {
     throw new ContentNotFoundError(articleContext(articleId, locale));

@@ -25,3 +25,16 @@ export {
   requirePublishedToolCategoryContent,
   type ToolCategoryContentEntry,
 } from './tool-categories';
+export {
+  createPublishedContentIndexes,
+  getPublishedContentIndexes,
+  resetPublishedContentIndexesForTesting,
+  type BlogCategoryContentKey,
+  type ArticleContentKey,
+  type ContentCollectionSource,
+  type ContentIndex,
+  type PublishedContentIndexes,
+  type ToolCategoryContentKey,
+  type ToolContentKey,
+} from './indexed-content-source';
+export { createIndexedPublicationAvailability } from './indexed-publication-availability';

@@ -1,4 +1,4 @@
-import { access, readFile } from 'node:fs/promises';
+import { access, readdir, readFile } from 'node:fs/promises';
 
 import { describe, expect, it } from 'vitest';
 
@@ -123,6 +123,15 @@ describe('static build output', () => {
       await expectDistFileMissing(relativeFile);
     });
   }
+
+  it('does not include the server-side content index in client bundles', async () => {
+    const clientBundle = await readClientJavaScriptBundle();
+
+    expect(clientBundle).not.toContain('createPublishedContentIndexes');
+    expect(clientBundle).not.toContain('PublishedContentIndexes');
+    expect(clientBundle).not.toContain('indexed-content-source');
+    expect(clientBundle).not.toContain('matchedEntryIds');
+  });
 });
 
 async function readDistFile(relativeFile: string): Promise<string> {
@@ -154,6 +163,18 @@ async function expectDistFileMissing(relativeFile: string): Promise<void> {
 
 function toDistUrl(relativeFile: string): URL {
   return new URL(relativeFile, DIST_ROOT);
+}
+
+async function readClientJavaScriptBundle(): Promise<string> {
+  const assetRoot = new URL('_astro/', DIST_ROOT);
+  const assetFiles = await readdir(assetRoot);
+  const scripts = await Promise.all(
+    assetFiles
+      .filter((file) => file.endsWith('.js'))
+      .map((file) => readFile(new URL(file, assetRoot), 'utf8')),
+  );
+
+  return scripts.join('\n');
 }
 
 function isMissingFileError(error: unknown): boolean {

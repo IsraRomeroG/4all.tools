@@ -13,6 +13,7 @@ import {
   ContentNotFoundError,
   getPublishedArticleContent,
   getPublishedBlogCategoryContent,
+  resetPublishedContentIndexesForTesting,
   requirePublishedArticleContent,
 } from '@/content/queries';
 
@@ -41,6 +42,8 @@ function mutableCollection(name: string): TestEntry[] {
 
 describe('blog content query services', () => {
   beforeEach(() => {
+    resetPublishedContentIndexesForTesting();
+
     collections = {
       blog: [
         entry('blog/en/development/what-is-json', {

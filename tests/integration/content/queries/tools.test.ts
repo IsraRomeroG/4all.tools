@@ -11,6 +11,7 @@ vi.mock('@/content/queries/astro-content', () => ({
 import {
   AmbiguousContentError,
   ContentNotFoundError,
+  resetPublishedContentIndexesForTesting,
   getPublishedBlogCategoryContent,
   getPublishedToolCategoryContent,
   getPublishedToolContent,
@@ -42,6 +43,8 @@ function mutableCollection(name: string): TestEntry[] {
 
 describe('tool content query services', () => {
   beforeEach(() => {
+    resetPublishedContentIndexesForTesting();
+
     collections = {
       tools: [
         entry('tools/en/developer/json-validator', {
@@ -154,6 +157,22 @@ describe('tool content query services', () => {
   it('filters drafts before resolving published cardinality', async () => {
     await expect(getPublishedToolContent('json-validator', 'es')).resolves.toMatchObject({
       id: 'tools/es/developer/json-validator',
+    });
+  });
+
+  it('rebuilds default indexes in dev/test so content changes are visible', async () => {
+    await expect(getPublishedToolContent('new-tool', 'en')).resolves.toBeNull();
+
+    mutableCollection('tools').push(
+      entry('tools/en/developer/new-tool', {
+        toolId: 'new-tool',
+        locale: 'en',
+        status: 'published',
+      }),
+    );
+
+    await expect(getPublishedToolContent('new-tool', 'en')).resolves.toMatchObject({
+      id: 'tools/en/developer/new-tool',
     });
   });
 
