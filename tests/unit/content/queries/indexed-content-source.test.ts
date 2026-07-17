@@ -1,16 +1,32 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+const mocks = vi.hoisted(() => ({
+  getCollection: vi.fn(),
+}));
+
+vi.mock('@/content/queries/astro-content', () => ({
+  getCollection: mocks.getCollection,
+}));
 
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { createIndexedPublicationAvailability } from '@/content/queries/indexed-publication-availability';
 import {
   createPublishedContentIndexes,
+  getPublishedContentIndexes,
+  resetPublishedContentIndexesForTesting,
   type ContentCollectionSource,
 } from '@/content/queries/indexed-content-source';
 import { AmbiguousContentError } from '@/content/queries/errors';
 import { createRouteRegistry } from '@/routing/registry';
 import { toolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
 import { toolRouteProvider } from '@/routing/providers/tool-route-provider';
+
+afterEach(() => {
+  resetPublishedContentIndexesForTesting();
+  vi.unstubAllEnvs();
+  mocks.getCollection.mockReset();
+});
 
 describe('published content indexes', () => {
   it('preserves exact-match semantics for zero, one, and duplicate entries', async () => {
@@ -132,6 +148,31 @@ describe('published content indexes', () => {
     expect(source.getCollection).toHaveBeenCalledWith('blogCategories');
   });
 
+  it('memoizes the default accessor outside DEV', async () => {
+    vi.stubEnv('DEV', false);
+    mockAstroCollections({
+      tools: [
+        entry('tools/en/developer/json-validator', {
+          toolId: 'json-validator',
+          locale: 'en',
+          status: 'published',
+        }),
+      ],
+    });
+
+    const firstPromise = getPublishedContentIndexes();
+    const secondPromise = getPublishedContentIndexes();
+    const [firstIndexes, secondIndexes] = await Promise.all([
+      firstPromise,
+      secondPromise,
+    ]);
+
+    expect(secondPromise).toBe(firstPromise);
+    expect(secondIndexes).toBe(firstIndexes);
+    expect(mocks.getCollection.mock.calls.map(([collection]) => collection))
+      .toEqual(['tools', 'toolCategories', 'blog', 'blogCategories']);
+  });
+
   it('uses prepared indexes for route publication without repeated source loads', async () => {
     const source = contentSource({
       tools: [
@@ -203,6 +244,12 @@ function contentSource(fixtures: CollectionFixtures = {}): ContentCollectionSour
   return {
     getCollection,
   };
+}
+
+function mockAstroCollections(fixtures: CollectionFixtures): void {
+  const source = contentSource(fixtures);
+
+  mocks.getCollection.mockImplementation(source.getCollection);
 }
 
 function entry(id: string, data: Record<string, unknown>) {
