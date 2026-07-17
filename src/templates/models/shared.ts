@@ -1,5 +1,5 @@
 import type { MarkdownHeading } from 'astro';
-import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+import type { RenderResult } from 'astro:content';
 
 import type {
   ArticleId,
@@ -21,7 +21,7 @@ export interface PageDocumentModel {
 }
 
 export interface RenderedContentModel {
-  readonly Content: AstroComponentFactory;
+  readonly Content: RenderResult['Content'];
   readonly headings: readonly MarkdownHeading[];
 }
 

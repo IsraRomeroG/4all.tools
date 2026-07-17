@@ -22,6 +22,7 @@ import {
   getAllToolDefinitions,
   getToolDefinition,
 } from '@/features/tools/registry';
+import { getToolModule } from '@/features/tools/module-registry';
 
 const PROJECT_ROOT = new URL('../../../../', import.meta.url);
 
@@ -64,6 +65,9 @@ describe('tool feature registry', () => {
     expect(Object.keys(TOOL_DEFINITIONS)).toEqual(['json-validator']);
     expect(findToolDefinition('json-validator')).toBe(jsonValidatorDefinition);
     expect(getToolDefinition('json-validator')).toBe(jsonValidatorDefinition);
+    expect(getToolDefinition('json-validator')).toBe(
+      getToolModule('json-validator').definition,
+    );
     expect(findToolDefinition('missing-tool')).toBeNull();
     expect(() => getToolDefinition('missing-tool')).toThrow(
       UnknownToolDefinitionError,

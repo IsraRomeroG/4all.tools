@@ -1,13 +1,12 @@
 import type { ToolId } from '@/domain/shared/ids';
 import type { Locale } from '@/i18n/types';
-import { getJsonValidatorMessages } from '@/features/tools/developer/json-validator/messages/registry';
-import { JSON_VALIDATOR_TOOL_ID } from '@/features/tools/developer/json-validator/types';
+import {
+  findToolModule,
+  type ToolMessageDictionary,
+  type ToolMessageProvider,
+} from '@/features/tools/module-registry';
 
-export type ToolMessageDictionary = Readonly<object>;
-
-export interface ToolMessageProvider<TMessages extends ToolMessageDictionary> {
-  getMessages(locale: Locale): TMessages | null;
-}
+export type { ToolMessageDictionary, ToolMessageProvider };
 
 export class MissingToolMessagesError extends Error {
   readonly toolId: ToolId;
@@ -25,23 +24,11 @@ export class MissingToolMessagesError extends Error {
   }
 }
 
-const TOOL_MESSAGE_PROVIDERS = {
-  [JSON_VALIDATOR_TOOL_ID]: {
-    getMessages: getJsonValidatorMessages,
-  },
-} as const satisfies Readonly<
-  Record<ToolId, ToolMessageProvider<ToolMessageDictionary>>
->;
-
-const TOOL_MESSAGE_PROVIDER_LOOKUP: Readonly<
-  Record<ToolId, ToolMessageProvider<ToolMessageDictionary>>
-> = TOOL_MESSAGE_PROVIDERS;
-
 export function getToolMessages(
   toolId: ToolId,
   locale: Locale,
 ): ToolMessageDictionary | null {
-  return TOOL_MESSAGE_PROVIDER_LOOKUP[toolId]?.getMessages(locale) ?? null;
+  return findToolModule(toolId)?.getMessages(locale) ?? null;
 }
 
 export function requireToolMessages(

@@ -1,151 +1,50 @@
-import { assertStableEntityId } from '@/domain/shared/ids';
-import type { ToolCategoryId, ToolId } from '@/domain/shared/ids';
-import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
-import type { TaxonomyTree } from '@/domain/taxonomy/shared/types';
+import type { ToolId } from '@/domain/shared/ids';
 import type { ToolDefinition } from '@/domain/tools';
-import { jsonValidatorDefinition } from '@/features/tools/developer/json-validator/tool.config';
 
-export class UnknownToolDefinitionError extends Error {
-  readonly toolId: ToolId;
+export {
+  DuplicateToolDefinitionError,
+  ToolTaxonomyMismatchError,
+  UnknownToolDefinitionError,
+  createToolRegistry,
+  type CreateToolRegistryOptions,
+  type ToolDefinitionRegistry,
+} from './definition-registry';
+import { UnknownToolDefinitionError } from './definition-registry';
+import {
+  TOOL_MODULES,
+  findToolModule,
+  getAllToolModules,
+  type RegisteredToolId,
+} from './module-registry';
 
-  constructor(toolId: ToolId) {
-    super(`Unknown tool definition ${JSON.stringify(toolId)}.`);
-    this.name = 'UnknownToolDefinitionError';
-    this.toolId = toolId;
-  }
-}
+export type { RegisteredToolId };
 
-export class DuplicateToolDefinitionError extends Error {
-  readonly toolId: ToolId;
-
-  constructor(toolId: ToolId) {
-    super(`Duplicate tool definition for stable ID ${JSON.stringify(toolId)}.`);
-    this.name = 'DuplicateToolDefinitionError';
-    this.toolId = toolId;
-  }
-}
-
-export class ToolTaxonomyMismatchError extends Error {
-  readonly toolId: ToolId;
-  readonly rootCategoryId: ToolCategoryId;
-  readonly primaryCategoryId: ToolCategoryId;
-  readonly actualRootCategoryId: ToolCategoryId;
-
-  constructor(params: {
-    readonly toolId: ToolId;
-    readonly rootCategoryId: ToolCategoryId;
-    readonly primaryCategoryId: ToolCategoryId;
-    readonly actualRootCategoryId: ToolCategoryId;
-  }) {
-    super(
-      `Tool ${JSON.stringify(params.toolId)} declares root category ` +
-        `${JSON.stringify(params.rootCategoryId)}, but primary category ` +
-        `${JSON.stringify(params.primaryCategoryId)} belongs to root ` +
-        `${JSON.stringify(params.actualRootCategoryId)}.`,
-    );
-    this.name = 'ToolTaxonomyMismatchError';
-    this.toolId = params.toolId;
-    this.rootCategoryId = params.rootCategoryId;
-    this.primaryCategoryId = params.primaryCategoryId;
-    this.actualRootCategoryId = params.actualRootCategoryId;
-  }
-}
-
-export interface ToolDefinitionRegistry {
-  readonly definitions: Readonly<Record<ToolId, ToolDefinition>>;
-  findToolDefinition(toolId: ToolId): ToolDefinition | null;
-  getToolDefinition(toolId: ToolId): ToolDefinition;
-  getAllToolDefinitions(): readonly ToolDefinition[];
-}
-
-export interface CreateToolRegistryOptions {
-  readonly taxonomy?: TaxonomyTree<ToolCategoryId>;
-}
-
-export const TOOL_DEFINITIONS = {
-  [jsonValidatorDefinition.id]: jsonValidatorDefinition,
-} as const;
-
-export type RegisteredToolId = keyof typeof TOOL_DEFINITIONS;
-
-const productionToolRegistry = createToolRegistry(
-  Object.values(TOOL_DEFINITIONS),
+export const TOOL_DEFINITIONS = Object.freeze(
+  Object.fromEntries(
+    Object.entries(TOOL_MODULES).map(([toolId, module]) => [
+      toolId,
+      module.definition,
+    ]),
+  ) as Record<ToolId, ToolDefinition>,
+);
+const ALL_TOOL_DEFINITIONS = Object.freeze(
+  getAllToolModules().map((module) => module.definition),
 );
 
-export const findToolDefinition =
-  productionToolRegistry.findToolDefinition;
-export const getToolDefinition = productionToolRegistry.getToolDefinition;
-export const getAllToolDefinitions =
-  productionToolRegistry.getAllToolDefinitions;
-
-export function createToolRegistry(
-  definitions: readonly ToolDefinition[],
-  options: CreateToolRegistryOptions = {},
-): ToolDefinitionRegistry {
-  const taxonomy = options.taxonomy ?? toolTaxonomy;
-  const definitionsById = new Map<ToolId, ToolDefinition>();
-
-  for (const definition of definitions) {
-    validateToolDefinition(definition, taxonomy);
-
-    if (definitionsById.has(definition.id)) {
-      throw new DuplicateToolDefinitionError(definition.id);
-    }
-
-    definitionsById.set(definition.id, definition);
-  }
-
-  const orderedDefinitions = Object.freeze(
-    [...definitionsById.values()].sort(compareToolDefinitions),
-  );
-  const definitionRecord = Object.freeze(
-    Object.fromEntries(
-      orderedDefinitions.map((definition) => [definition.id, definition]),
-    ) as Record<ToolId, ToolDefinition>,
-  );
-
-  return Object.freeze({
-    definitions: definitionRecord,
-    findToolDefinition: (toolId: ToolId) =>
-      definitionsById.get(toolId) ?? null,
-    getToolDefinition: (toolId: ToolId) => {
-      const definition = definitionsById.get(toolId);
-
-      if (!definition) {
-        throw new UnknownToolDefinitionError(toolId);
-      }
-
-      return definition;
-    },
-    getAllToolDefinitions: () => orderedDefinitions,
-  });
+export function findToolDefinition(toolId: ToolId): ToolDefinition | null {
+  return findToolModule(toolId)?.definition ?? null;
 }
 
-function validateToolDefinition(
-  definition: ToolDefinition,
-  taxonomy: TaxonomyTree<ToolCategoryId>,
-): void {
-  assertStableEntityId(definition.id);
-  assertStableEntityId(definition.rootCategoryId);
-  assertStableEntityId(definition.taxonomy.primaryCategoryId);
+export function getToolDefinition(toolId: ToolId): ToolDefinition {
+  const module = findToolModule(toolId);
 
-  const actualRootCategoryId = taxonomy.getRoot(
-    definition.taxonomy.primaryCategoryId,
-  ).id;
-
-  if (actualRootCategoryId !== definition.rootCategoryId) {
-    throw new ToolTaxonomyMismatchError({
-      toolId: definition.id,
-      rootCategoryId: definition.rootCategoryId,
-      primaryCategoryId: definition.taxonomy.primaryCategoryId,
-      actualRootCategoryId,
-    });
+  if (!module) {
+    throw new UnknownToolDefinitionError(toolId);
   }
+
+  return module.definition;
 }
 
-function compareToolDefinitions(
-  first: ToolDefinition,
-  second: ToolDefinition,
-): number {
-  return first.id < second.id ? -1 : first.id > second.id ? 1 : 0;
+export function getAllToolDefinitions(): readonly ToolDefinition[] {
+  return ALL_TOOL_DEFINITIONS;
 }

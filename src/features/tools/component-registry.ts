@@ -1,10 +1,12 @@
-import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
-
 import type { ToolId } from '@/domain/shared/ids';
-import JsonValidatorTool from '@/features/tools/developer/json-validator/Tool.astro';
-import { JSON_VALIDATOR_TOOL_ID } from '@/features/tools/developer/json-validator/types';
+import {
+  findToolModule,
+  getToolModule,
+  MissingToolModuleError,
+  type RegisteredToolModule,
+} from '@/features/tools/module-registry';
 
-export type ToolComponent = AstroComponentFactory;
+export type ToolComponent = RegisteredToolModule['component'];
 
 export class MissingToolComponentError extends Error {
   readonly toolId: ToolId;
@@ -16,23 +18,18 @@ export class MissingToolComponentError extends Error {
   }
 }
 
-export const TOOL_COMPONENTS = {
-  [JSON_VALIDATOR_TOOL_ID]: JsonValidatorTool,
-} as const satisfies Readonly<Record<ToolId, ToolComponent>>;
-
-const TOOL_COMPONENT_LOOKUP: Readonly<Record<ToolId, ToolComponent>> =
-  TOOL_COMPONENTS;
-
 export function hasToolComponent(toolId: ToolId): boolean {
-  return Object.hasOwn(TOOL_COMPONENT_LOOKUP, toolId);
+  return findToolModule(toolId)?.component !== undefined;
 }
 
 export function getToolComponent(toolId: ToolId): ToolComponent {
-  const component = TOOL_COMPONENT_LOOKUP[toolId];
+  try {
+    return getToolModule(toolId).component;
+  } catch (error) {
+    if (!(error instanceof MissingToolModuleError)) {
+      throw error;
+    }
 
-  if (!component) {
     throw new MissingToolComponentError(toolId);
   }
-
-  return component;
 }

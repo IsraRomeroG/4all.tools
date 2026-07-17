@@ -1,6 +1,5 @@
 import { readFile } from 'node:fs/promises';
 
-import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { ToolCategoryId, ToolId } from '@/domain/shared/ids';
@@ -354,7 +353,7 @@ describe('page model composers', () => {
 });
 
 const fixtureRenderContent: RenderContent = async () => ({
-  Content: FixtureContent as AstroComponentFactory,
+  Content: FixtureContent,
   headings: [],
 });
 

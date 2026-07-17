@@ -1,6 +1,5 @@
 ---
-import { getToolComponent } from '@/features/tools/component-registry';
-import { requireToolMessages } from '@/features/tools/message-registry';
+import { getToolModule } from '@/features/tools/module-registry';
 import ToolLayout from '@/layouts/ToolLayout.astro';
 import type { ToolPageModel } from './models/tool';
 
@@ -14,8 +13,9 @@ const layoutProps =
     ? { locale: page.locale }
     : { locale: page.locale, documentTitle: page.documentTitle };
 const EditorialContent = page.content.editorial.Content;
-const ToolComponent = getToolComponent(page.toolId);
-const toolMessages = requireToolMessages(page.toolId, page.locale);
+const toolModule = getToolModule(page.toolId);
+const ToolComponent = toolModule.component;
+const toolMessages = toolModule.getMessages(page.locale);
 const toolInstanceId = `tool-${page.toolId}-${page.locale}`;
 ---
 
