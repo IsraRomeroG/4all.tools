@@ -1,0 +1,50 @@
+---
+import { serializeRobots } from '@/seo';
+import type { SeoPageModel } from '@/seo/types';
+
+interface Props {
+  seo: SeoPageModel;
+}
+
+const { seo } = Astro.props;
+const robots = serializeRobots(seo.robots);
+const image = seo.openGraph.image;
+---
+
+<title>{seo.title}</title>
+<meta name="description" content={seo.description} />
+<meta name="robots" content={robots} />
+<link rel="canonical" href={seo.canonicalUrl} />
+{
+  seo.alternates.map((alternate) => (
+    <link
+      rel="alternate"
+      hreflang={alternate.hrefLang}
+      href={alternate.url}
+    />
+  ))
+}
+{
+  seo.xDefaultUrl && (
+    <link rel="alternate" hreflang="x-default" href={seo.xDefaultUrl} />
+  )
+}
+<meta property="og:title" content={seo.openGraph.title} />
+<meta property="og:description" content={seo.openGraph.description} />
+<meta property="og:type" content={seo.openGraph.type} />
+<meta property="og:url" content={seo.openGraph.url} />
+<meta property="og:site_name" content={seo.openGraph.siteName} />
+{
+  image && (
+    <>
+      <meta property="og:image" content={image.url} />
+      <meta property="og:image:alt" content={image.alt} />
+      {image.width !== undefined && (
+        <meta property="og:image:width" content={String(image.width)} />
+      )}
+      {image.height !== undefined && (
+        <meta property="og:image:height" content={String(image.height)} />
+      )}
+    </>
+  )
+}

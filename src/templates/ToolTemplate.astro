@@ -1,5 +1,6 @@
 ---
 import { getToolModule } from '@/features/tools/module-registry';
+import SeoHead from '@/components/seo/SeoHead.astro';
 import ToolLayout from '@/layouts/ToolLayout.astro';
 import type { ToolPageModel } from './models/tool';
 
@@ -8,10 +9,6 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const layoutProps =
-  page.documentTitle === undefined
-    ? { locale: page.locale, workspaceLabel: page.messages.sections.toolWorkspace }
-    : { locale: page.locale, documentTitle: page.documentTitle, workspaceLabel: page.messages.sections.toolWorkspace };
 const EditorialContent = page.content.editorial.Content;
 const toolModule = getToolModule(page.toolId);
 const ToolComponent = toolModule.component;
@@ -19,8 +16,11 @@ const toolMessages = toolModule.getMessages(page.locale);
 const toolInstanceId = `tool-${page.toolId}-${page.locale}`;
 ---
 
-<ToolLayout {...layoutProps}>
-  <slot name="head" slot="head" />
+<ToolLayout locale={page.locale} workspaceLabel={page.messages.sections.toolWorkspace}>
+  <Fragment slot="head">
+    <SeoHead seo={page.seo} />
+    <slot name="head" />
+  </Fragment>
 
   <Fragment slot="page-header">
     <h1 class="text-3xl font-semibold tracking-normal text-slate-950" data-template-identity={page.toolId}>{page.content.title}</h1>

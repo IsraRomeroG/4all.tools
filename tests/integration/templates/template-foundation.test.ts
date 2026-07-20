@@ -10,6 +10,7 @@ import HomeTemplate from '@/templates/HomeTemplate.astro';
 import ToolTemplate from '@/templates/ToolTemplate.astro';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
+import { createSeoPageModel } from '@/seo';
 
 import FixtureContent from '../../fixtures/templates/FixtureContent.astro';
 
@@ -54,6 +55,11 @@ describe('template foundation', () => {
             },
           }),
           documentTitle: 'Documento de herramienta',
+          seo: seo({
+            title: 'Documento de herramienta',
+            description: 'Valida documentos JSON desde un modelo preparado.',
+            canonicalUrl: 'https://4all.tools/es/desarrollo/validador-json/',
+          }),
           toolId: 'json-validator',
           title: 'Validador JSON',
           description: 'Valida documentos JSON desde un modelo preparado.',
@@ -105,6 +111,11 @@ describe('template foundation', () => {
               toolId: 'json-validator',
             },
           }),
+          seo: seo({
+            title: 'JSON Validator',
+            description: 'Validate JSON.',
+            canonicalUrl: 'https://4all.tools/developer/json-validator/',
+          }),
           toolId: 'json-validator',
           title: 'JSON Validator',
           messages: getGlobalMessages('en'),
@@ -153,6 +164,11 @@ describe('template foundation', () => {
             },
           }),
           documentTitle: 'Desarrollo',
+          seo: seo({
+            title: 'Desarrollo',
+            description: 'Herramientas para desarrolladores.',
+            canonicalUrl: 'https://4all.tools/es/desarrollo/',
+          }),
           categoryId: 'developer',
           title: 'Desarrollo',
           description: 'Herramientas para desarrolladores.',
@@ -196,6 +212,11 @@ describe('template foundation', () => {
           kind: 'home',
           locale: 'en',
           route: null,
+          seo: seo({
+            title: '4all.tools',
+            description: 'Useful tools for everyday work.',
+            canonicalUrl: 'https://4all.tools/',
+          }),
           title: '4all.tools',
           description: 'Useful tools for everyday work.',
           messages: getGlobalMessages('en'),
@@ -297,4 +318,12 @@ function route(input: {
     target: input.target,
     sourceId: 'fixture:template',
   };
+}
+
+function seo(input: {
+  readonly title: string;
+  readonly description: string;
+  readonly canonicalUrl: string;
+}) {
+  return createSeoPageModel(input);
 }

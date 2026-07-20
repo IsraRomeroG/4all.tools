@@ -20,6 +20,7 @@ import {
   renderContentEntry,
   type RenderContent,
 } from './rendered-content';
+import { composeRouteSeoPageModel } from './seo';
 
 export interface CategoryPageComposerDependencies {
   readonly routeRegistry: Pick<RouteRegistry, 'getCanonical'>;
@@ -86,7 +87,10 @@ export async function composeCategoryPageModel(
     kind: 'tool-category',
     locale,
     route,
-    documentTitle: contentEntry.data.title,
+    seo: composeRouteSeoPageModel({
+      route,
+      seo: contentEntry.data.seo,
+    }),
     title: contentEntry.data.title,
     description: contentEntry.data.description,
     categoryId,

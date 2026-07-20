@@ -5,17 +5,12 @@ import type { Locale } from '@/i18n/types';
 
 interface Props {
   locale: Locale;
-  documentTitle?: string;
 }
 
-const { locale, documentTitle } = Astro.props;
-const baseLayoutProps =
-  documentTitle === undefined
-    ? { locale, mainClass: 'min-h-screen bg-white' }
-    : { locale, documentTitle, mainClass: 'min-h-screen bg-white' };
+const { locale } = Astro.props;
 ---
 
-<BaseLayout {...baseLayoutProps}>
+<BaseLayout locale={locale} mainClass="min-h-screen bg-white">
   <slot name="head" slot="head" />
   <slot name="site-header" slot="site-header" />
   <slot name="site-footer" slot="site-footer" />

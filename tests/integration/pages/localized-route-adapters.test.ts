@@ -19,6 +19,7 @@ import {
 import { createRouteRegistryFromRecords } from '@/routing/registry';
 import type { Locale } from '@/i18n/types';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
+import { createSeoPageModel } from '@/seo';
 
 import FixtureContent from '../../fixtures/templates/FixtureContent.astro';
 
@@ -355,6 +356,14 @@ function fixtureToolModel(locale: Locale): ToolPageModel {
         kind: 'tool',
         toolId: 'json-validator',
       },
+    }),
+    seo: createSeoPageModel({
+      title: 'JSON Validator',
+      description: 'Validate JSON.',
+      canonicalUrl:
+        locale === 'en'
+          ? 'https://4all.tools/fixture/json-validator/'
+          : `https://4all.tools/${locale}/fixture/json-validator/`,
     }),
     toolId: 'json-validator',
     title: 'JSON Validator',

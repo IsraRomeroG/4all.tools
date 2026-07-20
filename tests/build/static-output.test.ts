@@ -11,6 +11,9 @@ interface ExpectedBuiltToolPage {
   readonly relativeFile: string;
   readonly htmlLang: string;
   readonly title: string;
+  readonly seoTitle: string;
+  readonly seoDescription: string;
+  readonly canonicalUrl: string;
   readonly inputLabel: string;
   readonly validateLabel: string;
   readonly editorialMarker: string;
@@ -24,6 +27,9 @@ const EXPECTED_JSON_VALIDATOR_PAGES = [
     relativeFile: 'developer/json-validator/index.html',
     htmlLang: 'en',
     title: 'JSON Validator',
+    seoTitle: 'JSON Validator - Validate JSON Online',
+    seoDescription: 'Validate JSON syntax, find parsing errors, format JSON, and minify JSON directly in your browser.',
+    canonicalUrl: 'https://4all.tools/developer/json-validator/',
     inputLabel: 'Input JSON',
     validateLabel: 'Validate JSON',
     editorialMarker: 'How to use the JSON Validator',
@@ -38,6 +44,9 @@ const EXPECTED_JSON_VALIDATOR_PAGES = [
     relativeFile: 'es/desarrollo/validador-json/index.html',
     htmlLang: 'es',
     title: 'Validador JSON',
+    seoTitle: 'Validador JSON - Validar JSON online',
+    seoDescription: 'Valida la sintaxis JSON, encuentra errores de anÃ¡lisis, formatea JSON y minifica JSON directamente en tu navegador.',
+    canonicalUrl: 'https://4all.tools/es/desarrollo/validador-json/',
     inputLabel: 'JSON de entrada',
     validateLabel: 'Validar JSON',
     editorialMarker: 'Cómo usar el Validador JSON',
@@ -52,6 +61,9 @@ const EXPECTED_JSON_VALIDATOR_PAGES = [
     relativeFile: 'pt/desenvolvedor/validador-json/index.html',
     htmlLang: 'pt',
     title: 'Validador JSON',
+    seoTitle: 'Validador JSON - Validar JSON online',
+    seoDescription: 'Valide a sintaxe JSON, encontre erros de anÃ¡lise, formate JSON e minifique JSON diretamente no navegador.',
+    canonicalUrl: 'https://4all.tools/pt/desenvolvedor/validador-json/',
     inputLabel: 'JSON de entrada',
     validateLabel: 'Validar JSON',
     editorialMarker: 'Como usar o Validador JSON',
@@ -66,6 +78,9 @@ const EXPECTED_JSON_VALIDATOR_PAGES = [
     relativeFile: 'fr/developpement/validateur-json/index.html',
     htmlLang: 'fr',
     title: 'Validateur JSON',
+    seoTitle: 'Validateur JSON - Valider du JSON en ligne',
+    seoDescription: 'Validez la syntaxe JSON, trouvez les erreurs dâ€™analyse, formatez JSON et minifiez du JSON directement dans votre navigateur.',
+    canonicalUrl: 'https://4all.tools/fr/developpement/validateur-json/',
     inputLabel: 'JSON d’entrée',
     validateLabel: 'Valider le JSON',
     editorialMarker: 'Comment utiliser le Validateur JSON',
@@ -101,7 +116,20 @@ describe('static build output', () => {
       const html = await readDistFile(expected.relativeFile);
 
       expect(html).toContain(`<html lang="${expected.htmlLang}"`);
-      expect(html).toContain(`<title>${expected.title}</title>`);
+      expect(html).toContain(`<title>${expected.seoTitle}</title>`);
+      expect(countMatches(html, /<title>/g)).toBe(1);
+      expect(html).toMatch(/<meta name="description" content="[^"]+">/);
+      expect(countMatches(html, /name="description"/g)).toBe(1);
+      expect(html).toContain('<meta name="robots" content="index,follow">');
+      expect(countMatches(html, /name="robots"/g)).toBe(1);
+      expect(html).toContain(
+        `<link rel="canonical" href="${expected.canonicalUrl}">`,
+      );
+      expect(countMatches(html, /rel="canonical"/g)).toBe(1);
+      expect(html).toContain(
+        `<meta property="og:url" content="${expected.canonicalUrl}">`,
+      );
+      expect(html).toMatch(/<meta property="og:description" content="[^"]+">/);
       expect(html).toContain(expected.title);
       expect(html).toContain(expected.inputLabel);
       expect(html).toContain(expected.validateLabel);
@@ -163,6 +191,10 @@ async function expectDistFileMissing(relativeFile: string): Promise<void> {
 
 function toDistUrl(relativeFile: string): URL {
   return new URL(relativeFile, DIST_ROOT);
+}
+
+function countMatches(value: string, pattern: RegExp): number {
+  return value.match(pattern)?.length ?? 0;
 }
 
 async function readClientJavaScriptBundle(): Promise<string> {

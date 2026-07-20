@@ -22,6 +22,7 @@ import {
   renderContentEntry,
   type RenderContent,
 } from './rendered-content';
+import { composeRouteSeoPageModel } from './seo';
 
 export interface ToolPresentationProvider {
   getToolPresentation(
@@ -91,7 +92,10 @@ export async function composeToolPageModel(
     kind: 'tool',
     locale,
     route,
-    documentTitle: contentEntry.data.title,
+    seo: composeRouteSeoPageModel({
+      route,
+      seo: contentEntry.data.seo,
+    }),
     title: contentEntry.data.title,
     description: contentEntry.data.description,
     toolId,

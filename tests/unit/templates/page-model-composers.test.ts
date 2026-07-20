@@ -31,6 +31,7 @@ const COMPOSER_FILES = [
   'src/templates/composers/home.ts',
   'src/templates/composers/tool.ts',
   'src/templates/composers/category.ts',
+  'src/templates/composers/seo.ts',
 ] as const;
 
 describe('page model composers', () => {
@@ -58,6 +59,23 @@ describe('page model composers', () => {
     expect(model.locale).toBe('es');
     expect(model.toolId).toBe('json-validator');
     expect(model.route.segments).toEqual(['desarrollo', 'validador-json']);
+    expect(model.seo).toMatchObject({
+      title: 'Validador JSON',
+      description: 'Valida JSON.',
+      canonicalUrl: 'https://4all.tools/es/desarrollo/validador-json/',
+      robots: {
+        index: true,
+        follow: true,
+      },
+      alternates: [],
+      openGraph: {
+        type: 'website',
+        title: 'Validador JSON',
+        description: 'Valida JSON.',
+        url: 'https://4all.tools/es/desarrollo/validador-json/',
+        siteName: '4all.tools',
+      },
+    });
     expect(model.content.title).toBe('Validador JSON');
     expect(model.presentation).toEqual({
       toolId: 'json-validator',
@@ -236,6 +254,11 @@ describe('page model composers', () => {
     expect(model.kind).toBe('tool-category');
     expect(model.categoryId).toBe('developer');
     expect(model.route.segments).toEqual(['desarrollo']);
+    expect(model.seo.canonicalUrl).toBe('https://4all.tools/es/desarrollo/');
+    expect(model.seo.robots).toEqual({
+      index: true,
+      follow: true,
+    });
     expect(model.category.label).toBe('Herramientas para desarrolladores');
     expect(model.content.title).toBe('Desarrollo');
     expect(model.messages.sections.tools).toBe('Herramientas');
@@ -292,6 +315,14 @@ describe('page model composers', () => {
     expect(model.kind).toBe('home');
     expect(model.locale).toBe('fr');
     expect(model.route).toBeNull();
+    expect(model.seo).toMatchObject({
+      title: '4all.tools',
+      canonicalUrl: 'https://4all.tools/fr/',
+      robots: {
+        index: true,
+        follow: true,
+      },
+    });
     expect(model.messages).toEqual({ marker: 'fr' });
     expect(getGlobalMessages).toHaveBeenCalledWith('fr');
   });
@@ -332,6 +363,12 @@ describe('page model composers', () => {
       'desarrollo/validador-json',
       'desenvolvedor/validador-json',
       'developpement/validateur-json',
+    ]);
+    expect(models.map((model) => model.seo.canonicalUrl)).toEqual([
+      'https://4all.tools/developer/json-validator/',
+      'https://4all.tools/es/desarrollo/validador-json/',
+      'https://4all.tools/pt/desenvolvedor/validador-json/',
+      'https://4all.tools/fr/developpement/validateur-json/',
     ]);
   });
 

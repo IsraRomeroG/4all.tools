@@ -24,6 +24,7 @@ import {
 } from '@/routing/static-paths';
 import { createRouteRegistryFromRecords } from '@/routing/registry';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
+import { createSeoPageModel } from '@/seo';
 
 import FixtureContent from '../../fixtures/templates/FixtureContent.astro';
 
@@ -262,6 +263,11 @@ function fixtureToolModel(): ToolPageModel {
         toolId: 'json-validator',
       },
     }),
+    seo: seo({
+      title: 'JSON Validator',
+      description: 'Validate JSON.',
+      canonicalUrl: 'https://4all.tools/developer/json-validator/',
+    }),
     toolId: 'json-validator',
     title: 'JSON Validator',
     messages: getGlobalMessages('en'),
@@ -293,6 +299,11 @@ function fixtureCategoryModel(): ToolCategoryPageModel {
         categoryId: 'developer',
       },
     }),
+    seo: seo({
+      title: 'Developer Tools',
+      description: 'Developer utilities.',
+      canonicalUrl: 'https://4all.tools/developer/',
+    }),
     categoryId: 'developer',
     title: 'Developer Tools',
     messages: getGlobalMessages('en'),
@@ -308,4 +319,12 @@ function fixtureCategoryModel(): ToolCategoryPageModel {
       },
     },
   };
+}
+
+function seo(input: {
+  readonly title: string;
+  readonly description: string;
+  readonly canonicalUrl: string;
+}) {
+  return createSeoPageModel(input);
 }

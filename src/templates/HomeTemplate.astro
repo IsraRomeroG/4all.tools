@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import SeoHead from '@/components/seo/SeoHead.astro';
 import type { HomePageModel } from './models/home';
 
 interface Props {
@@ -7,14 +8,13 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const layoutProps =
-  page.documentTitle === undefined
-    ? { locale: page.locale }
-    : { locale: page.locale, documentTitle: page.documentTitle };
 ---
 
-<BaseLayout {...layoutProps}>
-  <slot name="head" slot="head" />
+<BaseLayout locale={page.locale}>
+  <Fragment slot="head">
+    <SeoHead seo={page.seo} />
+    <slot name="head" />
+  </Fragment>
 
   <div class="mx-auto grid w-full max-w-6xl gap-10 px-4 py-10 sm:px-6 lg:px-8" data-template="home">
     <header class="grid max-w-3xl gap-4" data-template-region="home-hero">
