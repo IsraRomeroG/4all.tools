@@ -2,6 +2,7 @@ import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import { isLocale } from '@/i18n/guards';
 import type { Locale } from '@/i18n/types';
+import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
 import type { HomePageModel } from '@/templates/models/home';
 
 import { UnsupportedLocaleError } from './errors';
@@ -48,6 +49,7 @@ export async function composeHomePageModel(
     title: homeSeo.title,
     description: homeSeo.description,
   });
+  const messages = dependencies.getGlobalMessages(locale);
 
   return Object.freeze({
     kind: 'home',
@@ -55,8 +57,12 @@ export async function composeHomePageModel(
     route: null,
     seo: seoComposition.seo,
     localizedRouteCluster: seoComposition.localizedRouteCluster,
+    languageSwitcher: buildLanguageSwitcherModel({
+      cluster: seoComposition.localizedRouteCluster,
+      messages: messages.language,
+    }),
     title: homeSeo.title,
     description: homeSeo.description,
-    messages: dependencies.getGlobalMessages(locale),
+    messages,
   });
 }

@@ -13,6 +13,8 @@ import {
   UnsupportedPageTargetError,
 } from '@/templates/composers';
 import { getGlobalMessages } from '@/i18n/messages/registry';
+import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
+import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
 import type {
   ToolCategoryPageModel,
   ToolPageModel,
@@ -268,6 +270,7 @@ function fixtureToolModel(): ToolPageModel {
       description: 'Validate JSON.',
       canonicalUrl: 'https://4all.tools/developer/json-validator/',
     }),
+    languageSwitcher: languageSwitcher('en'),
     toolId: 'json-validator',
     title: 'JSON Validator',
     messages: getGlobalMessages('en'),
@@ -304,6 +307,7 @@ function fixtureCategoryModel(): ToolCategoryPageModel {
       description: 'Developer utilities.',
       canonicalUrl: 'https://4all.tools/developer/',
     }),
+    languageSwitcher: languageSwitcher('en'),
     categoryId: 'developer',
     title: 'Developer Tools',
     messages: getGlobalMessages('en'),
@@ -327,4 +331,28 @@ function seo(input: {
   readonly canonicalUrl: string;
 }) {
   return createSeoPageModel(input);
+}
+
+function languageSwitcher(locale: 'en'): LanguageSwitcherModel {
+  return {
+    ariaLabel: 'Languages',
+    currentLanguage: 'Current language',
+    unavailableLabel: 'Not available',
+    items: SUPPORTED_LOCALES.map((itemLocale) =>
+      itemLocale === locale
+        ? {
+            state: 'current' as const,
+            locale: itemLocale,
+            label: LOCALES[itemLocale].label,
+            htmlLang: LOCALES[itemLocale].htmlLang,
+          }
+        : {
+            state: 'available' as const,
+            locale: itemLocale,
+            label: LOCALES[itemLocale].label,
+            htmlLang: LOCALES[itemLocale].htmlLang,
+            url: `/${itemLocale}/`,
+          },
+    ),
+  };
 }

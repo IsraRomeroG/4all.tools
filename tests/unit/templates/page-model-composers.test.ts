@@ -326,6 +326,11 @@ describe('page model composers', () => {
   it('composes locale-specific home models without route parsing', async () => {
     const getGlobalMessages = vi.fn((locale: Locale) => ({
       marker: locale,
+      language: {
+        switcherLabel: 'Languages',
+        currentLanguage: 'Current language',
+        unavailable: 'Not available',
+      },
     }));
     const model = await composeHomePageModel('fr', {
       getGlobalMessages: getGlobalMessages as never,
@@ -349,7 +354,7 @@ describe('page model composers', () => {
       'https://4all.tools/fr/',
     ]);
     expect(model.seo.xDefaultUrl).toBe('https://4all.tools/');
-    expect(model.messages).toEqual({ marker: 'fr' });
+    expect(model.messages).toMatchObject({ marker: 'fr' });
     expect(getGlobalMessages).toHaveBeenCalledWith('fr');
   });
 

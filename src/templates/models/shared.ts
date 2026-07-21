@@ -11,6 +11,7 @@ import type { ToolExecutionType } from '@/domain/tools';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import type { Locale } from '@/i18n/types';
 import type { RouteRecord } from '@/routing/types';
+import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
 import type { LocalizedRouteCluster, SeoPageModel } from '@/seo';
 
 export interface PageDocumentModel {
@@ -42,6 +43,7 @@ export interface HomePageModel extends PageDocumentModel {
   readonly kind: 'home';
   readonly route: null;
   readonly seo: SeoPageModel;
+  readonly languageSwitcher: LanguageSwitcherModel;
   readonly messages: GlobalMessages;
 }
 
@@ -49,6 +51,7 @@ export interface ToolPageModel extends PageDocumentModel {
   readonly kind: 'tool';
   readonly route: RouteRecord;
   readonly seo: SeoPageModel;
+  readonly languageSwitcher: LanguageSwitcherModel;
   readonly toolId: ToolId;
   readonly messages: GlobalMessages;
   readonly content: {
@@ -63,6 +66,7 @@ export interface ToolCategoryPageModel extends PageDocumentModel {
   readonly kind: 'tool-category';
   readonly route: RouteRecord;
   readonly seo: SeoPageModel;
+  readonly languageSwitcher: LanguageSwitcherModel;
   readonly categoryId: ToolCategoryId;
   readonly messages: GlobalMessages;
   readonly category: {

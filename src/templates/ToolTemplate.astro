@@ -1,5 +1,6 @@
 ---
 import { getToolModule } from '@/features/tools/module-registry';
+import LanguageSwitcher from '@/components/navigation/LanguageSwitcher.astro';
 import SeoHead from '@/components/seo/SeoHead.astro';
 import ToolLayout from '@/layouts/ToolLayout.astro';
 import type { ToolPageModel } from './models/tool';
@@ -17,6 +18,7 @@ const toolInstanceId = `tool-${page.toolId}-${page.locale}`;
 ---
 
 <ToolLayout locale={page.locale} workspaceLabel={page.messages.sections.toolWorkspace}>
+  <LanguageSwitcher slot="site-header" model={page.languageSwitcher} />
   <Fragment slot="head">
     <SeoHead seo={page.seo} />
     <slot name="head" />

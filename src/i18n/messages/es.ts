@@ -29,6 +29,9 @@ export const es = {
   language: {
     label: 'Idioma',
     changeLanguage: 'Cambiar idioma',
+    switcherLabel: 'Idiomas',
+    currentLanguage: 'Idioma actual',
+    unavailable: 'No disponible',
   },
   footer: {
     privacy: 'Privacidad',

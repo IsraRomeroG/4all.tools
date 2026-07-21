@@ -7,6 +7,7 @@ import type { Locale } from '@/i18n/types';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import type { RouteRegistry } from '@/routing/registry';
+import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
 import type { SeoIndexabilityResolver } from '@/seo';
 import type {
   ToolPageModel,
@@ -102,6 +103,7 @@ export async function composeToolPageModel(
         : { indexabilityResolver: dependencies.seoIndexabilityResolver }),
     },
   );
+  const messages = globalMessages(locale);
 
   return Object.freeze({
     kind: 'tool',
@@ -109,10 +111,14 @@ export async function composeToolPageModel(
     route,
     seo: seoComposition.seo,
     localizedRouteCluster: seoComposition.localizedRouteCluster,
+    languageSwitcher: buildLanguageSwitcherModel({
+      cluster: seoComposition.localizedRouteCluster,
+      messages: messages.language,
+    }),
     title: contentEntry.data.title,
     description: contentEntry.data.description,
     toolId,
-    messages: globalMessages(locale),
+    messages,
     content: {
       title: contentEntry.data.title,
       description: contentEntry.data.description,

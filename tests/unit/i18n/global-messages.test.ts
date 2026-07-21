@@ -45,6 +45,9 @@ describe('global messages', () => {
       expect(messages.common.copy).toBeTruthy();
       expect(messages.search.placeholder).toBeTruthy();
       expect(messages.language.changeLanguage).toBeTruthy();
+      expect(messages.language.switcherLabel).toBeTruthy();
+      expect(messages.language.currentLanguage).toBeTruthy();
+      expect(messages.language.unavailable).toBeTruthy();
       expect(messages.footer.privacy).toBeTruthy();
       expect(messages.accessibility.openMenu).toBeTruthy();
       expect(messages.sections.search).toBeTruthy();

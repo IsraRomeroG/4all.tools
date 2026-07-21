@@ -11,6 +11,8 @@ import {
   UnsupportedPageTargetError,
 } from '@/templates/composers';
 import { getGlobalMessages } from '@/i18n/messages/registry';
+import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
+import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
 import type { ToolPageModel } from '@/templates/models/shared';
 import {
   getRootCategoryStaticPathEntries,
@@ -365,6 +367,7 @@ function fixtureToolModel(locale: Locale): ToolPageModel {
           ? 'https://4all.tools/fixture/json-validator/'
           : `https://4all.tools/${locale}/fixture/json-validator/`,
     }),
+    languageSwitcher: languageSwitcher(locale),
     toolId: 'json-validator',
     title: 'JSON Validator',
     messages: getGlobalMessages(locale),
@@ -381,5 +384,31 @@ function fixtureToolModel(locale: Locale): ToolPageModel {
       primaryCategoryId: 'json',
       executionType: 'client',
     },
+  };
+}
+
+function languageSwitcher(locale: Locale): LanguageSwitcherModel {
+  const messages = getGlobalMessages(locale).language;
+
+  return {
+    ariaLabel: messages.switcherLabel,
+    currentLanguage: messages.currentLanguage,
+    unavailableLabel: messages.unavailable,
+    items: SUPPORTED_LOCALES.map((itemLocale) =>
+      itemLocale === locale
+        ? {
+            state: 'current' as const,
+            locale: itemLocale,
+            label: LOCALES[itemLocale].label,
+            htmlLang: LOCALES[itemLocale].htmlLang,
+          }
+        : {
+            state: 'available' as const,
+            locale: itemLocale,
+            label: LOCALES[itemLocale].label,
+            htmlLang: LOCALES[itemLocale].htmlLang,
+            url: `/${itemLocale}/`,
+          },
+    ),
   };
 }

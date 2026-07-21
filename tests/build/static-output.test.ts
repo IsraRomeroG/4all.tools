@@ -159,6 +159,11 @@ describe('static build output', () => {
         '<link rel="alternate" hreflang="x-default" href="https://4all.tools/developer/json-validator/">',
       );
       expect(html).toContain(expected.title);
+      expect(countMatches(html, /data-language-switcher/g)).toBe(1);
+      expect(html).toContain(
+        `<li data-locale="${expected.locale}" data-state="current">`,
+      );
+      expect(html).toContain('aria-current="page"');
       expect(html).toContain(expected.inputLabel);
       expect(html).toContain(expected.validateLabel);
       expect(html).toContain(expected.editorialMarker);

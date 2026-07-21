@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import LanguageSwitcher from '@/components/navigation/LanguageSwitcher.astro';
 import SeoHead from '@/components/seo/SeoHead.astro';
 import type { ToolCategoryPageModel } from './models/category';
 
@@ -12,6 +13,7 @@ const EditorialContent = page.content.editorial.Content;
 ---
 
 <BaseLayout locale={page.locale} mainClass="min-h-screen bg-slate-50">
+  <LanguageSwitcher slot="site-header" model={page.languageSwitcher} />
   <Fragment slot="head">
     <SeoHead seo={page.seo} />
     <slot name="head" />

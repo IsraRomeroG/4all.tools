@@ -9,6 +9,8 @@ import CategoryTemplate from '@/templates/CategoryTemplate.astro';
 import HomeTemplate from '@/templates/HomeTemplate.astro';
 import ToolTemplate from '@/templates/ToolTemplate.astro';
 import { getGlobalMessages } from '@/i18n/messages/registry';
+import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
+import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
 import { createSeoPageModel } from '@/seo';
 
@@ -60,6 +62,7 @@ describe('template foundation', () => {
             description: 'Valida documentos JSON desde un modelo preparado.',
             canonicalUrl: 'https://4all.tools/es/desarrollo/validador-json/',
           }),
+          languageSwitcher: languageSwitcher('es'),
           toolId: 'json-validator',
           title: 'Validador JSON',
           description: 'Valida documentos JSON desde un modelo preparado.',
@@ -116,6 +119,7 @@ describe('template foundation', () => {
             description: 'Validate JSON.',
             canonicalUrl: 'https://4all.tools/developer/json-validator/',
           }),
+          languageSwitcher: languageSwitcher('en'),
           toolId: 'json-validator',
           title: 'JSON Validator',
           messages: getGlobalMessages('en'),
@@ -169,6 +173,7 @@ describe('template foundation', () => {
             description: 'Herramientas para desarrolladores.',
             canonicalUrl: 'https://4all.tools/es/desarrollo/',
           }),
+          languageSwitcher: languageSwitcher('es'),
           categoryId: 'developer',
           title: 'Desarrollo',
           description: 'Herramientas para desarrolladores.',
@@ -217,6 +222,7 @@ describe('template foundation', () => {
             description: 'Useful tools for everyday work.',
             canonicalUrl: 'https://4all.tools/',
           }),
+          languageSwitcher: languageSwitcher('en'),
           title: '4all.tools',
           description: 'Useful tools for everyday work.',
           messages: getGlobalMessages('en'),
@@ -326,4 +332,30 @@ function seo(input: {
   readonly canonicalUrl: string;
 }) {
   return createSeoPageModel(input);
+}
+
+function languageSwitcher(locale: 'en' | 'es'): LanguageSwitcherModel {
+  const messages = getGlobalMessages(locale).language;
+
+  return {
+    ariaLabel: messages.switcherLabel,
+    currentLanguage: messages.currentLanguage,
+    unavailableLabel: messages.unavailable,
+    items: SUPPORTED_LOCALES.map((itemLocale) =>
+      itemLocale === locale
+        ? {
+            state: 'current' as const,
+            locale: itemLocale,
+            label: LOCALES[itemLocale].label,
+            htmlLang: LOCALES[itemLocale].htmlLang,
+          }
+        : {
+            state: 'available' as const,
+            locale: itemLocale,
+            label: LOCALES[itemLocale].label,
+            htmlLang: LOCALES[itemLocale].htmlLang,
+            url: `/${itemLocale}/`,
+          },
+    ),
+  };
 }

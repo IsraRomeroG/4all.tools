@@ -165,6 +165,40 @@ test.describe('JSON Validator browser behavior', () => {
     });
   }
 
+  test('switches equivalent pages with static links and browser history', async ({
+    page,
+  }) => {
+    await openJsonValidator(page, ROUTES.en);
+
+    const languageNavigation = page.getByRole('navigation', {
+      name: 'Languages',
+    });
+    await languageNavigation.getByRole('link', { name: 'Español' }).click();
+    await expect(page).toHaveURL(/\/es\/desarrollo\/validador-json\/$/);
+    await expect(
+      page.getByRole('heading', { level: 1, name: ROUTES.es.title }),
+    ).toBeVisible();
+
+    const spanishNavigation = page.getByRole('navigation', {
+      name: 'Idiomas',
+    });
+    await spanishNavigation.getByRole('link', { name: 'Français' }).click();
+    await expect(page).toHaveURL(/\/fr\/developpement\/validateur-json\/$/);
+    await expect(
+      page.locator(
+        '[data-language-switcher] li[data-locale="fr"] [aria-current="page"]',
+      ),
+    ).toHaveText(/Français/);
+    await expect(
+      page.locator('[data-language-switcher] script'),
+    ).toHaveCount(0);
+
+    await page.goBack();
+    await expect(page).toHaveURL(/\/es\/desarrollo\/validador-json\/$/);
+    await page.goForward();
+    await expect(page).toHaveURL(/\/fr\/developpement\/validateur-json\/$/);
+  });
+
   test('validates English JSON and formats/minifies without network requests', async ({
     page,
   }) => {

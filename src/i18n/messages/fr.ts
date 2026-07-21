@@ -29,6 +29,9 @@ export const fr = {
   language: {
     label: 'Langue',
     changeLanguage: 'Changer de langue',
+    switcherLabel: 'Langues',
+    currentLanguage: 'Langue actuelle',
+    unavailable: 'Indisponible',
   },
   footer: {
     privacy: 'Confidentialité',

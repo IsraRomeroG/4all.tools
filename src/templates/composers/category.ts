@@ -9,6 +9,7 @@ import type { Locale } from '@/i18n/types';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import type { RouteRegistry } from '@/routing/registry';
+import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
 import type { SeoIndexabilityResolver } from '@/seo';
 import type { ToolCategoryPageModel } from '@/templates/models/category';
 
@@ -96,6 +97,7 @@ export async function composeCategoryPageModel(
         : { indexabilityResolver: dependencies.seoIndexabilityResolver }),
     },
   );
+  const messages = globalMessages(locale);
 
   return Object.freeze({
     kind: 'tool-category',
@@ -103,10 +105,14 @@ export async function composeCategoryPageModel(
     route,
     seo: seoComposition.seo,
     localizedRouteCluster: seoComposition.localizedRouteCluster,
+    languageSwitcher: buildLanguageSwitcherModel({
+      cluster: seoComposition.localizedRouteCluster,
+      messages: messages.language,
+    }),
     title: contentEntry.data.title,
     description: contentEntry.data.description,
     categoryId,
-    messages: globalMessages(locale),
+    messages,
     category,
     content: {
       title: contentEntry.data.title,

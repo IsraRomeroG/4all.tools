@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import LanguageSwitcher from '@/components/navigation/LanguageSwitcher.astro';
 import SeoHead from '@/components/seo/SeoHead.astro';
 import type { HomePageModel } from './models/home';
 
@@ -11,6 +12,7 @@ const { page } = Astro.props;
 ---
 
 <BaseLayout locale={page.locale}>
+  <LanguageSwitcher slot="site-header" model={page.languageSwitcher} />
   <Fragment slot="head">
     <SeoHead seo={page.seo} />
     <slot name="head" />

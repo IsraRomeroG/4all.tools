@@ -57,6 +57,23 @@ describe('SEO page model composition', () => {
           (variant) => variant.route?.target.kind === 'tool',
         ),
       ).toBe(true);
+      expect(
+        page.languageSwitcher.items.map((item) => item.locale),
+      ).toEqual(['en', 'es', 'pt', 'fr']);
+      expect(
+        page.languageSwitcher.items.find((item) => item.locale === 'es'),
+      ).toMatchObject(
+        page.locale === 'es'
+          ? { state: 'current' }
+          : { state: 'available', url: '/es/desarrollo/validador-json/' },
+      );
+      expect(
+        page.languageSwitcher.items.find((item) => item.locale === 'fr'),
+      ).toMatchObject(
+        page.locale === 'fr'
+          ? { state: 'current' }
+          : { state: 'available', url: '/fr/developpement/validateur-json/' },
+      );
     }
   });
 
@@ -85,6 +102,17 @@ describe('SEO page model composition', () => {
     expect(page.localizedRouteCluster?.variants.map((variant) => variant.locale)).toEqual([
       'en',
     ]);
+    expect(page.languageSwitcher.items).toEqual([
+      expect.objectContaining({ locale: 'en', state: 'current' }),
+      expect.objectContaining({ locale: 'es', state: 'unavailable' }),
+      expect.objectContaining({ locale: 'pt', state: 'unavailable' }),
+      expect.objectContaining({ locale: 'fr', state: 'unavailable' }),
+    ]);
+    expect(
+      page.languageSwitcher.items
+        .filter((item) => item.state === 'unavailable')
+        .some((item) => 'url' in item),
+    ).toBe(false);
   });
 
   it('does not introduce an English prefix while composing localized alternates', async () => {
