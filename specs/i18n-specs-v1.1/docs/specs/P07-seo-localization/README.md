@@ -110,6 +110,29 @@ P07 does not implement:
 
 Those remain assigned to P08/P10 or a future explicit decision.
 
+## Current Implementation Status
+
+The P07 task set is implemented in the repository and locally verified through
+the project phase gate. P07-T05 freezes the following publication policy:
+
+| State | Route | Canonical | Hreflang | Switcher | Direct request |
+|---|---|---|---|---|---|
+| Published + indexable | Generated | Self | Included | Link/current | Page |
+| Published + noindex | Generated | Self | Excluded | Link/current | Page with `noindex,follow` |
+| Missing route/content | Not generated | None | Excluded | Unavailable non-link | 404 |
+| Draft/archived | Not generated | None | Excluded | Unavailable non-link | 404 |
+| Ambiguous content | Build fails | None | None | None | No deployment |
+
+Global UI dictionaries are required in every supported locale. Entity-page
+translations are separate publication units: missing, draft, and archived
+translations remain absent and never fall back to English, home, or another
+locale. Published noindex pages remain user-navigable but do not participate in
+SEO alternate clusters.
+
+The implementation ledger in `specs/IMPLEMENTATION-STATUS.md` is the current
+status authority; historical task headers retain their original specification
+metadata.
+
 ## Implementation readiness
 
 The specs are ready. Implementation remains blocked until P06R-F is complete and verified.

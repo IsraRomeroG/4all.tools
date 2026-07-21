@@ -197,6 +197,10 @@ describe('static build output', () => {
     });
   }
 
+  it('does not synthesize a missing localized translation output', async () => {
+    await expectDistFileMissing('es/desarrollo/missing-json-validator/index.html');
+  });
+
   it('does not include the server-side content index in client bundles', async () => {
     const clientBundle = await readClientJavaScriptBundle();
 

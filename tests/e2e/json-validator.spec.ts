@@ -223,6 +223,22 @@ test.describe('JSON Validator browser behavior', () => {
     ).toBeVisible();
   });
 
+  test('keeps a missing localized path as a direct 404 without fallback navigation', async ({
+    page,
+  }) => {
+    const missingPath = '/es/desarrollo/missing-json-validator/';
+    const response = await page.goto(missingPath);
+
+    expect(response?.status()).toBe(404);
+    expect(new URL(page.url()).pathname).toBe(missingPath);
+
+    const errors = observedErrors.get(page);
+    expect(errors?.consoleErrors).toEqual([
+      'Failed to load resource: the server responded with a status of 404 (Not Found)',
+    ]);
+    errors?.consoleErrors.splice(0);
+  });
+
   test('validates English JSON and formats/minifies without network requests', async ({
     page,
   }) => {
