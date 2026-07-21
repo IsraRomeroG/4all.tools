@@ -13,7 +13,7 @@
 | P07R-T01 | Commit `2a5354b967745d334a2b9f1be9989791d2deb8f5` |
 | P07R-T02 | Commit `59f894022800309ba55d5c21dac93a1fd93a800a` |
 | P07R-T03 | Commit `b5f80d8416d728a3e939cbdfae9af25b4a5b5232` |
-| P07R-T04 | Documentation closure changes in the current local change set; final commit reference is recorded in the status ledger after commit |
+| P07R-T04 | Documentation closure commit `278d8f472da2c4d99a70bd78024a84cebb17e249` |
 | Merge commit | None for P07R; `origin/main` remains `e4f1bdd9b05585fcb2fd1610d4af4e56bf361859` |
 | Node/npm | Node `v24.12.0`; npm `11.6.2` |
 | `npm ci` | Passed locally on 2026-07-20; lockfile unchanged |

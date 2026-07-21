@@ -89,7 +89,7 @@ The local verification gate is `npm run verify`. P06R-F local closure ran `npm.c
 | P07R-T01 | Commit `2a5354b967745d334a2b9f1be9989791d2deb8f5` | `npm.cmd run verify` passed locally on 2026-07-20 | Honest public availability contract; route absence projects only `missing-public-route`. |
 | P07R-T02 | Commit `59f894022800309ba55d5c21dac93a1fd93a800a` | `npm.cmd run verify` passed locally on 2026-07-20 | Typed and runtime noindex SEO invariants. |
 | P07R-T03 | Commit `b5f80d8416d728a3e939cbdfae9af25b4a5b5232` | `npm.cmd run verify` passed locally on 2026-07-20 | Exact UTF-8 metadata, home build matrix, mojibake regression checks, and stable 404 E2E behavior. |
-| P07R-T04 | Local documentation closure commit follows; external CI/merge evidence pending | `npm.cmd ci` and `npm.cmd run verify` passed locally on 2026-07-20 | Current status authority, roadmap, traceability, and closure report updated. |
+| P07R-T04 | Commit `278d8f472da2c4d99a70bd78024a84cebb17e249` | `npm.cmd ci` and `npm.cmd run verify` passed locally on 2026-07-20; external CI/merge evidence pending | Current status authority, roadmap, traceability, and closure report updated. |
 
 ### P07R gate status
 
