@@ -75,17 +75,49 @@ export async function composeSeoPageModel(
     });
   }
 
-  const seoVariants = localizedRouteCluster.current.indexable
-    ? localizedRouteCluster.variants.filter((variant) => variant.indexable)
-    : [];
-  const defaultVariant = seoVariants.find(
-    (variant) => variant.locale === DEFAULT_LOCALE,
-  );
-  const seo = createSeoPageModel({
+  const seoBaseInput = {
     title: input.title,
     description: input.description,
     canonicalUrl: localizedRouteCluster.current.absoluteUrl,
-    noindex: input.noindex,
+    openGraphType: input.openGraphType,
+    ...(input.openGraphImage === undefined
+      ? {}
+      : { openGraphImage: input.openGraphImage }),
+  };
+
+  const seo = input.noindex
+    ? createSeoPageModel({
+        ...seoBaseInput,
+        noindex: true,
+      })
+    : createIndexableSeoPageModel(localizedRouteCluster, seoBaseInput);
+
+  return Object.freeze({
+    seo,
+    localizedRouteCluster,
+  });
+}
+
+function createIndexableSeoPageModel(
+  localizedRouteCluster: LocalizedRouteCluster,
+  input: {
+    readonly title: string;
+    readonly description: string;
+    readonly canonicalUrl: string;
+    readonly openGraphType: SeoOpenGraphModel['type'];
+    readonly openGraphImage?: SeoOpenGraphImage;
+  },
+) {
+  const seoVariants = localizedRouteCluster.variants.filter(
+    (variant) => variant.indexable,
+  );
+  const defaultVariant = seoVariants.find(
+    (variant) => variant.locale === DEFAULT_LOCALE,
+  );
+
+  return createSeoPageModel({
+    ...input,
+    noindex: false,
     alternates: seoVariants.map((variant) => ({
       locale: variant.locale,
       hrefLang: variant.hrefLang,
@@ -94,14 +126,5 @@ export async function composeSeoPageModel(
     ...(defaultVariant === undefined
       ? {}
       : { xDefaultUrl: defaultVariant.absoluteUrl }),
-    openGraphType: input.openGraphType,
-    ...(input.openGraphImage === undefined
-      ? {}
-      : { openGraphImage: input.openGraphImage }),
-  });
-
-  return Object.freeze({
-    seo,
-    localizedRouteCluster,
   });
 }

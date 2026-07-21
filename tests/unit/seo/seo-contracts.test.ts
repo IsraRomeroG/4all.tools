@@ -1,12 +1,14 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import {
   DuplicateSeoAlternateError,
   InvalidSeoDescriptionError,
   InvalidSeoTitleError,
   InvalidSeoUrlError,
+  NoindexSeoAlternateConflictError,
   createSeoPageModel,
   serializeRobots,
+  type SeoPageModel,
 } from '@/seo';
 
 describe('SEO contracts', () => {
@@ -15,6 +17,14 @@ describe('SEO contracts', () => {
       title: ' JSON Validator ',
       description: ' Validate JSON online. ',
       canonicalUrl: 'https://4all.tools/developer/json-validator/',
+      alternates: [
+        {
+          locale: 'en',
+          hrefLang: 'en',
+          url: 'https://4all.tools/developer/json-validator/',
+        },
+      ],
+      xDefaultUrl: 'https://4all.tools/developer/json-validator/',
     });
 
     expect(model.title).toBe('JSON Validator');
@@ -25,7 +35,10 @@ describe('SEO contracts', () => {
       follow: true,
     });
     expect(serializeRobots(model.robots)).toBe('index,follow');
-    expect(model.alternates).toEqual([]);
+    expect(model.alternates).toHaveLength(1);
+    expect(model.xDefaultUrl).toBe(
+      'https://4all.tools/developer/json-validator/',
+    );
     expect(model.openGraph).toMatchObject({
       type: 'website',
       title: 'JSON Validator',
@@ -49,6 +62,64 @@ describe('SEO contracts', () => {
       follow: true,
     });
     expect(serializeRobots(model.robots)).toBe('noindex,follow');
+    expect(model.alternates).toEqual([]);
+    expect(Object.isFrozen(model.alternates)).toBe(true);
+    expect(Object.prototype.hasOwnProperty.call(model, 'xDefaultUrl')).toBe(
+      false,
+    );
+  });
+
+  it('rejects noindex alternates and x-default at runtime and compile time', () => {
+    const base = {
+      title: 'Preview',
+      description: 'Preview content.',
+      canonicalUrl: 'https://4all.tools/developer/preview/',
+    };
+    const alternate = {
+      locale: 'en' as const,
+      hrefLang: 'en',
+      url: 'https://4all.tools/developer/preview/',
+    };
+    const noindexWithAlternate = {
+      ...base,
+      noindex: true as const,
+      alternates: [alternate] as const,
+    };
+    const noindexWithXDefault = {
+      ...base,
+      noindex: true as const,
+      xDefaultUrl: 'https://4all.tools/developer/preview/',
+    };
+
+    expect(() => {
+      // @ts-expect-error noindex pages cannot declare alternates
+      createSeoPageModel(noindexWithAlternate);
+    }).toThrow(NoindexSeoAlternateConflictError);
+    expect(() => {
+      // @ts-expect-error noindex pages cannot declare x-default
+      createSeoPageModel(noindexWithXDefault);
+    }).toThrow(NoindexSeoAlternateConflictError);
+    expect(() => {
+      createSeoPageModel(
+        noindexWithAlternate as unknown as Parameters<
+          typeof createSeoPageModel
+        >[0],
+      );
+    }).toThrow('cannot declare alternates');
+    expect(() => {
+      createSeoPageModel(
+        noindexWithXDefault as unknown as Parameters<
+          typeof createSeoPageModel
+        >[0],
+      );
+    }).toThrow('cannot declare x-default');
+  });
+
+  it('keeps noindex models narrow in the public type', () => {
+    type NoindexModel = Extract<SeoPageModel, { robots: { index: false } }>;
+
+    expectTypeOf<NoindexModel['alternates']>().toEqualTypeOf<readonly []>();
+    expectTypeOf<NoindexModel['xDefaultUrl']>().toEqualTypeOf<undefined>();
   });
 
   it('keeps optional Open Graph image fields explicit when supplied', () => {

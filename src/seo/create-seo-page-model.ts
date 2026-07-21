@@ -9,58 +9,100 @@ import {
   InvalidSeoDescriptionError,
   InvalidSeoTitleError,
   InvalidSeoUrlError,
+  NoindexSeoAlternateConflictError,
   type SeoUrlPurpose,
 } from './errors';
 import type {
+  IndexableSeoPageModel,
+  IndexableSeoRobotsModel,
+  NoindexSeoPageModel,
+  NoindexSeoRobotsModel,
   SeoLocaleAlternate,
   SeoOpenGraphImage,
   SeoOpenGraphModel,
-  SeoPageModel,
   SeoRobotsModel,
 } from './types';
 
-export interface CreateSeoPageModelInput {
+interface SeoBaseInput {
   readonly title: string;
   readonly description: string;
   readonly canonicalUrl: string;
-  readonly noindex?: boolean;
-  readonly alternates?: readonly SeoLocaleAlternate[];
-  readonly xDefaultUrl?: string;
   readonly openGraphType?: SeoOpenGraphModel['type'];
   readonly openGraphImage?: SeoOpenGraphImage;
   readonly siteUrl?: URL;
 }
 
+export interface CreateIndexableSeoPageModelInput extends SeoBaseInput {
+  readonly noindex?: false;
+  readonly alternates?: readonly SeoLocaleAlternate[];
+  readonly xDefaultUrl?: string;
+}
+
+export interface CreateNoindexSeoPageModelInput extends SeoBaseInput {
+  readonly noindex: true;
+  readonly alternates?: readonly [];
+  readonly xDefaultUrl?: never;
+}
+
+export type CreateSeoPageModelInput =
+  | CreateIndexableSeoPageModelInput
+  | CreateNoindexSeoPageModelInput;
+
+export function createSeoPageModel(
+  input: CreateIndexableSeoPageModelInput,
+): IndexableSeoPageModel;
+export function createSeoPageModel(
+  input: CreateNoindexSeoPageModelInput,
+): NoindexSeoPageModel;
 export function createSeoPageModel(
   input: CreateSeoPageModelInput,
-): SeoPageModel {
+): IndexableSeoPageModel | NoindexSeoPageModel;
+export function createSeoPageModel(
+  input: CreateSeoPageModelInput,
+): IndexableSeoPageModel | NoindexSeoPageModel {
   const siteUrl = input.siteUrl ?? SITE_URL;
   const title = normalizeTitle(input.title);
   const description = normalizeDescription(input.description);
   const canonicalUrl = assertCanonicalUrl(input.canonicalUrl, siteUrl);
-  const alternates = normalizeAlternates(input.alternates ?? [], siteUrl);
   const image =
     input.openGraphImage === undefined
       ? undefined
       : normalizeOpenGraphImage(input.openGraphImage);
 
+  const openGraph = Object.freeze({
+    type: input.openGraphType ?? 'website',
+    title,
+    description,
+    url: canonicalUrl,
+    siteName: '4all.tools',
+    ...(image === undefined ? {} : { image }),
+  });
+
+  if (input.noindex === true) {
+    assertNoindexSeoConflicts(input, canonicalUrl);
+
+    return Object.freeze({
+      title,
+      description,
+      canonicalUrl,
+      robots: normalizeRobots(false),
+      alternates: Object.freeze([] as const),
+      openGraph,
+    });
+  }
+
+  const alternates = normalizeAlternates(input.alternates ?? [], siteUrl);
+
   return Object.freeze({
     title,
     description,
     canonicalUrl,
-    robots: normalizeRobots(input.noindex ?? false),
+    robots: normalizeRobots(true),
     alternates,
     ...(input.xDefaultUrl === undefined
       ? {}
       : { xDefaultUrl: assertCanonicalUrl(input.xDefaultUrl, siteUrl, 'x-default') }),
-    openGraph: Object.freeze({
-      type: input.openGraphType ?? 'website',
-      title,
-      description,
-      url: canonicalUrl,
-      siteName: '4all.tools',
-      ...(image === undefined ? {} : { image }),
-    }),
+    openGraph,
   });
 }
 
@@ -126,11 +168,26 @@ function normalizeDescription(description: string): string {
   return normalized;
 }
 
-function normalizeRobots(noindex: boolean): SeoRobotsModel {
+function normalizeRobots(indexable: true): IndexableSeoRobotsModel;
+function normalizeRobots(indexable: false): NoindexSeoRobotsModel;
+function normalizeRobots(indexable: boolean): SeoRobotsModel {
   return Object.freeze({
-    index: !noindex,
+    index: indexable,
     follow: true,
   });
+}
+
+function assertNoindexSeoConflicts(
+  input: CreateNoindexSeoPageModelInput,
+  canonicalUrl: string,
+): void {
+  if (input.alternates !== undefined && input.alternates.length > 0) {
+    throw new NoindexSeoAlternateConflictError('alternates', canonicalUrl);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(input, 'xDefaultUrl')) {
+    throw new NoindexSeoAlternateConflictError('x-default', canonicalUrl);
+  }
 }
 
 function normalizeAlternates(

@@ -38,6 +38,29 @@ describe('SeoHead', () => {
     expect(html).toContain('property="og:site_name" content="4all.tools"');
   });
 
+  it('renders noindex pages without alternates or x-default', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(SeoHead, {
+      partial: true,
+      props: {
+        seo: createSeoPageModel({
+          title: 'Preview',
+          description: 'Preview content.',
+          canonicalUrl: 'https://4all.tools/developer/preview/',
+          noindex: true,
+        }),
+      },
+    });
+
+    expect(html.match(/rel="canonical"/g)).toHaveLength(1);
+    expect(html).toContain('content="noindex,follow"');
+    expect(html.match(/rel="alternate"/g)).toBeNull();
+    expect(html).not.toContain('hreflang="x-default"');
+    expect(html).toContain(
+      'property="og:url" content="https://4all.tools/developer/preview/"',
+    );
+  });
+
   it('omits x-default and image tags when absent', async () => {
     const html = await renderSeoHead({
       xDefaultUrl: null,

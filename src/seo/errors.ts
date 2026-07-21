@@ -56,6 +56,20 @@ export class InvalidSeoDescriptionError extends Error {
   }
 }
 
+export class NoindexSeoAlternateConflictError extends Error {
+  readonly code = 'NOINDEX_SEO_ALTERNATE_CONFLICT';
+
+  constructor(
+    readonly field: 'alternates' | 'x-default',
+    readonly canonicalUrl: string,
+  ) {
+    super(
+      `Noindex SEO page "${canonicalUrl}" cannot declare ${field}.`,
+    );
+    this.name = 'NoindexSeoAlternateConflictError';
+  }
+}
+
 export class MissingCanonicalRouteError extends Error {
   readonly code = 'MISSING_CANONICAL_ROUTE';
 

@@ -6,10 +6,19 @@ export interface SeoLocaleAlternate {
   readonly url: string;
 }
 
-export interface SeoRobotsModel {
-  readonly index: boolean;
+export interface IndexableSeoRobotsModel {
+  readonly index: true;
   readonly follow: true;
 }
+
+export interface NoindexSeoRobotsModel {
+  readonly index: false;
+  readonly follow: true;
+}
+
+export type SeoRobotsModel =
+  | IndexableSeoRobotsModel
+  | NoindexSeoRobotsModel;
 
 export interface SeoOpenGraphImage {
   readonly url: string;
@@ -27,12 +36,24 @@ export interface SeoOpenGraphModel {
   readonly image?: SeoOpenGraphImage;
 }
 
-export interface SeoPageModel {
+export interface IndexableSeoPageModel {
   readonly title: string;
   readonly description: string;
   readonly canonicalUrl: string;
-  readonly robots: SeoRobotsModel;
+  readonly robots: IndexableSeoRobotsModel;
   readonly alternates: readonly SeoLocaleAlternate[];
   readonly xDefaultUrl?: string;
   readonly openGraph: SeoOpenGraphModel;
 }
+
+export interface NoindexSeoPageModel {
+  readonly title: string;
+  readonly description: string;
+  readonly canonicalUrl: string;
+  readonly robots: NoindexSeoRobotsModel;
+  readonly alternates: readonly [];
+  readonly xDefaultUrl?: never;
+  readonly openGraph: SeoOpenGraphModel;
+}
+
+export type SeoPageModel = IndexableSeoPageModel | NoindexSeoPageModel;
