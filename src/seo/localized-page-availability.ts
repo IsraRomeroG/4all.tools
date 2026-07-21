@@ -15,11 +15,7 @@ export type LocalizedPageAvailability =
     }
   | {
       readonly state: 'unavailable';
-      readonly reason:
-        | 'missing-route-metadata'
-        | 'missing-content'
-        | 'draft'
-        | 'archived';
+      readonly reason: 'missing-public-route';
     };
 
 export interface LocalizedPageAvailabilityResolver {
@@ -53,7 +49,7 @@ export async function resolveLocalizedPageAvailability(
   if (route === null) {
     return {
       state: 'unavailable',
-      reason: 'missing-content',
+      reason: 'missing-public-route',
     };
   }
 
