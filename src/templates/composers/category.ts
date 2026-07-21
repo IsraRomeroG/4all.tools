@@ -9,6 +9,7 @@ import type { Locale } from '@/i18n/types';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import type { RouteRegistry } from '@/routing/registry';
+import type { SeoIndexabilityResolver } from '@/seo';
 import type { ToolCategoryPageModel } from '@/templates/models/category';
 
 import {
@@ -23,7 +24,8 @@ import {
 import { composeRouteSeoPageModel } from './seo';
 
 export interface CategoryPageComposerDependencies {
-  readonly routeRegistry: Pick<RouteRegistry, 'getCanonical'>;
+  readonly routeRegistry: Pick<RouteRegistry, 'getCanonical' | 'getByTarget'>;
+  readonly seoIndexabilityResolver?: SeoIndexabilityResolver;
   readonly toolTaxonomy?: Pick<TaxonomyTree<ToolCategoryId>, 'findNode'>;
   readonly requirePublishedToolCategoryContent?: (
     categoryId: ToolCategoryId,
@@ -82,15 +84,25 @@ export async function composeCategoryPageModel(
           label: localizedCategory.label,
           shortLabel: localizedCategory.shortLabel,
         };
+  const seoComposition = await composeRouteSeoPageModel(
+    {
+      route,
+      seo: contentEntry.data.seo,
+    },
+    {
+      routeRegistry: dependencies.routeRegistry,
+      ...(dependencies.seoIndexabilityResolver === undefined
+        ? {}
+        : { indexabilityResolver: dependencies.seoIndexabilityResolver }),
+    },
+  );
 
   return Object.freeze({
     kind: 'tool-category',
     locale,
     route,
-    seo: composeRouteSeoPageModel({
-      route,
-      seo: contentEntry.data.seo,
-    }),
+    seo: seoComposition.seo,
+    localizedRouteCluster: seoComposition.localizedRouteCluster,
     title: contentEntry.data.title,
     description: contentEntry.data.description,
     categoryId,

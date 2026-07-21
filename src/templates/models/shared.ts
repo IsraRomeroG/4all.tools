@@ -11,7 +11,7 @@ import type { ToolExecutionType } from '@/domain/tools';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import type { Locale } from '@/i18n/types';
 import type { RouteRecord } from '@/routing/types';
-import type { SeoPageModel } from '@/seo';
+import type { LocalizedRouteCluster, SeoPageModel } from '@/seo';
 
 export interface PageDocumentModel {
   readonly locale: Locale;
@@ -24,6 +24,7 @@ export interface PageDocumentModel {
   readonly title: string;
   readonly description?: string;
   readonly seo?: SeoPageModel;
+  readonly localizedRouteCluster?: LocalizedRouteCluster;
 }
 
 export interface RenderedContentModel {

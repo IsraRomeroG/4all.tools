@@ -7,6 +7,7 @@ import type { Locale } from '@/i18n/types';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import type { RouteRegistry } from '@/routing/registry';
+import type { SeoIndexabilityResolver } from '@/seo';
 import type {
   ToolPageModel,
   ToolPresentationDefinition,
@@ -31,7 +32,8 @@ export interface ToolPresentationProvider {
 }
 
 export interface ToolPageComposerDependencies {
-  readonly routeRegistry: Pick<RouteRegistry, 'getCanonical'>;
+  readonly routeRegistry: Pick<RouteRegistry, 'getCanonical' | 'getByTarget'>;
+  readonly seoIndexabilityResolver?: SeoIndexabilityResolver;
   readonly requirePublishedToolContent?: (
     toolId: ToolId,
     locale: Locale,
@@ -88,14 +90,25 @@ export async function composeToolPageModel(
     });
   }
 
+  const seoComposition = await composeRouteSeoPageModel(
+    {
+      route,
+      seo: contentEntry.data.seo,
+    },
+    {
+      routeRegistry: dependencies.routeRegistry,
+      ...(dependencies.seoIndexabilityResolver === undefined
+        ? {}
+        : { indexabilityResolver: dependencies.seoIndexabilityResolver }),
+    },
+  );
+
   return Object.freeze({
     kind: 'tool',
     locale,
     route,
-    seo: composeRouteSeoPageModel({
-      route,
-      seo: contentEntry.data.seo,
-    }),
+    seo: seoComposition.seo,
+    localizedRouteCluster: seoComposition.localizedRouteCluster,
     title: contentEntry.data.title,
     description: contentEntry.data.description,
     toolId,

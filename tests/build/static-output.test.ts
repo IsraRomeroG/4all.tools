@@ -92,6 +92,25 @@ const EXPECTED_JSON_VALIDATOR_PAGES = [
   },
 ] as const satisfies readonly ExpectedBuiltToolPage[];
 
+const EXPECTED_JSON_VALIDATOR_ALTERNATES = [
+  {
+    hrefLang: 'en',
+    url: 'https://4all.tools/developer/json-validator/',
+  },
+  {
+    hrefLang: 'es',
+    url: 'https://4all.tools/es/desarrollo/validador-json/',
+  },
+  {
+    hrefLang: 'pt',
+    url: 'https://4all.tools/pt/desenvolvedor/validador-json/',
+  },
+  {
+    hrefLang: 'fr',
+    url: 'https://4all.tools/fr/developpement/validateur-json/',
+  },
+] as const;
+
 const FORBIDDEN_OUTPUTS = [
   'en/developer/json-validator/index.html',
   'developer/data-formats/json/json-validator/index.html',
@@ -130,6 +149,15 @@ describe('static build output', () => {
         `<meta property="og:url" content="${expected.canonicalUrl}">`,
       );
       expect(html).toMatch(/<meta property="og:description" content="[^"]+">/);
+      expect(countMatches(html, /rel="alternate"/g)).toBe(5);
+      for (const alternate of EXPECTED_JSON_VALIDATOR_ALTERNATES) {
+        expect(html).toContain(
+          `<link rel="alternate" hreflang="${alternate.hrefLang}" href="${alternate.url}">`,
+        );
+      }
+      expect(html).toContain(
+        '<link rel="alternate" hreflang="x-default" href="https://4all.tools/developer/json-validator/">',
+      );
       expect(html).toContain(expected.title);
       expect(html).toContain(expected.inputLabel);
       expect(html).toContain(expected.validateLabel);

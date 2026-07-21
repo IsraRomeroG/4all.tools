@@ -2,7 +2,7 @@
 import HomeTemplate from '@/templates/HomeTemplate.astro';
 import { composeHomePageModel } from '@/templates/composers/home';
 
-const page = composeHomePageModel('en');
+const page = await composeHomePageModel('en');
 ---
 
 <HomeTemplate page={page} />

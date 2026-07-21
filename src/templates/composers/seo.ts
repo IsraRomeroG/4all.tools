@@ -1,37 +1,49 @@
 import type { SeoContentData } from '@/content/schemas/shared';
 import type { Locale } from '@/i18n/types';
-import { buildAbsoluteUrl } from '@/routing/builders';
 import type { RouteRecord } from '@/routing/types';
-import { createSeoPageModel, type SeoPageModel } from '@/seo';
+import {
+  composeSeoPageModel,
+  type SeoCompositionDependencies,
+  type SeoPageComposition,
+} from '@/seo';
 
-export function composeRouteSeoPageModel(input: {
-  readonly route: RouteRecord;
-  readonly seo: SeoContentData;
-}): SeoPageModel {
-  const canonicalUrl = buildAbsoluteUrl({
+export function composeRouteSeoPageModel(
+  input: {
+    readonly route: RouteRecord;
+    readonly seo: SeoContentData;
+  },
+  dependencies: SeoCompositionDependencies,
+): Promise<SeoPageComposition> {
+  return composeSeoPageModel({
+    subject: {
+      kind: 'route',
+      target: input.route.target,
+    },
     locale: input.route.locale,
-    segments: input.route.segments,
-  });
-
-  return createSeoPageModel({
     title: input.seo.title,
     description: input.seo.description,
-    canonicalUrl,
     noindex: input.seo.noindex,
-  });
+    openGraphType: 'website',
+  }, dependencies);
 }
 
-export function composeHomeSeoPageModel(input: {
-  readonly locale: Locale;
-  readonly title: string;
-  readonly description: string;
-}): SeoPageModel {
-  return createSeoPageModel({
+export function composeHomeSeoPageModel(
+  input: {
+    readonly locale: Locale;
+    readonly title: string;
+    readonly description: string;
+    readonly noindex?: boolean;
+  },
+  dependencies: SeoCompositionDependencies = {},
+): Promise<SeoPageComposition> {
+  return composeSeoPageModel({
+    subject: {
+      kind: 'home',
+    },
+    locale: input.locale,
     title: input.title,
     description: input.description,
-    canonicalUrl: buildAbsoluteUrl({
-      locale: input.locale,
-      segments: [],
-    }),
-  });
+    noindex: input.noindex ?? false,
+    openGraphType: 'website',
+  }, dependencies);
 }

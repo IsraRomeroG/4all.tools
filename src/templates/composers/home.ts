@@ -34,25 +34,27 @@ const HOME_SEO = {
   },
 } as const satisfies Record<Locale, { readonly title: string; readonly description: string }>;
 
-export function composeHomePageModel(
+export async function composeHomePageModel(
   locale: Locale,
   dependencies: HomePageComposerDependencies = defaultHomePageComposerDependencies,
-): HomePageModel {
+): Promise<HomePageModel> {
   if (!isLocale(locale)) {
     throw new UnsupportedLocaleError(locale);
   }
 
   const homeSeo = HOME_SEO[locale];
+  const seoComposition = await composeHomeSeoPageModel({
+    locale,
+    title: homeSeo.title,
+    description: homeSeo.description,
+  });
 
   return Object.freeze({
     kind: 'home',
     locale,
     route: null,
-    seo: composeHomeSeoPageModel({
-      locale,
-      title: homeSeo.title,
-      description: homeSeo.description,
-    }),
+    seo: seoComposition.seo,
+    localizedRouteCluster: seoComposition.localizedRouteCluster,
     title: homeSeo.title,
     description: homeSeo.description,
     messages: dependencies.getGlobalMessages(locale),
