@@ -74,6 +74,18 @@ describe('SEO page model composition', () => {
           ? { state: 'current' }
           : { state: 'available', url: '/fr/developpement/validateur-json/' },
       );
+      expect(page.breadcrumbs.items.map((item) => item.label)).toEqual(
+        page.locale === 'en'
+          ? ['Home', 'Developer Tools', 'Data Formats', 'JSON', 'JSON Validator']
+          : page.locale === 'es'
+            ? ['Inicio', 'Herramientas para desarrolladores', 'Formatos de datos', 'JSON', 'Validador JSON']
+            : page.locale === 'pt'
+              ? ['Início', 'Ferramentas para desenvolvedores', 'Formatos de dados', 'JSON', 'Validador JSON']
+              : ['Accueil', 'Outils pour développeurs', 'Formats de données', 'JSON', 'Validateur JSON'],
+      );
+      expect(page.breadcrumbs.items.filter((item) => item.state === 'link')).toHaveLength(
+        page.locale === 'en' ? 2 : 1,
+      );
     }
   });
 
@@ -113,6 +125,10 @@ describe('SEO page model composition', () => {
         .filter((item) => item.state === 'unavailable')
         .some((item) => 'url' in item),
     ).toBe(false);
+    expect(page.breadcrumbs.items).toEqual([
+      { kind: 'home', state: 'link', label: 'Home', url: '/' },
+      { kind: 'taxonomy', state: 'current', label: 'Developer Tools' },
+    ]);
   });
 
   it('does not introduce an English prefix while composing localized alternates', async () => {

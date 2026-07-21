@@ -111,6 +111,13 @@ const EXPECTED_JSON_VALIDATOR_ALTERNATES = [
   },
 ] as const;
 
+const EXPECTED_BREADCRUMB_LABELS = {
+  en: ['Home', 'Developer Tools', 'Data Formats', 'JSON', 'JSON Validator'],
+  es: ['Inicio', 'Herramientas para desarrolladores', 'Formatos de datos', 'JSON', 'Validador JSON'],
+  pt: ['Início', 'Ferramentas para desenvolvedores', 'Formatos de dados', 'JSON', 'Validador JSON'],
+  fr: ['Accueil', 'Outils pour développeurs', 'Formats de données', 'JSON', 'Validateur JSON'],
+} as const;
+
 const FORBIDDEN_OUTPUTS = [
   'en/developer/json-validator/index.html',
   'developer/data-formats/json/json-validator/index.html',
@@ -160,6 +167,11 @@ describe('static build output', () => {
       );
       expect(html).toContain(expected.title);
       expect(countMatches(html, /data-language-switcher/g)).toBe(1);
+      expect(countMatches(html, /data-breadcrumbs/g)).toBe(1);
+      expect(countMatches(html, /aria-current="page"/g)).toBe(2);
+      for (const label of EXPECTED_BREADCRUMB_LABELS[expected.locale]) {
+        expect(html).toContain(label);
+      }
       expect(html).toContain(
         `<li data-locale="${expected.locale}" data-state="current">`,
       );

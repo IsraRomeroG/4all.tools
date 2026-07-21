@@ -199,6 +199,30 @@ test.describe('JSON Validator browser behavior', () => {
     await expect(page).toHaveURL(/\/fr\/developpement\/validateur-json\/$/);
   });
 
+  test('follows explicit category breadcrumbs and keeps classification nodes as text', async ({
+    page,
+  }) => {
+    await openJsonValidator(page, ROUTES.en);
+
+    const breadcrumbs = page.getByRole('navigation', { name: 'Breadcrumbs' });
+    await expect(
+      breadcrumbs.getByRole('link', { name: 'Developer Tools' }),
+    ).toBeVisible();
+    await expect(
+      breadcrumbs.getByRole('link', { name: 'Data Formats' }),
+    ).toHaveCount(0);
+    await expect(breadcrumbs.getByRole('link', { name: 'JSON' })).toHaveCount(
+      0,
+    );
+    await expect(breadcrumbs.getByRole('link')).toHaveCount(2);
+
+    await breadcrumbs.getByRole('link', { name: 'Developer Tools' }).click();
+    await expect(page).toHaveURL(/\/developer\/$/);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Developer Tools' }),
+    ).toBeVisible();
+  });
+
   test('validates English JSON and formats/minifies without network requests', async ({
     page,
   }) => {

@@ -6,6 +6,10 @@ export const pt = {
     categories: 'Categorias',
     blog: 'Blog',
   },
+  navigation: {
+    home: 'Início',
+    breadcrumbsLabel: 'Caminho de navegação',
+  },
   common: {
     copy: 'Copiar',
     copied: 'Copiado',

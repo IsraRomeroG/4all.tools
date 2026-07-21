@@ -6,6 +6,10 @@ export const fr = {
     categories: 'Catégories',
     blog: 'Blog',
   },
+  navigation: {
+    home: 'Accueil',
+    breadcrumbsLabel: 'Fil d’Ariane',
+  },
   common: {
     copy: 'Copier',
     copied: 'Copié',

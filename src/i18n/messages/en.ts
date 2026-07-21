@@ -4,6 +4,10 @@ export const en = {
     categories: 'Categories',
     blog: 'Blog',
   },
+  navigation: {
+    home: 'Home',
+    breadcrumbsLabel: 'Breadcrumbs',
+  },
   common: {
     copy: 'Copy',
     copied: 'Copied',

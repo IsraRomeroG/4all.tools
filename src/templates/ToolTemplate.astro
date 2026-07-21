@@ -1,6 +1,7 @@
 ---
 import { getToolModule } from '@/features/tools/module-registry';
 import LanguageSwitcher from '@/components/navigation/LanguageSwitcher.astro';
+import Breadcrumbs from '@/components/navigation/Breadcrumbs.astro';
 import SeoHead from '@/components/seo/SeoHead.astro';
 import ToolLayout from '@/layouts/ToolLayout.astro';
 import type { ToolPageModel } from './models/tool';
@@ -25,6 +26,7 @@ const toolInstanceId = `tool-${page.toolId}-${page.locale}`;
   </Fragment>
 
   <Fragment slot="page-header">
+    <Breadcrumbs model={page.breadcrumbs} />
     <h1 class="text-3xl font-semibold tracking-normal text-slate-950" data-template-identity={page.toolId}>{page.content.title}</h1>
     <p class="max-w-3xl text-lg leading-8 text-slate-700">{page.content.description}</p>
   </Fragment>

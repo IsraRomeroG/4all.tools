@@ -13,6 +13,7 @@ import {
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
 import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
+import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
 import type { ToolPageModel } from '@/templates/models/shared';
 import {
   getRootCategoryStaticPathEntries,
@@ -368,6 +369,7 @@ function fixtureToolModel(locale: Locale): ToolPageModel {
           : `https://4all.tools/${locale}/fixture/json-validator/`,
     }),
     languageSwitcher: languageSwitcher(locale),
+    breadcrumbs: breadcrumbs(locale),
     toolId: 'json-validator',
     title: 'JSON Validator',
     messages: getGlobalMessages(locale),
@@ -410,5 +412,26 @@ function languageSwitcher(locale: Locale): LanguageSwitcherModel {
             url: `/${itemLocale}/`,
           },
     ),
+  };
+}
+
+function breadcrumbs(locale: Locale): BreadcrumbModel {
+  const messages = getGlobalMessages(locale).navigation;
+
+  return {
+    ariaLabel: messages.breadcrumbsLabel,
+    items: [
+      {
+        kind: 'home',
+        state: 'link',
+        label: messages.home,
+        url: locale === 'en' ? '/' : `/${locale}/`,
+      },
+      {
+        kind: 'entity',
+        state: 'current',
+        label: 'JSON Validator',
+      },
+    ],
   };
 }

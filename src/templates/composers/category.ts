@@ -10,6 +10,7 @@ import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import type { RouteRegistry } from '@/routing/registry';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildToolCategoryBreadcrumbs } from '@/navigation/breadcrumbs';
 import type { SeoIndexabilityResolver } from '@/seo';
 import type { ToolCategoryPageModel } from '@/templates/models/category';
 
@@ -27,7 +28,10 @@ import { composeRouteSeoPageModel } from './seo';
 export interface CategoryPageComposerDependencies {
   readonly routeRegistry: Pick<RouteRegistry, 'getCanonical' | 'getByTarget'>;
   readonly seoIndexabilityResolver?: SeoIndexabilityResolver;
-  readonly toolTaxonomy?: Pick<TaxonomyTree<ToolCategoryId>, 'findNode'>;
+  readonly toolTaxonomy?: Pick<
+    TaxonomyTree<ToolCategoryId>,
+    'findNode' | 'getPathFromRoot'
+  >;
   readonly requirePublishedToolCategoryContent?: (
     categoryId: ToolCategoryId,
     locale: Locale,
@@ -98,6 +102,14 @@ export async function composeCategoryPageModel(
     },
   );
   const messages = globalMessages(locale);
+  const breadcrumbs = buildToolCategoryBreadcrumbs({
+    locale,
+    categoryId,
+    currentTitle: contentEntry.data.title,
+    taxonomy,
+    routeRegistry: dependencies.routeRegistry,
+    messages: messages.navigation,
+  });
 
   return Object.freeze({
     kind: 'tool-category',
@@ -109,6 +121,7 @@ export async function composeCategoryPageModel(
       cluster: seoComposition.localizedRouteCluster,
       messages: messages.language,
     }),
+    breadcrumbs,
     title: contentEntry.data.title,
     description: contentEntry.data.description,
     categoryId,

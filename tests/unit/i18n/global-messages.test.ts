@@ -48,6 +48,8 @@ describe('global messages', () => {
       expect(messages.language.switcherLabel).toBeTruthy();
       expect(messages.language.currentLanguage).toBeTruthy();
       expect(messages.language.unavailable).toBeTruthy();
+      expect(messages.navigation.home).toBeTruthy();
+      expect(messages.navigation.breadcrumbsLabel).toBeTruthy();
       expect(messages.footer.privacy).toBeTruthy();
       expect(messages.accessibility.openMenu).toBeTruthy();
       expect(messages.sections.search).toBeTruthy();
@@ -84,6 +86,25 @@ describe('global messages', () => {
       featuredCategories: 'Catégories en vedette',
       popularTools: 'Outils populaires',
       toolWorkspace: 'Espace de travail de l’outil',
+    });
+  });
+
+  it('localizes breadcrumb navigation labels', () => {
+    expect(en.navigation).toEqual({
+      home: 'Home',
+      breadcrumbsLabel: 'Breadcrumbs',
+    });
+    expect(es.navigation).toEqual({
+      home: 'Inicio',
+      breadcrumbsLabel: 'Ruta de navegación',
+    });
+    expect(pt.navigation).toEqual({
+      home: 'Início',
+      breadcrumbsLabel: 'Caminho de navegação',
+    });
+    expect(fr.navigation).toEqual({
+      home: 'Accueil',
+      breadcrumbsLabel: 'Fil d’Ariane',
     });
   });
 

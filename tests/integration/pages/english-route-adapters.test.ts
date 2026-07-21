@@ -15,6 +15,7 @@ import {
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
 import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
+import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
 import type {
   ToolCategoryPageModel,
   ToolPageModel,
@@ -271,6 +272,7 @@ function fixtureToolModel(): ToolPageModel {
       canonicalUrl: 'https://4all.tools/developer/json-validator/',
     }),
     languageSwitcher: languageSwitcher('en'),
+    breadcrumbs: breadcrumbs('en', 'JSON Validator', 'entity'),
     toolId: 'json-validator',
     title: 'JSON Validator',
     messages: getGlobalMessages('en'),
@@ -308,6 +310,7 @@ function fixtureCategoryModel(): ToolCategoryPageModel {
       canonicalUrl: 'https://4all.tools/developer/',
     }),
     languageSwitcher: languageSwitcher('en'),
+    breadcrumbs: breadcrumbs('en', 'Developer Tools', 'taxonomy'),
     categoryId: 'developer',
     title: 'Developer Tools',
     messages: getGlobalMessages('en'),
@@ -354,5 +357,30 @@ function languageSwitcher(locale: 'en'): LanguageSwitcherModel {
             url: `/${itemLocale}/`,
           },
     ),
+  };
+}
+
+function breadcrumbs(
+  locale: 'en',
+  currentTitle: string,
+  currentKind: 'entity' | 'taxonomy',
+): BreadcrumbModel {
+  const messages = getGlobalMessages(locale).navigation;
+
+  return {
+    ariaLabel: messages.breadcrumbsLabel,
+    items: [
+      {
+        kind: 'home',
+        state: 'link',
+        label: messages.home,
+        url: '/',
+      },
+      {
+        kind: currentKind,
+        state: 'current',
+        label: currentTitle,
+      },
+    ],
   };
 }

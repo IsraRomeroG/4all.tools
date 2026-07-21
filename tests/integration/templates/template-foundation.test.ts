@@ -11,6 +11,7 @@ import ToolTemplate from '@/templates/ToolTemplate.astro';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
 import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
+import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
 import { createSeoPageModel } from '@/seo';
 
@@ -63,6 +64,7 @@ describe('template foundation', () => {
             canonicalUrl: 'https://4all.tools/es/desarrollo/validador-json/',
           }),
           languageSwitcher: languageSwitcher('es'),
+          breadcrumbs: breadcrumbs('es', 'Validador JSON', 'entity'),
           toolId: 'json-validator',
           title: 'Validador JSON',
           description: 'Valida documentos JSON desde un modelo preparado.',
@@ -120,6 +122,7 @@ describe('template foundation', () => {
             canonicalUrl: 'https://4all.tools/developer/json-validator/',
           }),
           languageSwitcher: languageSwitcher('en'),
+          breadcrumbs: breadcrumbs('en', 'JSON Validator', 'entity'),
           toolId: 'json-validator',
           title: 'JSON Validator',
           messages: getGlobalMessages('en'),
@@ -174,6 +177,7 @@ describe('template foundation', () => {
             canonicalUrl: 'https://4all.tools/es/desarrollo/',
           }),
           languageSwitcher: languageSwitcher('es'),
+          breadcrumbs: breadcrumbs('es', 'Desarrollo', 'taxonomy'),
           categoryId: 'developer',
           title: 'Desarrollo',
           description: 'Herramientas para desarrolladores.',
@@ -357,5 +361,30 @@ function languageSwitcher(locale: 'en' | 'es'): LanguageSwitcherModel {
             url: `/${itemLocale}/`,
           },
     ),
+  };
+}
+
+function breadcrumbs(
+  locale: 'en' | 'es',
+  currentTitle: string,
+  currentKind: 'entity' | 'taxonomy',
+): BreadcrumbModel {
+  const messages = getGlobalMessages(locale).navigation;
+
+  return {
+    ariaLabel: messages.breadcrumbsLabel,
+    items: [
+      {
+        kind: 'home',
+        state: 'link',
+        label: messages.home,
+        url: locale === 'en' ? '/' : `/${locale}/`,
+      },
+      {
+        kind: currentKind,
+        state: 'current',
+        label: currentTitle,
+      },
+    ],
   };
 }

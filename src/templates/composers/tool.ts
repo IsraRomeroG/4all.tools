@@ -1,4 +1,7 @@
 import type { ToolId } from '@/domain/shared/ids';
+import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
+import type { TaxonomyTree } from '@/domain/taxonomy/shared/types';
+import type { ToolCategoryId } from '@/domain/shared/ids';
 import {
   requirePublishedToolContent,
   type ToolContentEntry,
@@ -8,6 +11,7 @@ import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import type { RouteRegistry } from '@/routing/registry';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildToolBreadcrumbs } from '@/navigation/breadcrumbs';
 import type { SeoIndexabilityResolver } from '@/seo';
 import type {
   ToolPageModel,
@@ -35,6 +39,10 @@ export interface ToolPresentationProvider {
 export interface ToolPageComposerDependencies {
   readonly routeRegistry: Pick<RouteRegistry, 'getCanonical' | 'getByTarget'>;
   readonly seoIndexabilityResolver?: SeoIndexabilityResolver;
+  readonly toolTaxonomy?: Pick<
+    TaxonomyTree<ToolCategoryId>,
+    'findNode' | 'getPathFromRoot'
+  >;
   readonly requirePublishedToolContent?: (
     toolId: ToolId,
     locale: Locale,
@@ -67,6 +75,7 @@ export async function composeToolPageModel(
     dependencies.requirePublishedToolContent ?? requirePublishedToolContent;
   const renderContent = dependencies.renderContent ?? renderContentEntry;
   const globalMessages = dependencies.getGlobalMessages ?? getGlobalMessages;
+  const taxonomy = dependencies.toolTaxonomy ?? toolTaxonomy;
   const contentEntry = await withToolCompositionContext(
     context,
     () => contentQuery(toolId, locale),
@@ -104,6 +113,15 @@ export async function composeToolPageModel(
     },
   );
   const messages = globalMessages(locale);
+  const breadcrumbs = buildToolBreadcrumbs({
+    locale,
+    toolId,
+    primaryCategoryId: presentation.primaryCategoryId,
+    currentTitle: contentEntry.data.title,
+    taxonomy,
+    routeRegistry: dependencies.routeRegistry,
+    messages: messages.navigation,
+  });
 
   return Object.freeze({
     kind: 'tool',
@@ -115,6 +133,7 @@ export async function composeToolPageModel(
       cluster: seoComposition.localizedRouteCluster,
       messages: messages.language,
     }),
+    breadcrumbs,
     title: contentEntry.data.title,
     description: contentEntry.data.description,
     toolId,

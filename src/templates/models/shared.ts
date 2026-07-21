@@ -12,6 +12,7 @@ import type { GlobalMessages } from '@/i18n/messages/types';
 import type { Locale } from '@/i18n/types';
 import type { RouteRecord } from '@/routing/types';
 import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
+import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
 import type { LocalizedRouteCluster, SeoPageModel } from '@/seo';
 
 export interface PageDocumentModel {
@@ -52,6 +53,7 @@ export interface ToolPageModel extends PageDocumentModel {
   readonly route: RouteRecord;
   readonly seo: SeoPageModel;
   readonly languageSwitcher: LanguageSwitcherModel;
+  readonly breadcrumbs: BreadcrumbModel;
   readonly toolId: ToolId;
   readonly messages: GlobalMessages;
   readonly content: {
@@ -67,6 +69,7 @@ export interface ToolCategoryPageModel extends PageDocumentModel {
   readonly route: RouteRecord;
   readonly seo: SeoPageModel;
   readonly languageSwitcher: LanguageSwitcherModel;
+  readonly breadcrumbs: BreadcrumbModel;
   readonly categoryId: ToolCategoryId;
   readonly messages: GlobalMessages;
   readonly category: {
