@@ -71,3 +71,25 @@ The local verification gate is `npm run verify`. P06R-F local closure ran `npm.c
 | P06R-F-T01 | Commit `60bf9eb812adc19f4f3965fc6b01f4f436dda935` | `npm.cmd run verify` passed locally; GitHub Actions `Verify` passed after push | Delivery routing consumes `getPublishedContentIndexes()` and shares the same production/build published-content snapshot as content query APIs. |
 | P06R-F-T02 | Commit `60bf9eb812adc19f4f3965fc6b01f4f436dda935` | `npm.cmd run verify` passed locally; GitHub Actions `Verify` passed after push | Delivery route-registry access remains memoized in production/build and reconstructs in development so content-derived route availability can refresh. |
 | P06R-F-T03 | Commit `60bf9eb812adc19f4f3965fc6b01f4f436dda935` | `npm.cmd ci`, `npm.cmd run verify`, and GitHub Actions `Verify` passed on 2026-07-17 | Lifecycle regression coverage proves source-load counts, shared routing/query snapshot use, DEV freshness, production stability, concurrent production memoization, and failed DEV recovery. |
+
+## P07
+
+| Task ID | Implementation reference | Verification status | Notes |
+|---|---|---|---|
+| P07-T01 | Working tree | `npm.cmd run verify` passed locally | Typed SEO contracts, central `SeoHead.astro`, robots, canonical, alternate, and Open Graph ownership. |
+| P07-T02 | Working tree | `npm.cmd run verify` passed locally | Stable-target localized route clusters, indexability filtering, reciprocal alternates, and x-default policy. |
+| P07-T03 | Working tree | `npm.cmd run verify` passed locally | Model-driven accessible language switcher with unavailable non-link states and no client-side locale rewriting. |
+| P07-T04 | Working tree | `npm.cmd run verify` passed locally | Taxonomy-derived breadcrumbs with links only for explicit published category routes. |
+| P07-T05 | Working tree | `npm.cmd run verify` passed locally | Missing/noindex availability matrix, direct 404 behavior, reciprocal alternate validation, and no-fallback policy. |
+
+### P07 Missing-Translation Policy
+
+| State | Route/static output | Canonical | Hreflang | Switcher | Direct request |
+|---|---|---|---|---|---|
+| Published + indexable | Generated | Self | Included | Link/current | Page |
+| Published + noindex | Generated | Self | Excluded | Link/current | Page with `noindex,follow` |
+| Missing route/content | Not generated | None | Excluded | Unavailable non-link | 404 |
+| Draft/archived | Not generated | None | Excluded | Unavailable non-link | 404 |
+| Ambiguous content | Build fails | None | None | None | No deployment |
+
+Global UI translations are required for every supported locale, while entity-page translations are independently publishable and never fall back to another locale.

@@ -31,12 +31,14 @@ const COMPOSER_FILES = [
   'src/templates/composers/home.ts',
   'src/templates/composers/tool.ts',
   'src/templates/composers/category.ts',
+  'src/templates/composers/seo.ts',
 ] as const;
 
 describe('page model composers', () => {
   it('composes a tool model from stable identity and localized canonical route', async () => {
     const model = await composeToolPageModel('es', 'json-validator', {
       routeRegistry: fixtureRouteRegistry(),
+      seoIndexabilityResolver: fixtureAllIndexableSeoResolver,
       requirePublishedToolContent: async (toolId, locale) =>
         toolContentEntry({
           toolId,
@@ -58,6 +60,34 @@ describe('page model composers', () => {
     expect(model.locale).toBe('es');
     expect(model.toolId).toBe('json-validator');
     expect(model.route.segments).toEqual(['desarrollo', 'validador-json']);
+    expect(model.seo).toMatchObject({
+      title: 'Validador JSON',
+      description: 'Valida JSON.',
+      canonicalUrl: 'https://4all.tools/es/desarrollo/validador-json/',
+      robots: {
+        index: true,
+        follow: true,
+      },
+      openGraph: {
+        type: 'website',
+        title: 'Validador JSON',
+        description: 'Valida JSON.',
+        url: 'https://4all.tools/es/desarrollo/validador-json/',
+        siteName: '4all.tools',
+      },
+    });
+    expect(model.seo.alternates.map((alternate) => alternate.url)).toEqual([
+      'https://4all.tools/developer/json-validator/',
+      'https://4all.tools/es/desarrollo/validador-json/',
+      'https://4all.tools/pt/desenvolvedor/validador-json/',
+      'https://4all.tools/fr/developpement/validateur-json/',
+    ]);
+    expect(model.seo.xDefaultUrl).toBe(
+      'https://4all.tools/developer/json-validator/',
+    );
+    expect(model.localizedRouteCluster?.current.absoluteUrl).toBe(
+      'https://4all.tools/es/desarrollo/validador-json/',
+    );
     expect(model.content.title).toBe('Validador JSON');
     expect(model.presentation).toEqual({
       toolId: 'json-validator',
@@ -230,12 +260,25 @@ describe('page model composers', () => {
           title: 'Desarrollo',
           description: 'Herramientas para desarrolladores.',
         }),
+      seoIndexabilityResolver: {
+        isIndexable: () => true,
+      },
       renderContent: fixtureRenderContent,
     });
 
     expect(model.kind).toBe('tool-category');
     expect(model.categoryId).toBe('developer');
     expect(model.route.segments).toEqual(['desarrollo']);
+    expect(model.seo.canonicalUrl).toBe('https://4all.tools/es/desarrollo/');
+    expect(model.seo.robots).toEqual({
+      index: true,
+      follow: true,
+    });
+    expect(model.seo.alternates.map((alternate) => alternate.url)).toEqual([
+      'https://4all.tools/developer/',
+      'https://4all.tools/es/desarrollo/',
+    ]);
+    expect(model.seo.xDefaultUrl).toBe('https://4all.tools/developer/');
     expect(model.category.label).toBe('Herramientas para desarrolladores');
     expect(model.content.title).toBe('Desarrollo');
     expect(model.messages.sections.tools).toBe('Herramientas');
@@ -281,23 +324,43 @@ describe('page model composers', () => {
     ).rejects.toBeInstanceOf(MissingTaxonomyNodeError);
   });
 
-  it('composes locale-specific home models without route parsing', () => {
+  it('composes locale-specific home models without route parsing', async () => {
     const getGlobalMessages = vi.fn((locale: Locale) => ({
       marker: locale,
+      language: {
+        switcherLabel: 'Languages',
+        currentLanguage: 'Current language',
+        unavailable: 'Not available',
+      },
     }));
-    const model = composeHomePageModel('fr', {
+    const model = await composeHomePageModel('fr', {
       getGlobalMessages: getGlobalMessages as never,
     });
 
     expect(model.kind).toBe('home');
     expect(model.locale).toBe('fr');
     expect(model.route).toBeNull();
-    expect(model.messages).toEqual({ marker: 'fr' });
+    expect(model.seo).toMatchObject({
+      title: '4all.tools',
+      canonicalUrl: 'https://4all.tools/fr/',
+      robots: {
+        index: true,
+        follow: true,
+      },
+    });
+    expect(model.seo.alternates.map((alternate) => alternate.url)).toEqual([
+      'https://4all.tools/',
+      'https://4all.tools/es/',
+      'https://4all.tools/pt/',
+      'https://4all.tools/fr/',
+    ]);
+    expect(model.seo.xDefaultUrl).toBe('https://4all.tools/');
+    expect(model.messages).toMatchObject({ marker: 'fr' });
     expect(getGlobalMessages).toHaveBeenCalledWith('fr');
   });
 
-  it('rejects unsupported home locales instead of falling back to English', () => {
-    expect(() => composeHomePageModel('de' as Locale)).toThrow(
+  it('rejects unsupported home locales instead of falling back to English', async () => {
+    await expect(composeHomePageModel('de' as Locale)).rejects.toThrow(
       UnsupportedLocaleError,
     );
   });
@@ -308,6 +371,7 @@ describe('page model composers', () => {
       locales.map((locale) =>
         composeToolPageModel(locale, 'json-validator', {
           routeRegistry: fixtureRouteRegistry(),
+          seoIndexabilityResolver: fixtureAllIndexableSeoResolver,
           requirePublishedToolContent: async (toolId, contentLocale) =>
             toolContentEntry({
               toolId,
@@ -332,6 +396,12 @@ describe('page model composers', () => {
       'desarrollo/validador-json',
       'desenvolvedor/validador-json',
       'developpement/validateur-json',
+    ]);
+    expect(models.map((model) => model.seo.canonicalUrl)).toEqual([
+      'https://4all.tools/developer/json-validator/',
+      'https://4all.tools/es/desarrollo/validador-json/',
+      'https://4all.tools/pt/desenvolvedor/validador-json/',
+      'https://4all.tools/fr/developpement/validateur-json/',
     ]);
   });
 
@@ -367,6 +437,10 @@ const fixtureToolPresentationProvider = {
     primaryCategoryId: 'json',
     executionType: 'client' as const,
   }),
+};
+
+const fixtureAllIndexableSeoResolver = {
+  isIndexable: () => true,
 };
 
 function fixtureRouteRegistry() {

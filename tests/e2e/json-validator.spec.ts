@@ -165,6 +165,80 @@ test.describe('JSON Validator browser behavior', () => {
     });
   }
 
+  test('switches equivalent pages with static links and browser history', async ({
+    page,
+  }) => {
+    await openJsonValidator(page, ROUTES.en);
+
+    const languageNavigation = page.getByRole('navigation', {
+      name: 'Languages',
+    });
+    await languageNavigation.getByRole('link', { name: 'Español' }).click();
+    await expect(page).toHaveURL(/\/es\/desarrollo\/validador-json\/$/);
+    await expect(
+      page.getByRole('heading', { level: 1, name: ROUTES.es.title }),
+    ).toBeVisible();
+
+    const spanishNavigation = page.getByRole('navigation', {
+      name: 'Idiomas',
+    });
+    await spanishNavigation.getByRole('link', { name: 'Français' }).click();
+    await expect(page).toHaveURL(/\/fr\/developpement\/validateur-json\/$/);
+    await expect(
+      page.locator(
+        '[data-language-switcher] li[data-locale="fr"] [aria-current="page"]',
+      ),
+    ).toHaveText(/Français/);
+    await expect(
+      page.locator('[data-language-switcher] script'),
+    ).toHaveCount(0);
+
+    await page.goBack();
+    await expect(page).toHaveURL(/\/es\/desarrollo\/validador-json\/$/);
+    await page.goForward();
+    await expect(page).toHaveURL(/\/fr\/developpement\/validateur-json\/$/);
+  });
+
+  test('follows explicit category breadcrumbs and keeps classification nodes as text', async ({
+    page,
+  }) => {
+    await openJsonValidator(page, ROUTES.en);
+
+    const breadcrumbs = page.getByRole('navigation', { name: 'Breadcrumbs' });
+    await expect(
+      breadcrumbs.getByRole('link', { name: 'Developer Tools' }),
+    ).toBeVisible();
+    await expect(
+      breadcrumbs.getByRole('link', { name: 'Data Formats' }),
+    ).toHaveCount(0);
+    await expect(breadcrumbs.getByRole('link', { name: 'JSON' })).toHaveCount(
+      0,
+    );
+    await expect(breadcrumbs.getByRole('link')).toHaveCount(2);
+
+    await breadcrumbs.getByRole('link', { name: 'Developer Tools' }).click();
+    await expect(page).toHaveURL(/\/developer\/$/);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Developer Tools' }),
+    ).toBeVisible();
+  });
+
+  test('keeps a missing localized path as a direct 404 without fallback navigation', async ({
+    page,
+  }) => {
+    const missingPath = '/es/desarrollo/missing-json-validator/';
+    const response = await page.goto(missingPath);
+
+    expect(response?.status()).toBe(404);
+    expect(new URL(page.url()).pathname).toBe(missingPath);
+
+    const errors = observedErrors.get(page);
+    expect(errors?.consoleErrors).toEqual([
+      'Failed to load resource: the server responded with a status of 404 (Not Found)',
+    ]);
+    errors?.consoleErrors.splice(0);
+  });
+
   test('validates English JSON and formats/minifies without network requests', async ({
     page,
   }) => {

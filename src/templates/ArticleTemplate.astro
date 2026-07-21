@@ -7,13 +7,9 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const layoutProps =
-  page.documentTitle === undefined
-    ? { locale: page.locale }
-    : { locale: page.locale, documentTitle: page.documentTitle };
 ---
 
-<ArticleLayout {...layoutProps}>
+<ArticleLayout locale={page.locale}>
   <slot name="head" slot="head" />
 
   <Fragment slot="article-header">

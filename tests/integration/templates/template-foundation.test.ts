@@ -9,7 +9,11 @@ import CategoryTemplate from '@/templates/CategoryTemplate.astro';
 import HomeTemplate from '@/templates/HomeTemplate.astro';
 import ToolTemplate from '@/templates/ToolTemplate.astro';
 import { getGlobalMessages } from '@/i18n/messages/registry';
+import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
+import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
+import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
+import { createSeoPageModel } from '@/seo';
 
 import FixtureContent from '../../fixtures/templates/FixtureContent.astro';
 
@@ -54,6 +58,13 @@ describe('template foundation', () => {
             },
           }),
           documentTitle: 'Documento de herramienta',
+          seo: seo({
+            title: 'Documento de herramienta',
+            description: 'Valida documentos JSON desde un modelo preparado.',
+            canonicalUrl: 'https://4all.tools/es/desarrollo/validador-json/',
+          }),
+          languageSwitcher: languageSwitcher('es'),
+          breadcrumbs: breadcrumbs('es', 'Validador JSON', 'entity'),
           toolId: 'json-validator',
           title: 'Validador JSON',
           description: 'Valida documentos JSON desde un modelo preparado.',
@@ -105,6 +116,13 @@ describe('template foundation', () => {
               toolId: 'json-validator',
             },
           }),
+          seo: seo({
+            title: 'JSON Validator',
+            description: 'Validate JSON.',
+            canonicalUrl: 'https://4all.tools/developer/json-validator/',
+          }),
+          languageSwitcher: languageSwitcher('en'),
+          breadcrumbs: breadcrumbs('en', 'JSON Validator', 'entity'),
           toolId: 'json-validator',
           title: 'JSON Validator',
           messages: getGlobalMessages('en'),
@@ -153,6 +171,13 @@ describe('template foundation', () => {
             },
           }),
           documentTitle: 'Desarrollo',
+          seo: seo({
+            title: 'Desarrollo',
+            description: 'Herramientas para desarrolladores.',
+            canonicalUrl: 'https://4all.tools/es/desarrollo/',
+          }),
+          languageSwitcher: languageSwitcher('es'),
+          breadcrumbs: breadcrumbs('es', 'Desarrollo', 'taxonomy'),
           categoryId: 'developer',
           title: 'Desarrollo',
           description: 'Herramientas para desarrolladores.',
@@ -196,6 +221,12 @@ describe('template foundation', () => {
           kind: 'home',
           locale: 'en',
           route: null,
+          seo: seo({
+            title: '4all.tools',
+            description: 'Useful tools for everyday work.',
+            canonicalUrl: 'https://4all.tools/',
+          }),
+          languageSwitcher: languageSwitcher('en'),
           title: '4all.tools',
           description: 'Useful tools for everyday work.',
           messages: getGlobalMessages('en'),
@@ -296,5 +327,64 @@ function route(input: {
     segments: input.segments,
     target: input.target,
     sourceId: 'fixture:template',
+  };
+}
+
+function seo(input: {
+  readonly title: string;
+  readonly description: string;
+  readonly canonicalUrl: string;
+}) {
+  return createSeoPageModel(input);
+}
+
+function languageSwitcher(locale: 'en' | 'es'): LanguageSwitcherModel {
+  const messages = getGlobalMessages(locale).language;
+
+  return {
+    ariaLabel: messages.switcherLabel,
+    currentLanguage: messages.currentLanguage,
+    unavailableLabel: messages.unavailable,
+    items: SUPPORTED_LOCALES.map((itemLocale) =>
+      itemLocale === locale
+        ? {
+            state: 'current' as const,
+            locale: itemLocale,
+            label: LOCALES[itemLocale].label,
+            htmlLang: LOCALES[itemLocale].htmlLang,
+          }
+        : {
+            state: 'available' as const,
+            locale: itemLocale,
+            label: LOCALES[itemLocale].label,
+            htmlLang: LOCALES[itemLocale].htmlLang,
+            url: `/${itemLocale}/`,
+          },
+    ),
+  };
+}
+
+function breadcrumbs(
+  locale: 'en' | 'es',
+  currentTitle: string,
+  currentKind: 'entity' | 'taxonomy',
+): BreadcrumbModel {
+  const messages = getGlobalMessages(locale).navigation;
+
+  return {
+    ariaLabel: messages.breadcrumbsLabel,
+    items: [
+      {
+        kind: 'home',
+        state: 'link',
+        label: messages.home,
+        url: locale === 'en' ? '/' : `/${locale}/`,
+      },
+      {
+        kind: currentKind,
+        state: 'current',
+        label: currentTitle,
+      },
+    ],
   };
 }

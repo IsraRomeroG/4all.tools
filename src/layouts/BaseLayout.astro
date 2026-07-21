@@ -6,13 +6,11 @@ import type { Locale } from '@/i18n/types';
 
 interface Props {
   locale: Locale;
-  documentTitle?: string;
   mainClass?: string;
 }
 
 const {
   locale,
-  documentTitle = '4all.tools',
   mainClass = 'min-h-screen',
 } = Astro.props;
 
@@ -24,7 +22,6 @@ const localeDefinition = LOCALES[locale];
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>{documentTitle}</title>
     <slot name="head" />
   </head>
   <body class="bg-white text-slate-950 antialiased">

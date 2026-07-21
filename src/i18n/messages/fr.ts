@@ -6,6 +6,10 @@ export const fr = {
     categories: 'Catégories',
     blog: 'Blog',
   },
+  navigation: {
+    home: 'Accueil',
+    breadcrumbsLabel: 'Fil d’Ariane',
+  },
   common: {
     copy: 'Copier',
     copied: 'Copié',
@@ -29,6 +33,9 @@ export const fr = {
   language: {
     label: 'Langue',
     changeLanguage: 'Changer de langue',
+    switcherLabel: 'Langues',
+    currentLanguage: 'Langue actuelle',
+    unavailable: 'Indisponible',
   },
   footer: {
     privacy: 'Confidentialité',

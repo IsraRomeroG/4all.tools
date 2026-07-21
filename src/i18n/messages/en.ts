@@ -4,6 +4,10 @@ export const en = {
     categories: 'Categories',
     blog: 'Blog',
   },
+  navigation: {
+    home: 'Home',
+    breadcrumbsLabel: 'Breadcrumbs',
+  },
   common: {
     copy: 'Copy',
     copied: 'Copied',
@@ -27,6 +31,9 @@ export const en = {
   language: {
     label: 'Language',
     changeLanguage: 'Change language',
+    switcherLabel: 'Languages',
+    currentLanguage: 'Current language',
+    unavailable: 'Not available',
   },
   footer: {
     privacy: 'Privacy',

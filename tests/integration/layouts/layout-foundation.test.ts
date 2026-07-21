@@ -25,7 +25,6 @@ async function renderBaseLayout(locale: 'en' | 'es'): Promise<string> {
     partial: false,
     props: {
       locale,
-      documentTitle: `${locale} document`,
     },
     slots: {
       head: '<meta name="layout-head-slot" content="rendered" />',
@@ -37,18 +36,18 @@ async function renderBaseLayout(locale: 'en' | 'es'): Promise<string> {
 }
 
 describe('layout foundation', () => {
-  it('renders English document metadata from locale configuration', async () => {
+  it('renders English document roots from locale configuration', async () => {
     const html = await renderBaseLayout('en');
 
     expect(html).toContain('<html lang="en" dir="ltr">');
-    expect(html).toContain('<title>en document</title>');
+    expect(html).not.toContain('<title>');
   });
 
-  it('renders Spanish document metadata from locale configuration', async () => {
+  it('renders Spanish document roots from locale configuration', async () => {
     const html = await renderBaseLayout('es');
 
     expect(html).toContain('<html lang="es" dir="ltr">');
-    expect(html).toContain('<title>es document</title>');
+    expect(html).not.toContain('<title>');
   });
 
   it('renders named head content inside the document head', async () => {
@@ -77,7 +76,6 @@ describe('layout foundation', () => {
       partial: false,
       props: {
         locale: 'en',
-        documentTitle: 'Tool document',
         workspaceLabel: 'Tool workspace',
       },
       slots: {
@@ -102,7 +100,6 @@ describe('layout foundation', () => {
       partial: false,
       props: {
         locale: 'es',
-        documentTitle: 'Article document',
       },
       slots: {
         head: '<meta name="article-head-slot" content="rendered" />',

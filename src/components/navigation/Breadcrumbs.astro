@@ -1,0 +1,39 @@
+---
+import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
+
+interface Props {
+  model: BreadcrumbModel;
+}
+
+const { model } = Astro.props;
+---
+
+<nav aria-label={model.ariaLabel} data-breadcrumbs>
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-600">
+    {
+      model.items.map((item, index) => (
+        <li class="inline-flex items-center gap-x-2" data-kind={item.kind} data-state={item.state}>
+          {
+            item.state === 'link' ? (
+              <a
+                class="underline decoration-slate-300 underline-offset-4 hover:text-slate-950 hover:decoration-slate-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-700"
+                href={item.url}
+              >
+                {item.label}
+              </a>
+            ) : item.state === 'current' ? (
+              <span class="font-medium text-slate-950" aria-current="page">
+                {item.label}
+              </span>
+            ) : (
+              <span>{item.label}</span>
+            )
+          }
+          {index < model.items.length - 1 && (
+            <span aria-hidden="true">/</span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

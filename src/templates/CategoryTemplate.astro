@@ -1,5 +1,8 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import LanguageSwitcher from '@/components/navigation/LanguageSwitcher.astro';
+import Breadcrumbs from '@/components/navigation/Breadcrumbs.astro';
+import SeoHead from '@/components/seo/SeoHead.astro';
 import type { ToolCategoryPageModel } from './models/category';
 
 interface Props {
@@ -7,17 +10,18 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const layoutProps =
-  page.documentTitle === undefined
-    ? { locale: page.locale }
-    : { locale: page.locale, documentTitle: page.documentTitle };
 const EditorialContent = page.content.editorial.Content;
 ---
 
-<BaseLayout {...layoutProps} mainClass="min-h-screen bg-slate-50">
-  <slot name="head" slot="head" />
+<BaseLayout locale={page.locale} mainClass="min-h-screen bg-slate-50">
+  <LanguageSwitcher slot="site-header" model={page.languageSwitcher} />
+  <Fragment slot="head">
+    <SeoHead seo={page.seo} />
+    <slot name="head" />
+  </Fragment>
 
   <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:px-8" data-template="tool-category" data-template-identity={page.categoryId}>
+    <Breadcrumbs model={page.breadcrumbs} />
     <header class="grid max-w-3xl gap-4" data-template-region="category-header">
       <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{page.content.title}</h1>
       <p class="text-lg leading-8 text-slate-700">{page.content.description}</p>

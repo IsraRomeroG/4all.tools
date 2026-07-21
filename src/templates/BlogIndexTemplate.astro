@@ -7,13 +7,9 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const layoutProps =
-  page.documentTitle === undefined
-    ? { locale: page.locale }
-    : { locale: page.locale, documentTitle: page.documentTitle };
 ---
 
-<BaseLayout {...layoutProps}>
+<BaseLayout locale={page.locale}>
   <slot name="head" slot="head" />
 
   <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:px-8" data-template="blog-index">

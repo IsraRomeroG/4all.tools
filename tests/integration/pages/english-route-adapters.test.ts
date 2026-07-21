@@ -13,6 +13,9 @@ import {
   UnsupportedPageTargetError,
 } from '@/templates/composers';
 import { getGlobalMessages } from '@/i18n/messages/registry';
+import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
+import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
+import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
 import type {
   ToolCategoryPageModel,
   ToolPageModel,
@@ -24,6 +27,7 @@ import {
 } from '@/routing/static-paths';
 import { createRouteRegistryFromRecords } from '@/routing/registry';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
+import { createSeoPageModel } from '@/seo';
 
 import FixtureContent from '../../fixtures/templates/FixtureContent.astro';
 
@@ -262,6 +266,13 @@ function fixtureToolModel(): ToolPageModel {
         toolId: 'json-validator',
       },
     }),
+    seo: seo({
+      title: 'JSON Validator',
+      description: 'Validate JSON.',
+      canonicalUrl: 'https://4all.tools/developer/json-validator/',
+    }),
+    languageSwitcher: languageSwitcher('en'),
+    breadcrumbs: breadcrumbs('en', 'JSON Validator', 'entity'),
     toolId: 'json-validator',
     title: 'JSON Validator',
     messages: getGlobalMessages('en'),
@@ -293,6 +304,13 @@ function fixtureCategoryModel(): ToolCategoryPageModel {
         categoryId: 'developer',
       },
     }),
+    seo: seo({
+      title: 'Developer Tools',
+      description: 'Developer utilities.',
+      canonicalUrl: 'https://4all.tools/developer/',
+    }),
+    languageSwitcher: languageSwitcher('en'),
+    breadcrumbs: breadcrumbs('en', 'Developer Tools', 'taxonomy'),
     categoryId: 'developer',
     title: 'Developer Tools',
     messages: getGlobalMessages('en'),
@@ -307,5 +325,62 @@ function fixtureCategoryModel(): ToolCategoryPageModel {
         headings: [],
       },
     },
+  };
+}
+
+function seo(input: {
+  readonly title: string;
+  readonly description: string;
+  readonly canonicalUrl: string;
+}) {
+  return createSeoPageModel(input);
+}
+
+function languageSwitcher(locale: 'en'): LanguageSwitcherModel {
+  return {
+    ariaLabel: 'Languages',
+    currentLanguage: 'Current language',
+    unavailableLabel: 'Not available',
+    items: SUPPORTED_LOCALES.map((itemLocale) =>
+      itemLocale === locale
+        ? {
+            state: 'current' as const,
+            locale: itemLocale,
+            label: LOCALES[itemLocale].label,
+            htmlLang: LOCALES[itemLocale].htmlLang,
+          }
+        : {
+            state: 'available' as const,
+            locale: itemLocale,
+            label: LOCALES[itemLocale].label,
+            htmlLang: LOCALES[itemLocale].htmlLang,
+            url: `/${itemLocale}/`,
+          },
+    ),
+  };
+}
+
+function breadcrumbs(
+  locale: 'en',
+  currentTitle: string,
+  currentKind: 'entity' | 'taxonomy',
+): BreadcrumbModel {
+  const messages = getGlobalMessages(locale).navigation;
+
+  return {
+    ariaLabel: messages.breadcrumbsLabel,
+    items: [
+      {
+        kind: 'home',
+        state: 'link',
+        label: messages.home,
+        url: '/',
+      },
+      {
+        kind: currentKind,
+        state: 'current',
+        label: currentTitle,
+      },
+    ],
   };
 }

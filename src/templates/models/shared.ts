@@ -11,13 +11,22 @@ import type { ToolExecutionType } from '@/domain/tools';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import type { Locale } from '@/i18n/types';
 import type { RouteRecord } from '@/routing/types';
+import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
+import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
+import type { LocalizedRouteCluster, SeoPageModel } from '@/seo';
 
 export interface PageDocumentModel {
   readonly locale: Locale;
   readonly route: RouteRecord | null;
+  /**
+   * Deprecated P05 bridge. P07 templates render document metadata through
+   * SeoHead and ignore layout-owned title values.
+   */
   readonly documentTitle?: string;
   readonly title: string;
   readonly description?: string;
+  readonly seo?: SeoPageModel;
+  readonly localizedRouteCluster?: LocalizedRouteCluster;
 }
 
 export interface RenderedContentModel {
@@ -34,12 +43,17 @@ export interface ToolPresentationDefinition {
 export interface HomePageModel extends PageDocumentModel {
   readonly kind: 'home';
   readonly route: null;
+  readonly seo: SeoPageModel;
+  readonly languageSwitcher: LanguageSwitcherModel;
   readonly messages: GlobalMessages;
 }
 
 export interface ToolPageModel extends PageDocumentModel {
   readonly kind: 'tool';
   readonly route: RouteRecord;
+  readonly seo: SeoPageModel;
+  readonly languageSwitcher: LanguageSwitcherModel;
+  readonly breadcrumbs: BreadcrumbModel;
   readonly toolId: ToolId;
   readonly messages: GlobalMessages;
   readonly content: {
@@ -53,6 +67,9 @@ export interface ToolPageModel extends PageDocumentModel {
 export interface ToolCategoryPageModel extends PageDocumentModel {
   readonly kind: 'tool-category';
   readonly route: RouteRecord;
+  readonly seo: SeoPageModel;
+  readonly languageSwitcher: LanguageSwitcherModel;
+  readonly breadcrumbs: BreadcrumbModel;
   readonly categoryId: ToolCategoryId;
   readonly messages: GlobalMessages;
   readonly category: {
