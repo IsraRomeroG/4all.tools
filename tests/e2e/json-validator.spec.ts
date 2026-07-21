@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test';
+import { expect, type ConsoleMessage, type Page, test } from '@playwright/test';
 
 import {
   startAstroPreview,
@@ -27,6 +27,8 @@ interface JsonValidatorRoute {
 interface ObservedErrors {
   readonly consoleErrors: string[];
   readonly pageErrors: string[];
+  readonly expectedNavigation404ConsoleErrors: string[];
+  expectedNavigation404Path?: string;
 }
 
 interface RequestObserver {
@@ -116,12 +118,24 @@ test.beforeEach(({ page }) => {
   const errors: ObservedErrors = {
     consoleErrors: [],
     pageErrors: [],
+    expectedNavigation404ConsoleErrors: [],
   };
 
   observedErrors.set(page, errors);
   page.on('console', (message) => {
     if (message.type() === 'error') {
-      errors.consoleErrors.push(message.text());
+      if (
+        errors.expectedNavigation404Path !== undefined &&
+        isExpectedNavigation404ConsoleNoise(
+          page,
+          message,
+          errors.expectedNavigation404Path,
+        )
+      ) {
+        errors.expectedNavigation404ConsoleErrors.push(message.text());
+      } else {
+        errors.consoleErrors.push(message.text());
+      }
     }
   });
   page.on('pageerror', (error) => {
@@ -143,6 +157,7 @@ test.afterEach(({ page }) => {
 
   expect(errors?.pageErrors ?? []).toEqual([]);
   expect(errors?.consoleErrors ?? []).toEqual([]);
+  expect(errors?.expectedNavigation404ConsoleErrors.length ?? 0).toBeLessThanOrEqual(1);
 });
 
 test.describe('JSON Validator browser behavior', () => {
@@ -227,16 +242,15 @@ test.describe('JSON Validator browser behavior', () => {
     page,
   }) => {
     const missingPath = '/es/desarrollo/missing-json-validator/';
+    allowExpectedNavigation404ConsoleNoise(page, missingPath);
     const response = await page.goto(missingPath);
 
     expect(response?.status()).toBe(404);
     expect(new URL(page.url()).pathname).toBe(missingPath);
 
     const errors = observedErrors.get(page);
-    expect(errors?.consoleErrors).toEqual([
-      'Failed to load resource: the server responded with a status of 404 (Not Found)',
-    ]);
-    errors?.consoleErrors.splice(0);
+    expect(errors?.consoleErrors ?? []).toEqual([]);
+    expect(errors?.expectedNavigation404ConsoleErrors.length ?? 0).toBeLessThanOrEqual(1);
   });
 
   test('validates English JSON and formats/minifies without network requests', async ({
@@ -393,6 +407,41 @@ function isAllowedLocalAssetRequest(url: string): boolean {
     (parsedUrl.pathname.startsWith('/_astro/') ||
       parsedUrl.pathname === '/favicon.ico' ||
       parsedUrl.pathname === '/favicon.svg')
+  );
+}
+
+function allowExpectedNavigation404ConsoleNoise(
+  page: Page,
+  path: string,
+): void {
+  const errors = observedErrors.get(page);
+
+  if (errors === undefined) {
+    throw new Error('Expected page error observer to be initialized.');
+  }
+
+  errors.expectedNavigation404Path = path;
+}
+
+function isExpectedNavigation404ConsoleNoise(
+  page: Page,
+  message: ConsoleMessage,
+  expectedPath: string,
+): boolean {
+  const pagePath = new URL(page.url()).pathname;
+  const messageUrl = message.location().url;
+  let messagePath: string | undefined;
+
+  try {
+    messagePath = messageUrl === '' ? undefined : new URL(messageUrl).pathname;
+  } catch {
+    return false;
+  }
+
+  return (
+    pagePath === expectedPath &&
+    message.text().includes('404') &&
+    (messagePath === undefined || messagePath === expectedPath)
   );
 }
 

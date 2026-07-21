@@ -324,7 +324,7 @@ describe('page model composers', () => {
     ).rejects.toBeInstanceOf(MissingTaxonomyNodeError);
   });
 
-  it('composes locale-specific home models without route parsing', async () => {
+  it('composes exact localized home metadata without route parsing', async () => {
     const getGlobalMessages = vi.fn((locale: Locale) => ({
       marker: locale,
       language: {
@@ -333,30 +333,45 @@ describe('page model composers', () => {
         unavailable: 'Not available',
       },
     }));
-    const model = await composeHomePageModel('fr', {
-      getGlobalMessages: getGlobalMessages as never,
-    });
+    const expected = {
+      en: 'Useful online tools for everyday work.',
+      es: 'Herramientas en línea útiles para el trabajo diario.',
+      pt: 'Ferramentas online úteis para o trabalho diário.',
+      fr: 'Outils en ligne utiles pour le travail quotidien.',
+    } as const;
 
-    expect(model.kind).toBe('home');
-    expect(model.locale).toBe('fr');
-    expect(model.route).toBeNull();
-    expect(model.seo).toMatchObject({
-      title: '4all.tools',
-      canonicalUrl: 'https://4all.tools/fr/',
-      robots: {
-        index: true,
-        follow: true,
-      },
-    });
-    expect(model.seo.alternates.map((alternate) => alternate.url)).toEqual([
-      'https://4all.tools/',
-      'https://4all.tools/es/',
-      'https://4all.tools/pt/',
-      'https://4all.tools/fr/',
-    ]);
-    expect(model.seo.xDefaultUrl).toBe('https://4all.tools/');
-    expect(model.messages).toMatchObject({ marker: 'fr' });
-    expect(getGlobalMessages).toHaveBeenCalledWith('fr');
+    for (const locale of ['en', 'es', 'pt', 'fr'] as const) {
+      const model = await composeHomePageModel(locale, {
+        getGlobalMessages: getGlobalMessages as never,
+      });
+
+      expect(model.kind).toBe('home');
+      expect(model.locale).toBe(locale);
+      expect(model.route).toBeNull();
+      expect(model.description).toBe(expected[locale]);
+      expect(model.seo).toMatchObject({
+        title: '4all.tools',
+        description: expected[locale],
+        canonicalUrl: locale === 'en'
+          ? 'https://4all.tools/'
+          : `https://4all.tools/${locale}/`,
+        robots: {
+          index: true,
+          follow: true,
+        },
+      });
+      expect(model.seo.description).toBe(model.description);
+      expect(model.seo.alternates.map((alternate) => alternate.url)).toEqual([
+        'https://4all.tools/',
+        'https://4all.tools/es/',
+        'https://4all.tools/pt/',
+        'https://4all.tools/fr/',
+      ]);
+      expect(model.seo.xDefaultUrl).toBe('https://4all.tools/');
+      expect(model.messages).toMatchObject({ marker: locale });
+    }
+
+    expect(getGlobalMessages).toHaveBeenCalledTimes(4);
   });
 
   it('rejects unsupported home locales instead of falling back to English', async () => {

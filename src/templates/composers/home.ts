@@ -23,11 +23,11 @@ const HOME_SEO = {
   },
   es: {
     title: '4all.tools',
-    description: 'Herramientas en linea utiles para el trabajo diario.',
+    description: 'Herramientas en línea útiles para el trabajo diario.',
   },
   pt: {
     title: '4all.tools',
-    description: 'Ferramentas online uteis para o trabalho diario.',
+    description: 'Ferramentas online úteis para o trabalho diário.',
   },
   fr: {
     title: '4all.tools',

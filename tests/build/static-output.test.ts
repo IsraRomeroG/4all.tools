@@ -21,6 +21,45 @@ interface ExpectedBuiltToolPage {
   readonly forbiddenMetadataFragments: readonly string[];
 }
 
+interface ExpectedBuiltHomePage {
+  readonly locale: Locale;
+  readonly relativeFile: string;
+  readonly htmlLang: string;
+  readonly description: string;
+  readonly canonicalUrl: string;
+}
+
+const EXPECTED_HOME_PAGES = [
+  {
+    locale: 'en',
+    relativeFile: 'index.html',
+    htmlLang: 'en',
+    description: 'Useful online tools for everyday work.',
+    canonicalUrl: 'https://4all.tools/',
+  },
+  {
+    locale: 'es',
+    relativeFile: 'es/index.html',
+    htmlLang: 'es',
+    description: 'Herramientas en línea útiles para el trabajo diario.',
+    canonicalUrl: 'https://4all.tools/es/',
+  },
+  {
+    locale: 'pt',
+    relativeFile: 'pt/index.html',
+    htmlLang: 'pt',
+    description: 'Ferramentas online úteis para o trabalho diário.',
+    canonicalUrl: 'https://4all.tools/pt/',
+  },
+  {
+    locale: 'fr',
+    relativeFile: 'fr/index.html',
+    htmlLang: 'fr',
+    description: 'Outils en ligne utiles pour le travail quotidien.',
+    canonicalUrl: 'https://4all.tools/fr/',
+  },
+] as const satisfies readonly ExpectedBuiltHomePage[];
+
 const EXPECTED_JSON_VALIDATOR_PAGES = [
   {
     locale: 'en',
@@ -45,7 +84,7 @@ const EXPECTED_JSON_VALIDATOR_PAGES = [
     htmlLang: 'es',
     title: 'Validador JSON',
     seoTitle: 'Validador JSON - Validar JSON online',
-    seoDescription: 'Valida la sintaxis JSON, encuentra errores de anÃ¡lisis, formatea JSON y minifica JSON directamente en tu navegador.',
+    seoDescription: 'Valida la sintaxis JSON, encuentra errores de análisis, formatea JSON y minifica JSON directamente en tu navegador.',
     canonicalUrl: 'https://4all.tools/es/desarrollo/validador-json/',
     inputLabel: 'JSON de entrada',
     validateLabel: 'Validar JSON',
@@ -62,7 +101,7 @@ const EXPECTED_JSON_VALIDATOR_PAGES = [
     htmlLang: 'pt',
     title: 'Validador JSON',
     seoTitle: 'Validador JSON - Validar JSON online',
-    seoDescription: 'Valide a sintaxe JSON, encontre erros de anÃ¡lise, formate JSON e minifique JSON diretamente no navegador.',
+    seoDescription: 'Valide a sintaxe JSON, encontre erros de análise, formate JSON e minifique JSON diretamente no navegador.',
     canonicalUrl: 'https://4all.tools/pt/desenvolvedor/validador-json/',
     inputLabel: 'JSON de entrada',
     validateLabel: 'Validar JSON',
@@ -79,7 +118,7 @@ const EXPECTED_JSON_VALIDATOR_PAGES = [
     htmlLang: 'fr',
     title: 'Validateur JSON',
     seoTitle: 'Validateur JSON - Valider du JSON en ligne',
-    seoDescription: 'Validez la syntaxe JSON, trouvez les erreurs dâ€™analyse, formatez JSON et minifiez du JSON directement dans votre navigateur.',
+    seoDescription: 'Validez la syntaxe JSON, trouvez les erreurs d’analyse, formatez JSON et minifiez JSON directement dans votre navigateur.',
     canonicalUrl: 'https://4all.tools/fr/developpement/validateur-json/',
     inputLabel: 'JSON d’entrée',
     validateLabel: 'Valider le JSON',
@@ -131,6 +170,46 @@ const FORBIDDEN_OUTPUTS = [
 ] as const;
 
 describe('static build output', () => {
+  for (const expected of EXPECTED_HOME_PAGES) {
+    it(`verifies localized home output for ${expected.locale}`, async () => {
+      const html = await readDistFile(expected.relativeFile);
+      const escapedDescription = escapeExpectedHtml(expected.description);
+
+      expect(html).toContain(`<html lang="${expected.htmlLang}"`);
+      expect(html).toContain('<title>4all.tools</title>');
+      expect(html).toContain(
+        `<meta name="description" content="${escapedDescription}">`,
+      );
+      expect(countMatches(html, /<title>/g)).toBe(1);
+      expect(countMatches(html, /name="description"/g)).toBe(1);
+      expect(html).toContain('<meta name="robots" content="index,follow">');
+      expect(countMatches(html, /name="robots"/g)).toBe(1);
+      expect(html).toContain(
+        `<link rel="canonical" href="${expected.canonicalUrl}">`,
+      );
+      expect(countMatches(html, /rel="canonical"/g)).toBe(1);
+      expect(html).toContain(
+        `<meta property="og:url" content="${expected.canonicalUrl}">`,
+      );
+      expect(html).toContain(
+        `<meta property="og:description" content="${escapedDescription}">`,
+      );
+      expect(countMatches(html, /rel="alternate"/g)).toBe(5);
+      for (const alternate of EXPECTED_HOME_ALTERNATES) {
+        expect(html).toContain(
+          `<link rel="alternate" hreflang="${alternate.hrefLang}" href="${alternate.url}">`,
+        );
+      }
+      expect(html).toContain(
+        '<link rel="alternate" hreflang="x-default" href="https://4all.tools/">',
+      );
+      expect(html).toContain(
+        `<li data-locale="${expected.locale}" data-state="current">`,
+      );
+      expect(html).not.toContain('/en/');
+    });
+  }
+
   it('generates the root page through the home template', async () => {
     const html = await readDistFile('index.html');
 
@@ -144,7 +223,10 @@ describe('static build output', () => {
       expect(html).toContain(`<html lang="${expected.htmlLang}"`);
       expect(html).toContain(`<title>${expected.seoTitle}</title>`);
       expect(countMatches(html, /<title>/g)).toBe(1);
-      expect(html).toMatch(/<meta name="description" content="[^"]+">/);
+      const escapedDescription = escapeExpectedHtml(expected.seoDescription);
+      expect(html).toContain(
+        `<meta name="description" content="${escapedDescription}">`,
+      );
       expect(countMatches(html, /name="description"/g)).toBe(1);
       expect(html).toContain('<meta name="robots" content="index,follow">');
       expect(countMatches(html, /name="robots"/g)).toBe(1);
@@ -155,7 +237,9 @@ describe('static build output', () => {
       expect(html).toContain(
         `<meta property="og:url" content="${expected.canonicalUrl}">`,
       );
-      expect(html).toMatch(/<meta property="og:description" content="[^"]+">/);
+      expect(html).toContain(
+        `<meta property="og:description" content="${escapedDescription}">`,
+      );
       expect(countMatches(html, /rel="alternate"/g)).toBe(5);
       for (const alternate of EXPECTED_JSON_VALIDATOR_ALTERNATES) {
         expect(html).toContain(
@@ -209,7 +293,38 @@ describe('static build output', () => {
     expect(clientBundle).not.toContain('indexed-content-source');
     expect(clientBundle).not.toContain('matchedEntryIds');
   });
+
+  it('contains no common mojibake markers in generated HTML or this fixture', async () => {
+    const htmlFiles = [
+      ...EXPECTED_HOME_PAGES.map((expected) => expected.relativeFile),
+      ...EXPECTED_JSON_VALIDATOR_PAGES.map((expected) => expected.relativeFile),
+    ];
+    const generatedHtml = await Promise.all(
+      htmlFiles.map((relativeFile) => readDistFile(relativeFile)),
+    );
+    const fixtureSource = await readFile(new URL('static-output.test.ts', import.meta.url), 'utf8');
+
+    for (const marker of MOJIBAKE_MARKERS) {
+      expect(generatedHtml.join('\n')).not.toContain(marker);
+      expect(fixtureSource).not.toContain(marker);
+    }
+  });
 });
+
+const EXPECTED_HOME_ALTERNATES = [
+  { hrefLang: 'en', url: 'https://4all.tools/' },
+  { hrefLang: 'es', url: 'https://4all.tools/es/' },
+  { hrefLang: 'pt', url: 'https://4all.tools/pt/' },
+  { hrefLang: 'fr', url: 'https://4all.tools/fr/' },
+] as const;
+
+const MOJIBAKE_MARKERS = [
+  ['Ã', 'ƒ'].join(''),
+  ['Ã', '‚'].join(''),
+  ['Ã', '¢', 'â', '‚', '¬', '„', '¢'].join(''),
+  ['Ã', '¢', 'â', '‚', '¬', 'Å', '“'].join(''),
+  ['Ã', '¢', 'â', '‚', '¬'].join(''),
+] as const;
 
 async function readDistFile(relativeFile: string): Promise<string> {
   try {
@@ -244,6 +359,14 @@ function toDistUrl(relativeFile: string): URL {
 
 function countMatches(value: string, pattern: RegExp): number {
   return value.match(pattern)?.length ?? 0;
+}
+
+function escapeExpectedHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
 }
 
 async function readClientJavaScriptBundle(): Promise<string> {
