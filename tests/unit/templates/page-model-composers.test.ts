@@ -38,6 +38,7 @@ describe('page model composers', () => {
   it('composes a tool model from stable identity and localized canonical route', async () => {
     const model = await composeToolPageModel('es', 'json-validator', {
       routeRegistry: fixtureRouteRegistry(),
+      seoIndexabilityResolver: fixtureAllIndexableSeoResolver,
       requirePublishedToolContent: async (toolId, locale) =>
         toolContentEntry({
           toolId,
@@ -370,6 +371,7 @@ describe('page model composers', () => {
       locales.map((locale) =>
         composeToolPageModel(locale, 'json-validator', {
           routeRegistry: fixtureRouteRegistry(),
+          seoIndexabilityResolver: fixtureAllIndexableSeoResolver,
           requirePublishedToolContent: async (toolId, contentLocale) =>
             toolContentEntry({
               toolId,
@@ -435,6 +437,10 @@ const fixtureToolPresentationProvider = {
     primaryCategoryId: 'json',
     executionType: 'client' as const,
   }),
+};
+
+const fixtureAllIndexableSeoResolver = {
+  isIndexable: () => true,
 };
 
 function fixtureRouteRegistry() {
