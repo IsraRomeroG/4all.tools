@@ -4,7 +4,7 @@ This package specifies the next blocking phase for 4all.tools after P06R-F.
 
 ```text
 P00 → P01 → P02 → P03 → P04 → P05
-    → P06 → P06R → P06R-F → P07 → P08
+    → P06 → P06R → P06R-F → P07 → P07R → P08
 ```
 
 ## Package purpose
@@ -133,6 +133,10 @@ The implementation ledger in `specs/IMPLEMENTATION-STATUS.md` is the current
 status authority; historical task headers retain their original specification
 metadata.
 
-## Implementation readiness
+## Current implementation status
 
-The specs are ready. Implementation remains blocked until P06R-F is complete and verified.
+P07 is implemented and verified. Post-audit closure corrections are tracked by
+P07R. The implementation ledger in `specs/IMPLEMENTATION-STATUS.md` is the
+current status authority.
+
+P07 is considered fully closed when P07R is marked Complete in that ledger.

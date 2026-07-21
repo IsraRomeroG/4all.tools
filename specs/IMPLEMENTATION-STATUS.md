@@ -1,14 +1,14 @@
 # Implementation Status Ledger
 
-> Last updated: 2026-07-17  
+> Last updated: 2026-07-20  
 > Repository: `IsraRomeroG/4all.tools`  
-> Implementation reference: P06R-F verified commit `60bf9eb812adc19f4f3965fc6b01f4f436dda935`
+> Implementation reference: P07R local closure commits through `b5f80d8416d728a3e939cbdfae9af25b4a5b5232`; external merge pending
 
 This ledger records implementation state without rewriting historical task specs. Some historical P06 task files still carry `Blocked` metadata because their original dependency order was written before the vertical slice existed in this repository; the implementation state below is the current repository truth.
 
 ## Verification Status
 
-The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. The GitHub Actions `Verify` workflow completed successfully for final commit `60bf9eb812adc19f4f3965fc6b01f4f436dda935` after push.
+The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. P07R local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-20. No GitHub Actions run exists for the local P07R commits because they have not been pushed; `origin/main` remains at the P07 merge commit `e4f1bdd9b05585fcb2fd1610d4af4e56bf361859`.
 
 ## P00-P06
 
@@ -76,11 +76,28 @@ The local verification gate is `npm run verify`. P06R-F local closure ran `npm.c
 
 | Task ID | Implementation reference | Verification status | Notes |
 |---|---|---|---|
-| P07-T01 | Working tree | `npm.cmd run verify` passed locally | Typed SEO contracts, central `SeoHead.astro`, robots, canonical, alternate, and Open Graph ownership. |
-| P07-T02 | Working tree | `npm.cmd run verify` passed locally | Stable-target localized route clusters, indexability filtering, reciprocal alternates, and x-default policy. |
-| P07-T03 | Working tree | `npm.cmd run verify` passed locally | Model-driven accessible language switcher with unavailable non-link states and no client-side locale rewriting. |
-| P07-T04 | Working tree | `npm.cmd run verify` passed locally | Taxonomy-derived breadcrumbs with links only for explicit published category routes. |
-| P07-T05 | Working tree | `npm.cmd run verify` passed locally | Missing/noindex availability matrix, direct 404 behavior, reciprocal alternate validation, and no-fallback policy. |
+| P07-T01 | P07 merge commit `e4f1bdd9b05585fcb2fd1610d4af4e56bf361859` | `npm.cmd run verify` passed locally; merged P07 evidence | Typed SEO contracts, central `SeoHead.astro`, robots, canonical, alternate, and Open Graph ownership. |
+| P07-T02 | P07 merge commit `e4f1bdd9b05585fcb2fd1610d4af4e56bf361859` | `npm.cmd run verify` passed locally; merged P07 evidence | Stable-target localized route clusters, indexability filtering, reciprocal alternates, and x-default policy. |
+| P07-T03 | P07 merge commit `e4f1bdd9b05585fcb2fd1610d4af4e56bf361859` | `npm.cmd run verify` passed locally; merged P07 evidence | Model-driven accessible language switcher with unavailable non-link states and no client-side locale rewriting. |
+| P07-T04 | P07 merge commit `e4f1bdd9b05585fcb2fd1610d4af4e56bf361859` | `npm.cmd run verify` passed locally; merged P07 evidence | Taxonomy-derived breadcrumbs with links only for explicit published category routes. |
+| P07-T05 | P07 merge commit `e4f1bdd9b05585fcb2fd1610d4af4e56bf361859` | `npm.cmd run verify` passed locally; merged P07 evidence | Missing/noindex availability matrix, direct 404 behavior, reciprocal alternate validation, and no-fallback policy. |
+
+## P07R
+
+| Task ID | Implementation reference | Verification status | Notes |
+|---|---|---|---|
+| P07R-T01 | Commit `2a5354b967745d334a2b9f1be9989791d2deb8f5` | `npm.cmd run verify` passed locally on 2026-07-20 | Honest public availability contract; route absence projects only `missing-public-route`. |
+| P07R-T02 | Commit `59f894022800309ba55d5c21dac93a1fd93a800a` | `npm.cmd run verify` passed locally on 2026-07-20 | Typed and runtime noindex SEO invariants. |
+| P07R-T03 | Commit `b5f80d8416d728a3e939cbdfae9af25b4a5b5232` | `npm.cmd run verify` passed locally on 2026-07-20 | Exact UTF-8 metadata, home build matrix, mojibake regression checks, and stable 404 E2E behavior. |
+| P07R-T04 | Local documentation closure commit follows; external CI/merge evidence pending | `npm.cmd ci` and `npm.cmd run verify` passed locally on 2026-07-20 | Current status authority, roadmap, traceability, and closure report updated. |
+
+### P07R gate status
+
+| Phase | Status | Evidence |
+|---|---|---|
+| P07 | Complete | P07 merge commit `e4f1bdd9b05585fcb2fd1610d4af4e56bf361859` |
+| P07R | Local verification complete; external gate pending | `npm ci` and `npm run verify` passed locally; no PR-head Actions run or merge commit yet |
+| P08 | Blocked pending P07R merge | P08 is not implemented or in progress |
 
 ### P07 Missing-Translation Policy
 

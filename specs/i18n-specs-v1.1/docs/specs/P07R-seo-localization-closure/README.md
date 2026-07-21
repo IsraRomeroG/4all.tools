@@ -3,7 +3,7 @@
 > **Package ID:** `P07R`  
 > **Package name:** SEO & Locale Navigation Closure  
 > **Spec status:** Ready  
-> **Implementation status:** Not started  
+> **Implementation status:** In progress — local verification complete; external CI and merge evidence pending  
 > **Version:** 1.0.0  
 > **Date:** 2026-07-20  
 > **Audit baseline:** `main@e4f1bdd9b05585fcb2fd1610d4af4e56bf361859`  
@@ -123,3 +123,14 @@ main contains the merged closure evidence
 ```
 
 P08 MUST NOT introduce or consume a competing availability or SEO fallback policy.
+
+## Current implementation status
+
+P07R-T01, P07R-T02, and P07R-T03 are implemented in local commits and pass the
+local verification gate. P07R-T04 documentation is being closed in the current
+working branch. The current status authority is
+`specs/IMPLEMENTATION-STATUS.md`.
+
+P07R remains incomplete until its PR-head GitHub Actions `Verify` run and merge
+evidence are recorded there. P08 remains blocked until that external phase gate
+is satisfied.

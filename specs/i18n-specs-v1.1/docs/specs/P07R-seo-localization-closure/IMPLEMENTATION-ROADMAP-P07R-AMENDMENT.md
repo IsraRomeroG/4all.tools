@@ -180,6 +180,16 @@ P08: Unblocked
 
 No historical task header needs to be rewritten; the current status authority must clearly override historical metadata.
 
+## Current gate state
+
+```text
+P07   Complete
+P07R  Local implementation and verification complete; external CI/merge pending
+P08   Blocked pending the P07R phase gate
+```
+
+P08 is not implemented or in progress as part of P07R.
+
 ---
 
 # End of P07R Roadmap Amendment
