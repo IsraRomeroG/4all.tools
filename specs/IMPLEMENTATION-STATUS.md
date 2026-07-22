@@ -8,7 +8,7 @@ This ledger records implementation state without rewriting historical task specs
 
 ## Verification Status
 
-The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. P07R local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-20 and is included in the merged `origin/main` history. P08 local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-21 and is merged at `origin/main` commit `9a9cbe295bca89b317d84096bd2177f052493c95`. P08R clean-install and full `npm.cmd run verify` passed locally on 2026-07-22 through audit-correction commit `151c0867fbef64ddcf2562b9b28deefc4005c647`. The current `origin/main` head `fcbddbaa8be1cc44c16e6d38d23f37c968622e8e` has a successful GitHub Actions `Verify` run `29896256653` on 2026-07-22 ([run details](https://github.com/IsraRomeroG/4all.tools/actions/runs/29896256653)); the newer audit-correction commit remains local, so its external CI run is still pending publication.
+The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. P07R local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-20 and is included in the merged `origin/main` history. P08 local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-21 and is merged at `origin/main` commit `9a9cbe295bca89b317d84096bd2177f052493c95`. P08R clean-install and full `npm.cmd run verify` passed locally on 2026-07-22 through audit-correction commit `151c0867fbef64ddcf2562b9b28deefc4005c647`. P09 clean-install and full `npm.cmd run verify` passed locally on 2026-07-22 through T06 closure preparation; GitHub Actions evidence for the local P08R/P09 delivery commits is not available because those commits have not been published. The current `origin/main` head `fcbddbaa8be1cc44c16e6d38d23f37c968622e8e` has a successful GitHub Actions `Verify` run `29896256653` on 2026-07-22 ([run details](https://github.com/IsraRomeroG/4all.tools/actions/runs/29896256653)); that run does not cover the local P08R/P09 commits.
 
 ## P00-P06
 
@@ -138,4 +138,26 @@ Global UI translations are required for every supported locale, while entity-pag
 | P08 | Complete | Commits `f2421b3` through `9a3795c`; local `npm.cmd ci` and `npm.cmd run verify` passed on 2026-07-21 |
 | P08R | Locally Verified / CI Pending | Commits `54fb405`, `a3056e2`, `c07617c`, and `151c0867fbef64ddcf2562b9b28deefc4005c647`; clean-install and full `npm.cmd run verify` passed locally, with the latest run on 2026-07-22 |
 | M4 | Pending P08R CI closure | Local P08R verification is green; final milestone authority awaits successful GitHub Actions `Verify` on the P08R delivery commit |
-| P09 | Blocked by P08R closure | P08R must be merged and pass the GitHub Actions `Verify` gate before P09 handoff |
+
+## P09
+
+| Task ID | Implementation reference | Verification status | Notes |
+| ------- | ------------------------ | ------------------- | ----- |
+| P09-PRE-01 | Commits `151c0867`, `170a4ac` | Local preflight/current-state review completed on 2026-07-22 | P08R remains locally verified and CI-pending; P09 changes are isolated to build validation and do not include P10 sitemap/redirect work. |
+| P09-T01 | Commit `72fd25b89a4ac62a0183763ab84d80463350df80` | `npm.cmd run verify` passed locally | Validation contracts, deterministic reports, and shared content-source snapshot lifecycle. |
+| P09-T02 | Commit `e47098c6bc7a6e05082d520ab0ec3f7a767c05e0` | `npm.cmd run verify` passed locally | Identity, taxonomy, registry, module, and feature-path validation with negative fixtures. |
+| P09-T03 | Commit `3bb2f5295049df11eaaea5dea37c11c5829faee3` | `npm.cmd run verify` passed locally | Cross-content relation validation, including unpublished, self, route-less, and missing-locale cases. |
+| P09-T04 | Commit `66a5fee95dad9b1bbf2048893fe6a09174314548` | `npm.cmd run verify` passed locally | Publication, public composition, fixed roots, route contracts, and reciprocal/noindex SEO validation. |
+| P09-T05 | Commit `170a4acaa56e569f919808d871d9414d6ee9a5af` | `npm.cmd run verify` passed locally | Source graph/boundary validation, production orchestrator, independent command, verify/CI wiring, and client-bundle exclusion. |
+| P09-T06 | T06 closure evidence in this ledger; commit follows | `npm.cmd ci` and `npm.cmd run verify` passed locally on 2026-07-22 | Local closure is complete; final CI/status transition is pending publication and a successful GitHub Actions `Verify` run for the delivery commit. |
+
+### P09 gate status
+
+| Phase | Status | Evidence |
+| ----- | ------ | -------- |
+| P08 | Complete | Commits `f2421b3` through `9a3795c`; local `npm.cmd ci` and `npm.cmd run verify` passed on 2026-07-21 |
+| P08R | Locally Verified / CI Pending | Latest local audit-correction commit `151c0867`; clean-install and full `npm.cmd run verify` passed locally on 2026-07-22 |
+| M4 | Pending P08R CI closure | GitHub Actions evidence is still required for the local P08R delivery commit |
+| P09 | Locally Verified / CI Pending | T01-T05 commits are present; clean `npm.cmd ci` and full `npm.cmd run verify` passed locally on 2026-07-22 |
+| M5 | Pending P09 CI closure | Requires a successful GitHub Actions `Verify` run covering the published P09 delivery commit |
+| P10 | Blocked by P09 closure | P10 remains unimplemented and cannot be marked ready until P09 CI/status closure is evidenced |
