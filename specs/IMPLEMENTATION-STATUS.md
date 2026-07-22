@@ -1,14 +1,14 @@
 # Implementation Status Ledger
 
-> Last updated: 2026-07-21  
+> Last updated: 2026-07-22
 > Repository: `IsraRomeroG/4all.tools`  
-> Implementation reference: P07R is included in `origin/main` through `9a9cbe295bca89b317d84096bd2177f052493c95`; P08R remediation is locally implemented through `c07617c`; external P08R merge and CI evidence pending
+> Implementation reference: P07R is included in `origin/main` through `9a9cbe295bca89b317d84096bd2177f052493c95`; P08R audit corrections are locally implemented through `151c0867fbef64ddcf2562b9b28deefc4005c647`, while `origin/main` currently ends at `fcbddbaa8be1cc44c16e6d38d23f37c968622e8e`
 
 This ledger records implementation state without rewriting historical task specs. Some historical P06 task files still carry `Blocked` metadata because their original dependency order was written before the vertical slice existed in this repository; the implementation state below is the current repository truth.
 
 ## Verification Status
 
-The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. P07R local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-20 and is included in the merged `origin/main` history. P08 local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-21 and is merged at `origin/main` commit `9a9cbe295bca89b317d84096bd2177f052493c95`. P08R clean-install and full `npm.cmd run verify` passed locally on 2026-07-21 through local commit `c07617c`; the P08R commits have not been pushed, so no P08R GitHub Actions `Verify` run is recorded yet.
+The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. P07R local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-20 and is included in the merged `origin/main` history. P08 local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-21 and is merged at `origin/main` commit `9a9cbe295bca89b317d84096bd2177f052493c95`. P08R clean-install and full `npm.cmd run verify` passed locally on 2026-07-22 through audit-correction commit `151c0867fbef64ddcf2562b9b28deefc4005c647`. The current `origin/main` head `fcbddbaa8be1cc44c16e6d38d23f37c968622e8e` has a successful GitHub Actions `Verify` run `29896256653` on 2026-07-22 ([run details](https://github.com/IsraRomeroG/4all.tools/actions/runs/29896256653)); the newer audit-correction commit remains local, so its external CI run is still pending publication.
 
 ## P00-P06
 
@@ -91,13 +91,13 @@ The local verification gate is `npm run verify`. P06R-F local closure ran `npm.c
 | P07R-T03 | Commit `b5f80d8416d728a3e939cbdfae9af25b4a5b5232` | `npm.cmd run verify` passed locally on 2026-07-20                                                      | Exact UTF-8 metadata, home build matrix, mojibake regression checks, and stable 404 E2E behavior. |
 | P07R-T04 | Commit `278d8f472da2c4d99a70bd78024a84cebb17e249` | `npm.cmd ci` and `npm.cmd run verify` passed locally on 2026-07-20; included in merged `origin/main` history | Current status authority, roadmap, traceability, and closure report updated.                      |
 
-### P07R gate status
+### Historical P07R gate snapshot
 
 | Phase | Status   | Evidence                                                    |
 | ----- | -------- | ----------------------------------------------------------- |
 | P07   | Complete | P07 merge commit `e4f1bdd9b05585fcb2fd1610d4af4e56bf361859` |
 | P07R  | Complete | Commit `0d7864ca8e99c4d215d4c89ae37231fbb708e36b`           |
-| P08   | Pending  | P08 is not implemented or in progress                       |
+| P08   | Pending  | Historical snapshot: P08 had not started at the time of this closure record |
 
 ### P07 Missing-Translation Policy
 
@@ -129,13 +129,13 @@ Global UI translations are required for every supported locale, while entity-pag
 | P08R-T01 | Commit `54fb405` | `npm.cmd run check` and `npm.cmd run test` passed on 2026-07-21 | Removed legacy article fallback/casts, made required blog template fields direct, and added strict template-boundary regression proof. |
 | P08R-T02 | Commit `a3056e2` | `npm.cmd run check` and `npm.cmd run test` passed on 2026-07-21 | Added runtime Open Graph discrimination, noindex article SEO/OG, and unknown secondary-category regression coverage. |
 | P08R-T03 | Commit `c07617c` | `npm.cmd run verify` passed locally after `npm.cmd ci` on 2026-07-21 | Added exact recursive 16-file blog inventory, blog missing-locale static/SEO proof, and direct localized 404 E2E coverage. |
-| P08R-T04 | This ledger update commit | Local clean-install and full verification evidence recorded; GitHub Actions `Verify` pending | Corrected stale status authority and recorded the remaining external CI/merge requirement without inventing evidence. |
+| P08R-T04 | Commit `151c0867fbef64ddcf2562b9b28deefc4005c647` | `npm.cmd run verify` passed locally on 2026-07-22; GitHub Actions `Verify` pending for this local commit | Closed the audit coverage gaps: UTF-8 localized-title assertions, response-scoped 404 handling, complete flat blog-output inventory, and both article-identity fallback guards. |
 
 ### P08 gate status
 
 | Phase | Status | Evidence |
 | ----- | ------ | -------- |
 | P08 | Complete | Commits `f2421b3` through `9a3795c`; local `npm.cmd ci` and `npm.cmd run verify` passed on 2026-07-21 |
-| P08R | Locally Verified / CI Pending | Commits `54fb405`, `a3056e2`, and `c07617c`; clean `npm.cmd ci` and full `npm.cmd run verify` passed locally on 2026-07-21 |
+| P08R | Locally Verified / CI Pending | Commits `54fb405`, `a3056e2`, `c07617c`, and `151c0867fbef64ddcf2562b9b28deefc4005c647`; clean-install and full `npm.cmd run verify` passed locally, with the latest run on 2026-07-22 |
 | M4 | Pending P08R CI closure | Local P08R verification is green; final milestone authority awaits successful GitHub Actions `Verify` on the P08R delivery commit |
 | P09 | Blocked by P08R closure | P08R must be merged and pass the GitHub Actions `Verify` gate before P09 handoff |
