@@ -1,45 +1,16 @@
 import type { CollectionEntry } from 'astro:content';
 
-import type { BlogCategoryId } from '@/domain/shared/ids';
-import type { Locale } from '@/i18n/types';
-
-import { ContentNotFoundError, type ContentQueryContext } from './errors';
+import { createBlogContentQueries } from './blog-content-queries';
 import { getPublishedContentIndexes } from './indexed-content-source';
 
 export type BlogCategoryContentEntry = CollectionEntry<'blogCategories'>;
 
-function blogCategoryContext(
-  categoryId: BlogCategoryId,
-  locale: Locale,
-): ContentQueryContext {
-  return {
-    collection: 'blogCategories',
-    entityField: 'categoryId',
-    entityId: categoryId,
-    locale,
-    status: 'published',
-  };
-}
+const productionBlogContentQueries = createBlogContentQueries({
+  getPublishedContentIndexes,
+});
 
-export async function getPublishedBlogCategoryContent(
-  categoryId: BlogCategoryId,
-  locale: Locale,
-): Promise<BlogCategoryContentEntry | null> {
-  const indexes = await getPublishedContentIndexes();
+export const getPublishedBlogCategoryContent =
+  productionBlogContentQueries.getPublishedBlogCategoryContent;
 
-  return indexes.blogCategories.find({ categoryId, locale });
-}
-
-export async function requirePublishedBlogCategoryContent(
-  categoryId: BlogCategoryId,
-  locale: Locale,
-): Promise<BlogCategoryContentEntry> {
-  const indexes = await getPublishedContentIndexes();
-  const entry = indexes.blogCategories.find({ categoryId, locale });
-
-  if (entry === null) {
-    throw new ContentNotFoundError(blogCategoryContext(categoryId, locale));
-  }
-
-  return entry;
-}
+export const requirePublishedBlogCategoryContent =
+  productionBlogContentQueries.requirePublishedBlogCategoryContent;

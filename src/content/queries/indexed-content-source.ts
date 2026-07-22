@@ -57,13 +57,21 @@ export interface ContentIndex<TKey, TEntry> {
   require(key: TKey): TEntry;
 }
 
+export interface LocaleListContentIndex<TKey, TEntry>
+  extends ContentIndex<TKey, TEntry> {
+  list(locale: Locale): readonly TEntry[];
+}
+
 export interface PublishedContentIndexes {
   readonly tools: ContentIndex<ToolContentKey, ToolContentEntry>;
   readonly toolCategories: ContentIndex<
     ToolCategoryContentKey,
     ToolCategoryContentEntry
   >;
-  readonly blog: ContentIndex<ArticleContentKey, ArticleContentEntry>;
+  readonly blog: LocaleListContentIndex<
+    ArticleContentKey,
+    ArticleContentEntry
+  >;
   readonly blogCategories: ContentIndex<
     BlogCategoryContentKey,
     BlogCategoryContentEntry
@@ -80,8 +88,11 @@ interface CreatePublishedIndexInput<TKey, TEntry extends PublishedEntry> {
   readonly entries: readonly TEntry[];
   readonly context: (key: TKey) => ContentQueryContext;
   readonly getEntityId: (entry: TEntry) => string;
+  readonly getKey: (entry: TEntry) => TKey;
   readonly getKeyEntityId: (key: TKey) => string;
   readonly getKeyLocale: (key: TKey) => Locale;
+  readonly includeLocaleList?: boolean;
+  readonly compareEntries?: (first: TEntry, second: TEntry) => number;
 }
 
 export async function createPublishedContentIndexes(
@@ -105,6 +116,10 @@ export async function createPublishedContentIndexes(
         status: 'published',
       }),
       getEntityId: (entry) => entry.data.toolId,
+      getKey: (entry) => ({
+        toolId: entry.data.toolId,
+        locale: entry.data.locale,
+      }),
       getKeyEntityId: (key) => key.toolId,
       getKeyLocale: (key) => key.locale,
     }),
@@ -121,6 +136,10 @@ export async function createPublishedContentIndexes(
         status: 'published',
       }),
       getEntityId: (entry) => entry.data.categoryId,
+      getKey: (entry) => ({
+        categoryId: entry.data.categoryId,
+        locale: entry.data.locale,
+      }),
       getKeyEntityId: (key) => key.categoryId,
       getKeyLocale: (key) => key.locale,
     }),
@@ -134,8 +153,14 @@ export async function createPublishedContentIndexes(
         status: 'published',
       }),
       getEntityId: (entry) => entry.data.articleId,
+      getKey: (entry) => ({
+        articleId: entry.data.articleId,
+        locale: entry.data.locale,
+      }),
       getKeyEntityId: (key) => key.articleId,
       getKeyLocale: (key) => key.locale,
+      includeLocaleList: true,
+      compareEntries: comparePublishedArticles,
     }),
     blogCategories: createPublishedIndex<
       BlogCategoryContentKey,
@@ -150,6 +175,10 @@ export async function createPublishedContentIndexes(
         status: 'published',
       }),
       getEntityId: (entry) => entry.data.categoryId,
+      getKey: (entry) => ({
+        categoryId: entry.data.categoryId,
+        locale: entry.data.locale,
+      }),
       getKeyEntityId: (key) => key.categoryId,
       getKeyLocale: (key) => key.locale,
     }),
@@ -157,9 +186,18 @@ export async function createPublishedContentIndexes(
 }
 
 function createPublishedIndex<TKey, TEntry extends PublishedEntry>(
+  input: CreatePublishedIndexInput<TKey, TEntry> & {
+    readonly includeLocaleList: true;
+  },
+): LocaleListContentIndex<TKey, TEntry>;
+function createPublishedIndex<TKey, TEntry extends PublishedEntry>(
   input: CreatePublishedIndexInput<TKey, TEntry>,
-): ContentIndex<TKey, TEntry> {
+): ContentIndex<TKey, TEntry>;
+function createPublishedIndex<TKey, TEntry extends PublishedEntry>(
+  input: CreatePublishedIndexInput<TKey, TEntry>,
+): ContentIndex<TKey, TEntry> | LocaleListContentIndex<TKey, TEntry> {
   const entriesByLocale = new Map<Locale, Map<string, TEntry[]>>();
+  const entriesByLocaleList = new Map<Locale, TEntry[]>();
 
   for (const entry of input.entries) {
     if (entry.data.status !== 'published') {
@@ -174,6 +212,11 @@ function createPublishedIndex<TKey, TEntry extends PublishedEntry>(
     matches.push(entry);
     localeEntries.set(entityId, matches);
     entriesByLocale.set(entry.data.locale, localeEntries);
+
+    const localeEntriesList =
+      entriesByLocaleList.get(entry.data.locale) ?? [];
+    localeEntriesList.push(entry);
+    entriesByLocaleList.set(entry.data.locale, localeEntriesList);
   }
 
   const find = (key: TKey): TEntry | null => {
@@ -185,7 +228,7 @@ function createPublishedIndex<TKey, TEntry extends PublishedEntry>(
     return resolveExactMatch(matches, input.context(key));
   };
 
-  return Object.freeze({
+  const index = {
     find,
     require: (key: TKey) => {
       const entry = find(key);
@@ -196,7 +239,47 @@ function createPublishedIndex<TKey, TEntry extends PublishedEntry>(
 
       return entry;
     },
+  } satisfies ContentIndex<TKey, TEntry>;
+
+  if (!input.includeLocaleList) {
+    return Object.freeze(index);
+  }
+
+  return Object.freeze({
+    ...index,
+    list: (locale: Locale) => {
+      const entries = entriesByLocaleList.get(locale) ?? [];
+
+      for (const entry of entries) {
+        const matches =
+          entriesByLocale.get(locale)?.get(input.getEntityId(entry)) ?? [];
+
+        resolveExactMatch(matches, input.context(input.getKey(entry)));
+      }
+
+      return Object.freeze(
+        [...entries].sort(input.compareEntries ?? (() => 0)),
+      );
+    },
   });
+}
+
+function comparePublishedArticles(
+  first: ArticleContentEntry,
+  second: ArticleContentEntry,
+): number {
+  const byDate =
+    second.data.publishedAt.getTime() - first.data.publishedAt.getTime();
+
+  if (byDate !== 0) {
+    return byDate;
+  }
+
+  return compareStableIds(first.data.articleId, second.data.articleId);
+}
+
+function compareStableIds(first: string, second: string): number {
+  return first < second ? -1 : first > second ? 1 : 0;
 }
 
 let publishedContentIndexesPromise:
