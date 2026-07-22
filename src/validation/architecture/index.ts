@@ -14,13 +14,18 @@ export {
   formatArchitectureValidationReport,
 } from './report';
 export { createArchitectureValidationContext } from './context';
-export type { ArchitectureValidationContext } from './context';
+export type {
+  ArchitectureComposedPageModel,
+  ArchitectureCompositionPorts,
+  ArchitectureValidationContext,
+} from './context';
 export {
   validateContentIdentities,
   validateTaxonomyReferences,
   validateToolRegistryIntegrity,
 } from './validators/identity';
 export { validateContentRelations } from './validators/relations';
+export { validatePublicationAndSeo } from './validators/publication';
 export type {
   ArchitectureValidationCounts,
   ArchitectureValidationIssue,

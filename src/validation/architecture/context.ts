@@ -8,6 +8,9 @@ import type {
 } from '@/features/tools/module-registry';
 import type { RouteDefinition } from '@/routing/definitions/types';
 import type { RouteRegistry } from '@/routing/registry/route-index';
+import type { RouteRecord, RouteTarget } from '@/routing/types';
+import type { Locale } from '@/i18n/types';
+import type { LocalizedRouteCluster, SeoPageModel } from '@/seo';
 
 export interface ArchitectureValidationContext {
   readonly content: ContentSourceSnapshot;
@@ -19,11 +22,28 @@ export interface ArchitectureValidationContext {
   readonly blogTaxonomy: TaxonomyTree<BlogCategoryId>;
   readonly routeDefinitions: readonly RouteDefinition[];
   readonly routeRegistry: RouteRegistry;
+  readonly composition?: ArchitectureCompositionPorts;
 }
 
 export interface ArchitectureToolModuleRegistration {
   readonly toolId: ToolId;
   readonly module: ToolModule;
+}
+
+export interface ArchitectureComposedPageModel {
+  readonly kind: 'home' | 'blog-index' | RouteTarget['kind'];
+  readonly locale: Locale;
+  readonly route: RouteRecord | null;
+  readonly seo: SeoPageModel;
+  readonly localizedRouteCluster: LocalizedRouteCluster;
+}
+
+export interface ArchitectureCompositionPorts {
+  readonly composeRoute: (
+    record: RouteRecord,
+  ) => Promise<ArchitectureComposedPageModel>;
+  readonly composeHome: (locale: Locale) => Promise<ArchitectureComposedPageModel>;
+  readonly composeBlogIndex: (locale: Locale) => Promise<ArchitectureComposedPageModel>;
 }
 
 export function createArchitectureValidationContext(
