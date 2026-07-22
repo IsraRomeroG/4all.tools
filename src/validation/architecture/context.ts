@@ -1,5 +1,5 @@
 import type { ContentSourceSnapshot } from '@/content/queries/indexed-content-source';
-import type { BlogCategoryId, ToolCategoryId } from '@/domain/shared/ids';
+import type { BlogCategoryId, ToolCategoryId, ToolId } from '@/domain/shared/ids';
 import type { TaxonomyTree } from '@/domain/taxonomy/shared/types';
 import type { ToolDefinitionRegistry } from '@/features/tools/definition-registry';
 import type {
@@ -13,10 +13,17 @@ export interface ArchitectureValidationContext {
   readonly content: ContentSourceSnapshot;
   readonly toolDefinitions: ToolDefinitionRegistry;
   readonly toolModules: ToolModuleRegistry;
+  readonly toolModuleRegistrations?: readonly ArchitectureToolModuleRegistration[];
+  readonly toolModuleSourceDirectories?: Readonly<Record<ToolId, string>>;
   readonly toolTaxonomy: TaxonomyTree<ToolCategoryId>;
   readonly blogTaxonomy: TaxonomyTree<BlogCategoryId>;
   readonly routeDefinitions: readonly RouteDefinition[];
   readonly routeRegistry: RouteRegistry;
+}
+
+export interface ArchitectureToolModuleRegistration {
+  readonly toolId: ToolId;
+  readonly module: ToolModule;
 }
 
 export function createArchitectureValidationContext(
@@ -27,5 +34,3 @@ export function createArchitectureValidationContext(
     routeDefinitions: Object.freeze([...input.routeDefinitions]),
   });
 }
-
-export type ArchitectureToolModule = ToolModule;

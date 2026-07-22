@@ -15,6 +15,11 @@ export {
 } from './report';
 export { createArchitectureValidationContext } from './context';
 export type { ArchitectureValidationContext } from './context';
+export {
+  validateContentIdentities,
+  validateTaxonomyReferences,
+  validateToolRegistryIntegrity,
+} from './validators/identity';
 export type {
   ArchitectureValidationCounts,
   ArchitectureValidationIssue,
