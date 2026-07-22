@@ -428,6 +428,10 @@ describe('static build output', () => {
     expect(clientBundle).not.toContain('PublishedContentIndexes');
     expect(clientBundle).not.toContain('indexed-content-source');
     expect(clientBundle).not.toContain('matchedEntryIds');
+    expect(clientBundle).not.toContain('validateArchitecture');
+    expect(clientBundle).not.toContain('ArchitectureValidationIssue');
+    expect(clientBundle).not.toContain('DUPLICATE_CONTENT_IDENTITY');
+    expect(clientBundle).not.toContain('src/validation/architecture');
   });
 
   it('contains no common mojibake markers in generated HTML or this fixture', async () => {
