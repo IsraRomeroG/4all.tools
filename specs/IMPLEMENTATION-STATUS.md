@@ -149,7 +149,7 @@ Global UI translations are required for every supported locale, while entity-pag
 | P09-T03 | Commit `3bb2f5295049df11eaaea5dea37c11c5829faee3` | `npm.cmd run verify` passed locally | Cross-content relation validation, including unpublished, self, route-less, and missing-locale cases. |
 | P09-T04 | Commit `66a5fee95dad9b1bbf2048893fe6a09174314548` | `npm.cmd run verify` passed locally | Publication, public composition, fixed roots, route contracts, and reciprocal/noindex SEO validation. |
 | P09-T05 | Commit `170a4acaa56e569f919808d871d9414d6ee9a5af` | `npm.cmd run verify` passed locally | Source graph/boundary validation, production orchestrator, independent command, verify/CI wiring, and client-bundle exclusion. |
-| P09-T06 | T06 closure evidence in this ledger; commit follows | `npm.cmd ci` and `npm.cmd run verify` passed locally on 2026-07-22 | Local closure is complete; final CI/status transition is pending publication and a successful GitHub Actions `Verify` run for the delivery commit. |
+| P09-T06 | Commit `7e207b1` | `npm.cmd ci` and `npm.cmd run verify` passed locally on 2026-07-22 | Local closure is complete; final CI/status transition is pending publication and a successful GitHub Actions `Verify` run for the delivery commit. |
 
 ### P09 gate status
 
