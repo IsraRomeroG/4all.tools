@@ -1,6 +1,6 @@
 # Implementation Status Ledger
 
-> Last updated: 2026-07-20  
+> Last updated: 2026-07-21  
 > Repository: `IsraRomeroG/4all.tools`  
 > Implementation reference: P07R local closure commits through `fd33a6c701b635914b84767e41286033d7026f13`; external merge pending
 
@@ -8,7 +8,7 @@ This ledger records implementation state without rewriting historical task specs
 
 ## Verification Status
 
-The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. P07R local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-20. No GitHub Actions run exists for the local P07R commits because they have not been pushed; `origin/main` remains at the P07 merge commit `e4f1bdd9b05585fcb2fd1610d4af4e56bf361859`.
+The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. P07R local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-20. P08 local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-21. No GitHub Actions run exists for the local P07R or P08 commits because they have not been pushed; `origin/main` remains at the P07 merge commit `e4f1bdd9b05585fcb2fd1610d4af4e56bf361859`.
 
 ## P00-P06
 
@@ -110,3 +110,22 @@ The local verification gate is `npm run verify`. P06R-F local closure ran `npm.c
 | Ambiguous content     | Build fails         | None      | None     | None                 | No deployment              |
 
 Global UI translations are required for every supported locale, while entity-page translations are independently publishable and never fall back to another locale.
+
+## P08
+
+| Task ID  | Implementation reference | Verification status | Notes |
+| -------- | ------------------------ | ------------------- | ----- |
+| P08-T01  | Commit `f2421b3` | `npm.cmd run verify` passed locally on 2026-07-21 | Explicit article and blog-category route definitions and delivery providers. |
+| P08-T02  | Commit `ac651d2` | `npm.cmd run verify` passed locally on 2026-07-21 | Deterministic locale-aware article catalog indexes and shared query accessors. |
+| P08-T03  | Commit `83e4c8e` | `npm.cmd run verify` passed locally on 2026-07-21 | Blog page models, localized SEO, breadcrumbs, dates, and category/article composers. |
+| P08-T04  | Commit `0fb2ecb` | `npm.cmd run verify` passed locally on 2026-07-21 | Production blog templates, adapters, and English/localized static route entrypoints. |
+| P08-T05  | Commit `812db6c` | `npm.cmd run verify` passed locally on 2026-07-21 | Published multilingual article/category content and production delivery integration. |
+| P08-T06  | Commits `97f4d7a`, `9a3795c` | `npm.cmd ci` and `npm.cmd run verify` passed locally on 2026-07-21 | Full 16-page static output contract, localized browser navigation, and deterministic fixed-port E2E execution. |
+
+### P08 gate status
+
+| Phase | Status | Evidence |
+| ----- | ------ | -------- |
+| P08 | Complete | Commits `f2421b3` through `9a3795c`; local `npm.cmd ci` and `npm.cmd run verify` passed on 2026-07-21 |
+| M4 | Verified | Static output, unit, integration, build, and browser gates all passed locally |
+| P09 | Unblocked / Ready | P08 implementation and local verification are complete |
