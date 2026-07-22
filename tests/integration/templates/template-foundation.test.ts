@@ -14,6 +14,8 @@ import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
 import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
 import { createSeoPageModel } from '@/seo';
+import type { LocalizedRouteCluster } from '@/seo';
+import type { Locale } from '@/i18n/types';
 
 import FixtureContent from '../../fixtures/templates/FixtureContent.astro';
 
@@ -23,6 +25,7 @@ const TEMPLATE_FILES = [
   'src/templates/ToolTemplate.astro',
   'src/templates/CategoryTemplate.astro',
   'src/templates/BlogIndexTemplate.astro',
+  'src/templates/BlogCategoryTemplate.astro',
   'src/templates/ArticleTemplate.astro',
 ] as const;
 
@@ -243,7 +246,19 @@ describe('template foundation', () => {
           kind: 'blog-index',
           locale: 'fr',
           route: null,
+          seo: seo({
+            title: 'Guides',
+            description: 'Guides pratiques.',
+            canonicalUrl: 'https://4all.tools/fr/blog/',
+          }),
+          localizedRouteCluster: localizedRouteCluster('fr', null, { kind: 'blog-index' }),
+          languageSwitcher: languageSwitcher('fr'),
+          breadcrumbs: breadcrumbs('fr', 'Guides', 'taxonomy'),
+          messages: getGlobalMessages('fr'),
           title: 'Guides',
+          description: 'Guides pratiques.',
+          articles: [],
+          categories: [],
         },
       },
       slots: {
@@ -256,9 +271,57 @@ describe('template foundation', () => {
         page: {
           kind: 'article',
           locale: 'pt',
-          route: null,
+          route: route({
+            locale: 'pt',
+            segments: ['blog', 'desenvolvimento', 'guias-json', 'o-que-e-json'],
+            target: {
+              kind: 'article',
+              articleId: 'what-is-json',
+            },
+          }),
+          seo: articleSeo({
+            title: 'O que é JSON?',
+            description: 'Uma introdução prática ao JSON.',
+            canonicalUrl: 'https://4all.tools/pt/blog/desenvolvimento/guias-json/o-que-e-json/',
+          }),
+          localizedRouteCluster: localizedRouteCluster('pt', route({
+            locale: 'pt',
+            segments: ['blog', 'desenvolvimento', 'guias-json', 'o-que-e-json'],
+            target: {
+              kind: 'article',
+              articleId: 'what-is-json',
+            },
+          }), {
+            kind: 'route',
+            target: {
+              kind: 'article',
+              articleId: 'what-is-json',
+            },
+          }),
+          languageSwitcher: languageSwitcher('pt'),
+          breadcrumbs: breadcrumbs('pt', 'O que é JSON?', 'entity'),
+          messages: getGlobalMessages('pt'),
           articleId: 'what-is-json',
-          title: 'O que e JSON?',
+          content: {
+            title: 'O que é JSON?',
+            excerpt: 'Uma introdução prática ao JSON.',
+            editorial: {
+              Content: FixtureContent,
+              headings: [],
+            },
+          },
+          metadata: {
+            publishedAt: {
+              iso: '2026-07-21T00:00:00.000Z',
+              display: '21 de julho de 2026',
+            },
+            primaryCategory: {
+              categoryId: 'json-guides',
+              label: 'Guias JSON',
+              state: 'link',
+              url: '/pt/blog/desenvolvimento/guias-json/',
+            },
+          },
         },
       },
       slots: {
@@ -307,6 +370,37 @@ describe('template foundation', () => {
     expect(combinedSource).not.toContain('pathname');
   });
 
+  it('keeps blog templates strict at the page-model boundary', async () => {
+    const [articleSource, indexSource, categorySource] = await Promise.all([
+      readProjectFile('src/templates/ArticleTemplate.astro'),
+      readProjectFile('src/templates/BlogIndexTemplate.astro'),
+      readProjectFile('src/templates/BlogCategoryTemplate.astro'),
+    ]);
+
+    expect(articleSource).toContain('page.content.title');
+    expect(articleSource).toContain('page.content.excerpt');
+    expect(articleSource).toContain('page.content.editorial.Content');
+    expect(articleSource).not.toMatch(/as\s+unknown\s+as/);
+    expect(articleSource).not.toContain('legacyPage');
+    expect(articleSource).not.toMatch(/page\.articleId\s*\?\?/);
+    expect(articleSource).not.toMatch(/page\.seo\s*&&/);
+    expect(articleSource).not.toMatch(/page\.breadcrumbs\s*&&/);
+    expect(articleSource).not.toMatch(/page\.metadata\s*&&/);
+    expect(articleSource).not.toMatch(/page\.messages\?\./);
+
+    expect(indexSource).toContain('page.messages.blog.articles');
+    expect(indexSource).toContain('page.messages.blog.categories');
+    expect(indexSource).not.toMatch(/page\.articles\s*\?\?/);
+    expect(indexSource).not.toMatch(/page\.categories\s*\?\?/);
+    expect(indexSource).not.toMatch(/page\.messages\?\./);
+
+    for (const source of [articleSource, indexSource, categorySource]) {
+      expect(source).not.toMatch(/as\s+unknown\s+as/);
+      expect(source).not.toContain('legacyPage');
+      expect(source).not.toMatch(/page\.articleId\s*\?\?/);
+    }
+  });
+
   it('uses src/templates without introducing src/views', async () => {
     for (const file of TEMPLATE_FILES) {
       expect(await projectPathExists(file)).toBe(true);
@@ -338,7 +432,22 @@ function seo(input: {
   return createSeoPageModel(input);
 }
 
-function languageSwitcher(locale: 'en' | 'es'): LanguageSwitcherModel {
+function articleSeo(input: {
+  readonly title: string;
+  readonly description: string;
+  readonly canonicalUrl: string;
+}) {
+  return createSeoPageModel({
+    ...input,
+    openGraphType: 'article',
+    openGraphArticle: {
+      publishedTime: '2026-07-21T00:00:00.000Z',
+      section: 'Guias JSON',
+    },
+  });
+}
+
+function languageSwitcher(locale: Locale): LanguageSwitcherModel {
   const messages = getGlobalMessages(locale).language;
 
   return {
@@ -365,7 +474,7 @@ function languageSwitcher(locale: 'en' | 'es'): LanguageSwitcherModel {
 }
 
 function breadcrumbs(
-  locale: 'en' | 'es',
+  locale: Locale,
   currentTitle: string,
   currentKind: 'entity' | 'taxonomy',
 ): BreadcrumbModel {
@@ -386,5 +495,30 @@ function breadcrumbs(
         label: currentTitle,
       },
     ],
+  };
+}
+
+function localizedRouteCluster(
+  locale: Locale,
+  routeRecord: RouteRecord | null,
+  subject: LocalizedRouteCluster['subject'],
+): LocalizedRouteCluster {
+  const segments = routeRecord?.segments ?? ['blog'];
+  const relativeUrl = `/${segments.join('/')}/`;
+  const variant = {
+    locale,
+    hrefLang: LOCALES[locale].htmlLang,
+    relativeUrl,
+    absoluteUrl: `https://4all.tools${relativeUrl}`,
+    route: routeRecord,
+    published: true as const,
+    indexable: true,
+  };
+
+  return {
+    subject,
+    currentLocale: locale,
+    current: variant,
+    variants: [variant],
   };
 }
