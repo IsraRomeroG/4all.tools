@@ -49,6 +49,62 @@ describe('SEO contracts', () => {
     expect(model.openGraph).not.toHaveProperty('image');
   });
 
+  it('accepts valid website and article Open Graph combinations', () => {
+    const model = createSeoPageModel({
+      title: 'What Is JSON',
+      description: 'A practical introduction to JSON.',
+      canonicalUrl: 'https://4all.tools/blog/development/what-is-json/',
+      openGraphType: 'article',
+      openGraphArticle: {
+        publishedTime: '2026-07-21T00:00:00.000Z',
+        section: 'Development',
+      },
+    });
+
+    expect(model.openGraph).toMatchObject({
+      type: 'article',
+      article: {
+        publishedTime: '2026-07-21T00:00:00.000Z',
+        section: 'Development',
+      },
+    });
+  });
+
+  it('rejects invalid Open Graph combinations at runtime', () => {
+    const base = {
+      title: 'JSON Validator',
+      description: 'Validate JSON online.',
+      canonicalUrl: 'https://4all.tools/developer/json-validator/',
+    };
+    const websiteWithArticle = {
+      ...base,
+      openGraphType: 'website',
+      openGraphArticle: {
+        publishedTime: '2026-07-21T00:00:00.000Z',
+        section: 'Developer Tools',
+      },
+    };
+    const articleWithoutMetadata = {
+      ...base,
+      openGraphType: 'article',
+    };
+
+    expect(() => {
+      createSeoPageModel(
+        websiteWithArticle as unknown as Parameters<
+          typeof createSeoPageModel
+        >[0],
+      );
+    }).toThrow('only valid when openGraphType is article');
+    expect(() => {
+      createSeoPageModel(
+        articleWithoutMetadata as unknown as Parameters<
+          typeof createSeoPageModel
+        >[0],
+      );
+    }).toThrow('required when openGraphType is article');
+  });
+
   it('creates a valid noindex model', () => {
     const model = createSeoPageModel({
       title: 'Preview',

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { ArticleContentEntry } from '@/content/queries';
+import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { createRouteRegistryFromRecords } from '@/routing/registry';
 import type { RouteRecord } from '@/routing/types';
 import {
@@ -8,6 +9,7 @@ import {
   composeArticlePageModel,
   composeBlogCategoryPageModel,
   composeBlogIndexPageModel,
+  filterArticlesForBlogCategory,
 } from '@/templates/composers';
 import FixtureContent from '../../fixtures/templates/FixtureContent.astro';
 
@@ -83,6 +85,43 @@ describe('blog page-model composers', () => {
     ]);
   });
 
+  it('preserves article Open Graph metadata for a public noindex article', async () => {
+    const page = await composeArticlePageModel('en', 'what-is-json', {
+      routeRegistry: routeRegistry(),
+      requirePublishedArticleContent: async () =>
+        articleEntry('json-guides', {
+          noindex: true,
+          updatedAt: '2026-07-22T00:00:00.000Z',
+        }),
+      renderContent,
+      seoIndexabilityResolver: { isIndexable: () => false },
+    });
+
+    expect(page.kind).toBe('article');
+    expect(page.seo.canonicalUrl).toBe(
+      'https://4all.tools/blog/development/json-guides/what-is-json/',
+    );
+    expect(page.seo.robots).toEqual({ index: false, follow: true });
+    expect(page.seo.alternates).toEqual([]);
+    expect(Object.prototype.hasOwnProperty.call(page.seo, 'xDefaultUrl')).toBe(
+      false,
+    );
+    expect(page.seo.openGraph).toMatchObject({
+      type: 'article',
+      article: {
+        publishedTime: page.metadata.publishedAt.iso,
+        modifiedTime: page.metadata.updatedAt?.iso,
+        section: 'JSON Guides',
+      },
+    });
+    expect(page.languageSwitcher.items).toEqual([
+      expect.objectContaining({ locale: 'en', state: 'current' }),
+      expect.objectContaining({ locale: 'es', state: 'available' }),
+      expect.objectContaining({ locale: 'pt', state: 'available' }),
+      expect.objectContaining({ locale: 'fr', state: 'available' }),
+    ]);
+  });
+
   it('does not require a public category landing for article composition', async () => {
     const registry = createRouteRegistryFromRecords([
       route({
@@ -115,6 +154,51 @@ describe('blog page-model composers', () => {
         seoIndexabilityResolver: { isIndexable: () => true },
       }),
     ).rejects.toBeInstanceOf(ArticleRouteContentMismatchError);
+  });
+
+  it('rejects unknown secondary categories during article composition', async () => {
+    await expect(
+      composeArticlePageModel('en', 'what-is-json', {
+        routeRegistry: routeRegistry(),
+        requirePublishedArticleContent: async () =>
+          articleEntry('json-guides', {
+            secondaryCategoryIds: ['missing-secondary-category'],
+          }),
+        renderContent,
+        seoIndexabilityResolver: { isIndexable: () => true },
+      }),
+    ).rejects.toMatchObject({
+      code: 'UNKNOWN_BLOG_CATEGORY_REFERENCE',
+      context: {
+        locale: 'en',
+        targetKind: 'blog-category',
+        entityId: 'missing-secondary-category',
+      },
+    });
+  });
+
+  it('rejects unknown secondary categories during catalog projection', () => {
+    expect(() =>
+      filterArticlesForBlogCategory({
+        categoryId: 'development',
+        articles: [
+          articleEntry('json-guides', {
+            secondaryCategoryIds: ['missing-secondary-category'],
+          }),
+        ],
+        blogTaxonomy,
+        locale: 'en',
+      }),
+    ).toThrow(
+      expect.objectContaining({
+        code: 'UNKNOWN_BLOG_CATEGORY_REFERENCE',
+        context: {
+          locale: 'en',
+          targetKind: 'blog-category',
+          entityId: 'missing-secondary-category',
+        },
+      }),
+    );
   });
 });
 
@@ -162,7 +246,14 @@ function route(input: {
   };
 }
 
-function articleEntry(primaryCategoryId = 'json-guides') {
+function articleEntry(
+  primaryCategoryId = 'json-guides',
+  options: {
+    readonly secondaryCategoryIds?: readonly string[];
+    readonly noindex?: boolean;
+    readonly updatedAt?: string;
+  } = {},
+) {
   return {
     id: 'blog/en/development/json-guides/what-is-json',
     collection: 'blog',
@@ -170,16 +261,19 @@ function articleEntry(primaryCategoryId = 'json-guides') {
       articleId: 'what-is-json',
       locale: 'en',
       primaryCategoryId,
-      secondaryCategoryIds: [],
+      secondaryCategoryIds: options.secondaryCategoryIds ?? [],
       status: 'published',
       title: 'What Is JSON',
       excerpt: 'A practical introduction to JSON.',
       seo: {
         title: 'What Is JSON',
         description: 'A practical introduction to JSON.',
-        noindex: false,
+        noindex: options.noindex ?? false,
       },
       publishedAt: new Date('2026-07-21T00:00:00.000Z'),
+      ...(options.updatedAt === undefined
+        ? {}
+        : { updatedAt: new Date(options.updatedAt) }),
       relatedArticleIds: [],
       relatedToolIds: [],
     },

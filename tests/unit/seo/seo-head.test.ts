@@ -61,6 +61,39 @@ describe('SeoHead', () => {
     );
   });
 
+  it('preserves article Open Graph metadata on a noindex article', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(SeoHead, {
+      partial: true,
+      props: {
+        seo: createSeoPageModel({
+          title: 'What Is JSON',
+          description: 'A practical introduction to JSON.',
+          canonicalUrl: 'https://4all.tools/blog/development/what-is-json/',
+          noindex: true,
+          openGraphType: 'article',
+          openGraphArticle: {
+            publishedTime: '2026-07-21T00:00:00.000Z',
+            modifiedTime: '2026-07-22T00:00:00.000Z',
+            section: 'JSON Guides',
+          },
+        }),
+      },
+    });
+
+    expect(html).toContain('content="noindex,follow"');
+    expect(html.match(/rel="alternate"/g)).toBeNull();
+    expect(html).not.toContain('hreflang="x-default"');
+    expect(html).toContain('property="og:type" content="article"');
+    expect(html).toContain(
+      'property="article:published_time" content="2026-07-21T00:00:00.000Z"',
+    );
+    expect(html).toContain(
+      'property="article:modified_time" content="2026-07-22T00:00:00.000Z"',
+    );
+    expect(html).toContain('property="article:section" content="JSON Guides"');
+  });
+
   it('omits x-default and image tags when absent', async () => {
     const html = await renderSeoHead({
       xDefaultUrl: null,
