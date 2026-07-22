@@ -184,8 +184,8 @@ No historical task header needs to be rewritten; the current status authority mu
 
 ```text
 P07   Complete
-P07R  Local implementation and verification complete; external CI/merge pending
-P08   Blocked pending the P07R phase gate
+P07R  Complete
+P08   Pending
 ```
 
 P08 is not implemented or in progress as part of P07R.
