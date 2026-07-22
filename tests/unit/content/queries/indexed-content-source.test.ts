@@ -13,6 +13,7 @@ import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { createIndexedPublicationAvailability } from '@/content/queries/indexed-publication-availability';
 import {
   createPublishedContentIndexes,
+  getContentSourceSnapshot,
   getPublishedContentIndexes,
   resetPublishedContentIndexesForTesting,
   type ContentCollectionSource,
@@ -171,6 +172,58 @@ describe('published content indexes', () => {
     expect(secondIndexes).toBe(firstIndexes);
     expect(mocks.getCollection.mock.calls.map(([collection]) => collection))
       .toEqual(['tools', 'toolCategories', 'blog', 'blogCategories']);
+  });
+
+  it('shares one production source snapshot between all-entry and published views', async () => {
+    vi.stubEnv('DEV', false);
+    mockAstroCollections({
+      tools: [
+        entry('tools/en/developer/json-validator', {
+          toolId: 'json-validator',
+          locale: 'en',
+          status: 'published',
+        }),
+      ],
+    });
+
+    const snapshotPromise = getContentSourceSnapshot();
+    const indexesPromise = getPublishedContentIndexes();
+    const [snapshot, indexes] = await Promise.all([
+      snapshotPromise,
+      indexesPromise,
+    ]);
+
+    expect(snapshot.published).toBe(indexes);
+    expect(mocks.getCollection).toHaveBeenCalledTimes(4);
+  });
+
+  it('refreshes the all-entry snapshot in DEV', async () => {
+    vi.stubEnv('DEV', true);
+    let tools = [
+      entry('tools/en/developer/json-validator', {
+        toolId: 'json-validator',
+        locale: 'en',
+        status: 'published',
+      }),
+    ];
+    mocks.getCollection.mockImplementation(async (collection) =>
+      collection === 'tools' ? tools : [],
+    );
+
+    const first = await getContentSourceSnapshot();
+    tools = [
+      ...tools,
+      entry('tools/es/developer/json-validator', {
+        toolId: 'json-validator',
+        locale: 'es',
+        status: 'draft',
+      }),
+    ];
+    const second = await getContentSourceSnapshot();
+
+    expect(first).not.toBe(second);
+    expect(first.all.tools).toHaveLength(1);
+    expect(second.all.tools).toHaveLength(2);
   });
 
   it('uses prepared indexes for route publication without repeated source loads', async () => {

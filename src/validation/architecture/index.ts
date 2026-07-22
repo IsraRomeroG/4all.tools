@@ -1,0 +1,24 @@
+export {
+  createContentSourceSnapshot,
+  getContentSourceSnapshot,
+  resetContentSourceSnapshotForTesting,
+  resetPublishedContentIndexesForTesting,
+  type ContentSourceSnapshot,
+} from '@/content/queries/indexed-content-source';
+export {
+  ArchitectureValidationError,
+  assertArchitectureValid,
+  compareArchitectureValidationIssues,
+  createArchitectureValidationIssue,
+  createArchitectureValidationReport,
+  formatArchitectureValidationReport,
+} from './report';
+export { createArchitectureValidationContext } from './context';
+export type { ArchitectureValidationContext } from './context';
+export type {
+  ArchitectureValidationCounts,
+  ArchitectureValidationIssue,
+  ArchitectureValidationIssueCode,
+  ArchitectureValidationReport,
+  ArchitectureValidationScope,
+} from './types';

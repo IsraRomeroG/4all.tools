@@ -78,6 +78,16 @@ export interface PublishedContentIndexes {
   >;
 }
 
+export interface ContentSourceSnapshot {
+  readonly all: {
+    readonly tools: readonly ToolContentEntry[];
+    readonly toolCategories: readonly ToolCategoryContentEntry[];
+    readonly blog: readonly ArticleContentEntry[];
+    readonly blogCategories: readonly BlogCategoryContentEntry[];
+  };
+  readonly published: PublishedContentIndexes;
+}
+
 type PublishedEntry =
   | ToolContentEntry
   | ToolCategoryContentEntry
@@ -98,6 +108,12 @@ interface CreatePublishedIndexInput<TKey, TEntry extends PublishedEntry> {
 export async function createPublishedContentIndexes(
   source: ContentCollectionSource = astroContentSource,
 ): Promise<PublishedContentIndexes> {
+  return (await createContentSourceSnapshot(source)).published;
+}
+
+export async function createContentSourceSnapshot(
+  source: ContentCollectionSource = astroContentSource,
+): Promise<ContentSourceSnapshot> {
   const [tools, toolCategories, blog, blogCategories] = await Promise.all([
     source.getCollection('tools'),
     source.getCollection('toolCategories'),
@@ -105,9 +121,28 @@ export async function createPublishedContentIndexes(
     source.getCollection('blogCategories'),
   ]);
 
+  const all = Object.freeze({
+    tools: freezeEntries(tools),
+    toolCategories: freezeEntries(toolCategories),
+    blog: freezeEntries(blog),
+    blogCategories: freezeEntries(blogCategories),
+  });
+
+  return Object.freeze({
+    all,
+    published: createPublishedContentIndexesFromEntries(all),
+  });
+}
+
+function createPublishedContentIndexesFromEntries(entries: {
+  readonly tools: readonly ToolContentEntry[];
+  readonly toolCategories: readonly ToolCategoryContentEntry[];
+  readonly blog: readonly ArticleContentEntry[];
+  readonly blogCategories: readonly BlogCategoryContentEntry[];
+}): PublishedContentIndexes {
   return Object.freeze({
     tools: createPublishedIndex<ToolContentKey, ToolContentEntry>({
-      entries: tools,
+      entries: entries.tools,
       context: ({ toolId, locale }) => ({
         collection: 'tools',
         entityField: 'toolId',
@@ -127,7 +162,7 @@ export async function createPublishedContentIndexes(
       ToolCategoryContentKey,
       ToolCategoryContentEntry
     >({
-      entries: toolCategories,
+      entries: entries.toolCategories,
       context: ({ categoryId, locale }) => ({
         collection: 'toolCategories',
         entityField: 'categoryId',
@@ -144,7 +179,7 @@ export async function createPublishedContentIndexes(
       getKeyLocale: (key) => key.locale,
     }),
     blog: createPublishedIndex<ArticleContentKey, ArticleContentEntry>({
-      entries: blog,
+      entries: entries.blog,
       context: ({ articleId, locale }) => ({
         collection: 'blog',
         entityField: 'articleId',
@@ -166,7 +201,7 @@ export async function createPublishedContentIndexes(
       BlogCategoryContentKey,
       BlogCategoryContentEntry
     >({
-      entries: blogCategories,
+      entries: entries.blogCategories,
       context: ({ categoryId, locale }) => ({
         collection: 'blogCategories',
         entityField: 'categoryId',
@@ -183,6 +218,10 @@ export async function createPublishedContentIndexes(
       getKeyLocale: (key) => key.locale,
     }),
   });
+}
+
+function freezeEntries<TEntry>(entries: readonly TEntry[]): readonly TEntry[] {
+  return Object.freeze([...entries]);
 }
 
 function createPublishedIndex<TKey, TEntry extends PublishedEntry>(
@@ -285,19 +324,37 @@ function compareStableIds(first: string, second: string): number {
 let publishedContentIndexesPromise:
   | Promise<PublishedContentIndexes>
   | undefined;
+let contentSourceSnapshotPromise: Promise<ContentSourceSnapshot> | undefined;
 
-export function getPublishedContentIndexes(): Promise<PublishedContentIndexes> {
+export function getContentSourceSnapshot(): Promise<ContentSourceSnapshot> {
   // Astro dev keeps the content store mutable across page reloads; rebuild there
   // so authoring changes are visible instead of favoring a stale singleton.
   if (import.meta.env.DEV) {
-    return createPublishedContentIndexes();
+    return createContentSourceSnapshot();
   }
 
-  publishedContentIndexesPromise ??= createPublishedContentIndexes();
+  contentSourceSnapshotPromise ??= createContentSourceSnapshot();
+
+  return contentSourceSnapshotPromise;
+}
+
+export function getPublishedContentIndexes(): Promise<PublishedContentIndexes> {
+  if (import.meta.env.DEV) {
+    return getContentSourceSnapshot().then((snapshot) => snapshot.published);
+  }
+
+  publishedContentIndexesPromise ??= getContentSourceSnapshot().then(
+    (snapshot) => snapshot.published,
+  );
 
   return publishedContentIndexesPromise;
 }
 
 export function resetPublishedContentIndexesForTesting(): void {
+  resetContentSourceSnapshotForTesting();
+}
+
+export function resetContentSourceSnapshotForTesting(): void {
   publishedContentIndexesPromise = undefined;
+  contentSourceSnapshotPromise = undefined;
 }

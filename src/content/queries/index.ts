@@ -33,11 +33,15 @@ export {
 } from './tool-categories';
 export {
   createPublishedContentIndexes,
+  createContentSourceSnapshot,
+  getContentSourceSnapshot,
   getPublishedContentIndexes,
+  resetContentSourceSnapshotForTesting,
   resetPublishedContentIndexesForTesting,
   type BlogCategoryContentKey,
   type ArticleContentKey,
   type ContentCollectionSource,
+  type ContentSourceSnapshot,
   type ContentIndex,
   type LocaleListContentIndex,
   type PublishedContentIndexes,
