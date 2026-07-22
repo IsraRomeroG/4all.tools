@@ -8,6 +8,12 @@ import {
 interface ObservedErrors {
   readonly consoleErrors: string[];
   readonly pageErrors: string[];
+  readonly httpErrors: Array<{
+    readonly url: string;
+    readonly status: number;
+    readonly resourceType: string;
+  }>;
+  allowExpectedDocument404ConsoleError?: boolean;
 }
 
 const observedErrors = new WeakMap<Page, ObservedErrors>();
@@ -26,6 +32,7 @@ test.beforeEach(({ page }) => {
   const errors: ObservedErrors = {
     consoleErrors: [],
     pageErrors: [],
+    httpErrors: [],
   };
 
   observedErrors.set(page, errors);
@@ -37,13 +44,30 @@ test.beforeEach(({ page }) => {
   page.on('pageerror', (error) => {
     errors.pageErrors.push(error.message);
   });
+  page.on('response', (response) => {
+    if (response.status() >= 400) {
+      errors.httpErrors.push({
+        url: response.url(),
+        status: response.status(),
+        resourceType: response.request().resourceType(),
+      });
+    }
+  });
 });
 
 test.afterEach(({ page }) => {
   const errors = observedErrors.get(page);
 
   expect(errors?.pageErrors ?? []).toEqual([]);
-  expect(errors?.consoleErrors ?? []).toEqual([]);
+  if (errors?.allowExpectedDocument404ConsoleError) {
+    expect(errors.httpErrors).toHaveLength(1);
+    expect(errors.httpErrors[0]?.resourceType).toBe('document');
+    expect(errors.httpErrors[0]?.status).toBe(404);
+    expect(errors.httpErrors[0]?.url).toBe(page.url());
+    expect(errors.consoleErrors.length).toBeLessThanOrEqual(1);
+  } else {
+    expect(errors?.consoleErrors ?? []).toEqual([]);
+  }
 });
 
 test('navigates from the blog index to a localized article and category', async ({
@@ -89,9 +113,18 @@ test('returns 404 for a missing localized blog request without fallback', async 
 }) => {
   const requestedPath = '/es/blog/desarrollo/guias-json/articulo-inexistente/';
   const response = await page.goto(requestedPath);
+  const errors = observedErrors.get(page);
 
   expect(response?.status()).toBe(404);
-  clearExpected404ConsoleMessage(page);
+  expect(errors).toBeDefined();
+  errors!.allowExpectedDocument404ConsoleError = true;
+  expect(errors!.httpErrors).toEqual([
+    {
+      url: page.url(),
+      status: 404,
+      resourceType: 'document',
+    },
+  ]);
   await expect(page).toHaveURL(`http://127.0.0.1:4321${requestedPath}`);
   expect(page.url()).not.toBe('http://127.0.0.1:4321/es/');
   expect(page.url()).not.toBe('http://127.0.0.1:4321/');
@@ -101,23 +134,12 @@ test('returns 404 for a missing localized blog request without fallback', async 
   await expect(
     page.getByRole('heading', {
       level: 1,
-      name: 'Â¿QuÃ© es JSON? GuÃ­a prÃ¡ctica de su sintaxis',
+      name: '¿Qué es JSON? Guía práctica de su sintaxis',
     }),
   ).toHaveCount(0);
+  await expect(
+    page.locator(
+      'meta[property="og:title"][content="¿Qué es JSON? Sintaxis, ejemplos y usos"]',
+    ),
+  ).toHaveCount(0);
 });
-
-function clearExpected404ConsoleMessage(page: Page): void {
-  const errors = observedErrors.get(page);
-
-  if (errors === undefined) {
-    return;
-  }
-
-  const expectedMessage =
-    'Failed to load resource: the server responded with a status of 404 (Not Found)';
-  errors.consoleErrors.splice(
-    0,
-    errors.consoleErrors.length,
-    ...errors.consoleErrors.filter((message) => message !== expectedMessage),
-  );
-}

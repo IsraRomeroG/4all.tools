@@ -411,7 +411,7 @@ describe('static build output', () => {
     });
   }
 
-  for (const relativeFile of BLOG_FORBIDDEN_OUTPUTS) {
+  for (const relativeFile of FORBIDDEN_FLAT_BLOG_HTML_FILES) {
     it(`does not emit forbidden blog output ${relativeFile}`, async () => {
       await expectDistFileMissing(relativeFile);
     });
@@ -625,14 +625,6 @@ const EXPECTED_BLOG_ARTICLE_PAGES = [
   },
 ] as const satisfies readonly ExpectedBuiltArticlePage[];
 
-const BLOG_FORBIDDEN_OUTPUTS = [
-  'en/blog/index.html',
-  'blog/development/json-guides/what-is-json.html',
-  'es/blog/desarrollo/guias-json/que-es-json.html',
-  'pt/blog/desenvolvimento/guias-json/o-que-e-json.html',
-  'fr/blog/developpement/guides-json/qu-est-ce-que-json.html',
-] as const;
-
 const EXPECTED_BLOG_HTML_FILES = [
   'blog/index.html',
   'blog/development/index.html',
@@ -651,6 +643,10 @@ const EXPECTED_BLOG_HTML_FILES = [
   'fr/blog/developpement/guides-json/index.html',
   'fr/blog/developpement/guides-json/qu-est-ce-que-json/index.html',
 ].sort(compareCodePointOrder);
+
+const FORBIDDEN_FLAT_BLOG_HTML_FILES = EXPECTED_BLOG_HTML_FILES
+  .filter((file) => file.endsWith('/index.html'))
+  .map((file) => file.replace(/\/index\.html$/, '.html'));
 
 const BLOG_FORBIDDEN_OUTPUT_PATTERNS = [
   /^en\/blog\//,

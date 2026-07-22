@@ -383,6 +383,8 @@ describe('template foundation', () => {
     expect(articleSource).not.toMatch(/as\s+unknown\s+as/);
     expect(articleSource).not.toContain('legacyPage');
     expect(articleSource).not.toMatch(/page\.articleId\s*\?\?/);
+    expect(articleSource).not.toMatch(/\?\?\s*page\.articleId/);
+    expect(articleSource).toMatch(/data-template-identity=\{page\.articleId\}/);
     expect(articleSource).not.toMatch(/page\.seo\s*&&/);
     expect(articleSource).not.toMatch(/page\.breadcrumbs\s*&&/);
     expect(articleSource).not.toMatch(/page\.metadata\s*&&/);
