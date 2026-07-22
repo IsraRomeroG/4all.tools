@@ -7,6 +7,8 @@ import {
 } from '@/content/queries';
 import { toolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
 import { toolRouteProvider } from '@/routing/providers/tool-route-provider';
+import { articleRouteProvider } from '@/routing/providers/article-route-provider';
+import { blogCategoryRouteProvider } from '@/routing/providers/blog-category-route-provider';
 import {
   createRouteRegistry,
   type RouteRegistry,
@@ -58,7 +60,12 @@ async function createDeliveryRouteRegistry(
   const contentIndexes = await dependencies.getPublishedContentIndexes();
 
   return createRouteRegistry({
-    providers: [toolRouteProvider, toolCategoryRouteProvider],
+    providers: [
+      toolRouteProvider,
+      toolCategoryRouteProvider,
+      articleRouteProvider,
+      blogCategoryRouteProvider,
+    ],
     toolTaxonomy,
     blogTaxonomy,
     publicationAvailability: createIndexedPublicationAvailability(contentIndexes),
