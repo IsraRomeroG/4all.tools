@@ -1,0 +1,57 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/navigation/Breadcrumbs.astro';
+import LanguageSwitcher from '@/components/navigation/LanguageSwitcher.astro';
+import SeoHead from '@/components/seo/SeoHead.astro';
+import type { BlogCategoryPageModel } from './models/blog';
+
+interface Props {
+  page: BlogCategoryPageModel;
+}
+
+const { page } = Astro.props;
+const EditorialContent = page.content.editorial.Content;
+---
+
+<BaseLayout locale={page.locale} mainClass="min-h-screen bg-slate-50">
+  <LanguageSwitcher slot="site-header" model={page.languageSwitcher} />
+  <Fragment slot="head">
+    <SeoHead seo={page.seo} />
+    <slot name="head" />
+  </Fragment>
+
+  <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:px-8" data-template="blog-category" data-template-identity={page.categoryId}>
+    <Breadcrumbs model={page.breadcrumbs} />
+    <header class="grid max-w-3xl gap-4" data-template-region="category-header">
+      <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{page.content.title}</h1>
+      <p class="text-lg leading-8 text-slate-700">{page.content.description}</p>
+    </header>
+
+    <section class="grid gap-6" data-template-region="category-content">
+      <EditorialContent />
+      <slot name="content" />
+    </section>
+
+    <section class="grid gap-4" aria-labelledby="blog-category-articles-heading" data-template-region="category-articles">
+      <h2 id="blog-category-articles-heading" class="text-xl font-semibold text-slate-950">{page.messages.blog.articles}</h2>
+      <ul class="grid gap-4">
+        {page.articles.map((article) => (
+          <li class="grid gap-1" data-article-id={article.articleId}>
+            <a class="font-semibold text-slate-950 underline" href={article.url}>{article.title}</a>
+            <p class="text-slate-700">{article.excerpt}</p>
+            <time class="text-sm text-slate-600" datetime={article.publishedAt.iso}>{article.publishedAt.display}</time>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="grid gap-4" aria-labelledby="blog-category-children-heading" data-template-region="category-children">
+      <h2 id="blog-category-children-heading" class="text-xl font-semibold text-slate-950">{page.messages.blog.categories}</h2>
+      <ul class="grid gap-2">
+        {page.childCategories.map((category) => (
+          <li><a class="text-slate-950 underline" href={category.url}>{category.label}</a></li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,30 @@
+---
+import BlogCategoryTemplate from '@/templates/BlogCategoryTemplate.astro';
+import ArticleTemplate from '@/templates/ArticleTemplate.astro';
+import {
+  composeBlogAreaAdapterPage,
+  getDeliveryRouteRegistry,
+} from '@/templates/composers';
+import { createBlogStaticPaths } from '@/routing/static-paths';
+import type { StaticPathProps } from '@/routing/static-paths';
+
+export const getStaticPaths = createBlogStaticPaths({
+  locale: 'fr',
+  getRegistry: getDeliveryRouteRegistry,
+});
+
+interface Props extends StaticPathProps {}
+
+const locale = 'fr' as const;
+const { routeTarget } = Astro.props as Props;
+const routeRegistry = await getDeliveryRouteRegistry();
+const page = await composeBlogAreaAdapterPage(locale, routeTarget, {
+  routeRegistry,
+});
+---
+
+{page.kind === 'article' ? (
+  <ArticleTemplate page={page} />
+) : (
+  <BlogCategoryTemplate page={page} />
+)}

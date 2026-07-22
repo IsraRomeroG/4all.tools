@@ -1,5 +1,8 @@
 ---
 import ArticleLayout from '@/layouts/ArticleLayout.astro';
+import Breadcrumbs from '@/components/navigation/Breadcrumbs.astro';
+import LanguageSwitcher from '@/components/navigation/LanguageSwitcher.astro';
+import SeoHead from '@/components/seo/SeoHead.astro';
 import type { ArticlePageModel } from './models/blog';
 
 interface Props {
@@ -7,25 +10,58 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const legacyPage = page as unknown as { title?: string };
-const title = page.content?.title ?? legacyPage.title ?? page.articleId;
-const excerpt = page.content?.excerpt;
+const legacyPage = page as unknown as {
+  readonly title?: string;
+  readonly description?: string;
+  readonly content?: ArticlePageModel['content'];
+};
+const content = page.content ?? legacyPage.content;
+const title = content?.title ?? legacyPage.title ?? page.articleId;
+const excerpt = content?.excerpt ?? legacyPage.description;
+const EditorialContent = content?.editorial.Content;
 ---
 
 <ArticleLayout locale={page.locale}>
-  <slot name="head" slot="head" />
+  {page.languageSwitcher && <LanguageSwitcher slot="site-header" model={page.languageSwitcher} />}
+  <Fragment slot="head">
+    {page.seo && <SeoHead seo={page.seo} />}
+    <slot name="head" />
+  </Fragment>
 
   <Fragment slot="article-header">
-    <p class="text-sm font-medium text-slate-600" data-template-identity={page.articleId}>{page.articleId}</p>
-    <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{title}</h1>
+    {page.breadcrumbs && <div class="mb-2"><Breadcrumbs model={page.breadcrumbs} /></div>}
+    <h1 class="text-3xl font-semibold tracking-normal text-slate-950" data-template-identity={page.articleId}>{title}</h1>
     {excerpt && <p class="text-lg leading-8 text-slate-700">{excerpt}</p>}
   </Fragment>
 
   <div slot="metadata" class="grid gap-2" data-template-region="article-metadata">
+    {page.metadata && (
+      <>
+        <div>
+          <span>{page.messages?.blog?.published ?? ''}: </span>
+          <time datetime={page.metadata.publishedAt.iso}>{page.metadata.publishedAt.display}</time>
+        </div>
+        {page.metadata.updatedAt && (
+          <div>
+            <span>{page.messages?.blog?.updated ?? ''}: </span>
+            <time datetime={page.metadata.updatedAt.iso}>{page.metadata.updatedAt.display}</time>
+          </div>
+        )}
+        <div>
+          <span>{page.messages?.blog?.categories ?? ''}: </span>
+          {page.metadata.primaryCategory.state === 'link' ? (
+            <a href={page.metadata.primaryCategory.url}>{page.metadata.primaryCategory.label}</a>
+          ) : (
+            <span>{page.metadata.primaryCategory.label}</span>
+          )}
+        </div>
+      </>
+    )}
     <slot name="metadata" />
   </div>
 
   <div class="grid gap-6" data-template-region="article-content">
+    {EditorialContent && <EditorialContent />}
     <slot />
   </div>
 

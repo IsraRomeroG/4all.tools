@@ -1,0 +1,10 @@
+---
+import BlogIndexTemplate from '@/templates/BlogIndexTemplate.astro';
+import { composeBlogIndexPageModel, getDeliveryRouteRegistry } from '@/templates/composers';
+
+const page = await composeBlogIndexPageModel('fr', {
+  routeRegistry: await getDeliveryRouteRegistry(),
+});
+---
+
+<BlogIndexTemplate page={page} />
