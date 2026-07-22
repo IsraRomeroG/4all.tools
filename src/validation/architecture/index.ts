@@ -20,6 +20,7 @@ export {
   validateTaxonomyReferences,
   validateToolRegistryIntegrity,
 } from './validators/identity';
+export { validateContentRelations } from './validators/relations';
 export type {
   ArchitectureValidationCounts,
   ArchitectureValidationIssue,
