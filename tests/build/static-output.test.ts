@@ -29,6 +29,24 @@ interface ExpectedBuiltHomePage {
   readonly canonicalUrl: string;
 }
 
+interface ExpectedBuiltBlogPage {
+  readonly locale: Locale;
+  readonly relativeFile: string;
+  readonly htmlLang: string;
+  readonly title: string;
+  readonly description?: string;
+  readonly canonicalUrl: string;
+  readonly expectedLink: string;
+}
+
+interface ExpectedBuiltArticlePage extends ExpectedBuiltBlogPage {
+  readonly articleTitle: string;
+  readonly articleExcerpt: string;
+  readonly section: string;
+  readonly publishedAt: string;
+  readonly publishedDate: string;
+}
+
 const EXPECTED_HOME_PAGES = [
   {
     locale: 'en',
@@ -275,8 +293,115 @@ describe('static build output', () => {
     });
   }
 
+  for (const expected of EXPECTED_BLOG_ROOT_PAGES) {
+    it(`generates localized blog root output for ${expected.locale}`, async () => {
+      const html = await readDistFile(expected.relativeFile);
+
+      expect(html).toContain(`<html lang="${expected.htmlLang}"`);
+      expect(html).toContain(`<title>${expected.title}</title>`);
+      expect(html).toContain(
+        `<meta name="description" content="${escapeExpectedHtml(expected.description ?? '')}">`,
+      );
+      expect(countMatches(html, /<title>/g)).toBe(1);
+      expect(countMatches(html, /name="description"/g)).toBe(1);
+      expect(html).toContain('<meta name="robots" content="index,follow">');
+      expect(html).toContain(
+        `<link rel="canonical" href="${expected.canonicalUrl}">`,
+      );
+      expect(html).toContain('<meta property="og:type" content="website">');
+      expect(html).toContain(expected.expectedLink);
+      expect(html).toContain('data-template="blog-index"');
+      expect(countMatches(html, /data-language-switcher/g)).toBe(1);
+      expect(countMatches(html, /data-breadcrumbs/g)).toBe(1);
+      expect(countMatches(html, /rel="alternate"/g)).toBe(5);
+      for (const alternate of EXPECTED_BLOG_ALTERNATES) {
+        expect(html).toContain(
+          `<link rel="alternate" hreflang="${alternate.hrefLang}" href="${alternate.url}">`,
+        );
+      }
+      expect(html).toContain(
+        '<link rel="alternate" hreflang="x-default" href="https://4all.tools/blog/">',
+      );
+      expect(html).not.toContain('/en/');
+      expect(html).not.toContain('blog/blog');
+    });
+  }
+
+  for (const [index, expected] of EXPECTED_BLOG_CATEGORY_PAGES.entries()) {
+    it(`generates localized blog category output for ${expected.locale} ${expected.relativeFile}`, async () => {
+      const html = await readDistFile(expected.relativeFile);
+      const alternateUrls = EXPECTED_BLOG_CATEGORY_ALTERNATES[index % 2]!;
+
+      expect(html).toContain(`<html lang="${expected.htmlLang}"`);
+      expect(html).toContain(`<title>${expected.title}</title>`);
+      expect(html).toContain('<meta name="robots" content="index,follow">');
+      expect(html).toContain(
+        `<link rel="canonical" href="${expected.canonicalUrl}">`,
+      );
+      expect(html).toContain('<meta property="og:type" content="website">');
+      expect(html).toContain(expected.expectedLink);
+      expect(html).toContain('data-template="blog-category"');
+      expect(countMatches(html, /data-language-switcher/g)).toBe(1);
+      expect(countMatches(html, /data-breadcrumbs/g)).toBe(1);
+      expect(countMatches(html, /rel="alternate"/g)).toBe(5);
+      for (const alternateUrl of alternateUrls) {
+        expect(html).toContain(alternateUrl);
+      }
+      expect(html).not.toContain('/en/');
+      expect(html).not.toContain('blog/blog');
+    });
+  }
+
+  for (const expected of EXPECTED_BLOG_ARTICLE_PAGES) {
+    it(`generates localized blog article output for ${expected.locale}`, async () => {
+      const html = await readDistFile(expected.relativeFile);
+
+      expect(html).toContain(`<html lang="${expected.htmlLang}"`);
+      expect(html).toContain(`<title>${expected.title}</title>`);
+      expect(html).toContain('<h1');
+      expect(html).toContain(expected.articleTitle);
+      expect(html).toContain(expected.articleExcerpt);
+      expect(html).toContain('<meta name="robots" content="index,follow">');
+      expect(html).toContain(
+        `<link rel="canonical" href="${expected.canonicalUrl}">`,
+      );
+      expect(html).toContain('<meta property="og:type" content="article">');
+      expect(html).toContain(
+        `<meta property="og:url" content="${expected.canonicalUrl}">`,
+      );
+      expect(html).toContain(
+        `<meta property="article:published_time" content="${expected.publishedAt}">`,
+      );
+      expect(html).toContain(
+        `<meta property="article:section" content="${expected.section}">`,
+      );
+      expect(html).not.toContain('article:modified_time');
+      expect(html).not.toContain('name="author"');
+      expect(html).not.toContain('application/ld+json');
+      expect(html).toContain(expected.expectedLink);
+      expect(html).toContain(
+        `<time datetime="${expected.publishedAt}">${expected.publishedDate}</time>`,
+      );
+      expect(html).toContain('data-language-switcher');
+      expect(html).toContain('data-breadcrumbs');
+      expect(countMatches(html, /rel="alternate"/g)).toBe(5);
+      for (const alternateUrl of EXPECTED_BLOG_ARTICLE_ALTERNATES) {
+        expect(html).toContain(alternateUrl);
+      }
+      expect(html).not.toContain('>what-is-json<');
+      expect(html).not.toContain('/en/');
+      expect(html).not.toContain('blog/blog');
+    });
+  }
+
   for (const relativeFile of FORBIDDEN_OUTPUTS) {
     it(`does not emit forbidden output ${relativeFile}`, async () => {
+      await expectDistFileMissing(relativeFile);
+    });
+  }
+
+  for (const relativeFile of BLOG_FORBIDDEN_OUTPUTS) {
+    it(`does not emit forbidden blog output ${relativeFile}`, async () => {
       await expectDistFileMissing(relativeFile);
     });
   }
@@ -298,6 +423,9 @@ describe('static build output', () => {
     const htmlFiles = [
       ...EXPECTED_HOME_PAGES.map((expected) => expected.relativeFile),
       ...EXPECTED_JSON_VALIDATOR_PAGES.map((expected) => expected.relativeFile),
+      ...EXPECTED_BLOG_ROOT_PAGES.map((expected) => expected.relativeFile),
+      ...EXPECTED_BLOG_CATEGORY_PAGES.map((expected) => expected.relativeFile),
+      ...EXPECTED_BLOG_ARTICLE_PAGES.map((expected) => expected.relativeFile),
     ];
     const generatedHtml = await Promise.all(
       htmlFiles.map((relativeFile) => readDistFile(relativeFile)),
@@ -316,6 +444,204 @@ const EXPECTED_HOME_ALTERNATES = [
   { hrefLang: 'es', url: 'https://4all.tools/es/' },
   { hrefLang: 'pt', url: 'https://4all.tools/pt/' },
   { hrefLang: 'fr', url: 'https://4all.tools/fr/' },
+] as const;
+
+const EXPECTED_BLOG_ALTERNATES = [
+  { hrefLang: 'en', url: 'https://4all.tools/blog/' },
+  { hrefLang: 'es', url: 'https://4all.tools/es/blog/' },
+  { hrefLang: 'pt', url: 'https://4all.tools/pt/blog/' },
+  { hrefLang: 'fr', url: 'https://4all.tools/fr/blog/' },
+] as const;
+
+const EXPECTED_BLOG_ROOT_PAGES = [
+  {
+    locale: 'en',
+    relativeFile: 'blog/index.html',
+    htmlLang: 'en',
+    title: 'Blog',
+    description: 'Guides, explanations and practical ideas for everyday work.',
+    canonicalUrl: 'https://4all.tools/blog/',
+    expectedLink: '/blog/development/json-guides/what-is-json/',
+  },
+  {
+    locale: 'es',
+    relativeFile: 'es/blog/index.html',
+    htmlLang: 'es',
+    title: 'Blog',
+    description: 'Guías, explicaciones e ideas prácticas para el trabajo diario.',
+    canonicalUrl: 'https://4all.tools/es/blog/',
+    expectedLink: '/es/blog/desarrollo/guias-json/que-es-json/',
+  },
+  {
+    locale: 'pt',
+    relativeFile: 'pt/blog/index.html',
+    htmlLang: 'pt',
+    title: 'Blog',
+    description: 'Guias, explicações e ideias práticas para o trabalho diário.',
+    canonicalUrl: 'https://4all.tools/pt/blog/',
+    expectedLink: '/pt/blog/desenvolvimento/guias-json/o-que-e-json/',
+  },
+  {
+    locale: 'fr',
+    relativeFile: 'fr/blog/index.html',
+    htmlLang: 'fr',
+    title: 'Blog',
+    description: 'Guides, explications et idées pratiques pour le travail quotidien.',
+    canonicalUrl: 'https://4all.tools/fr/blog/',
+    expectedLink: '/fr/blog/developpement/guides-json/qu-est-ce-que-json/',
+  },
+] as const satisfies readonly ExpectedBuiltBlogPage[];
+
+const EXPECTED_BLOG_CATEGORY_PAGES = [
+  {
+    locale: 'en',
+    relativeFile: 'blog/development/index.html',
+    htmlLang: 'en',
+    title: 'Development Guides',
+    canonicalUrl: 'https://4all.tools/blog/development/',
+    expectedLink: '/blog/development/json-guides/',
+  },
+  {
+    locale: 'en',
+    relativeFile: 'blog/development/json-guides/index.html',
+    htmlLang: 'en',
+    title: 'JSON Guides and Tutorials',
+    canonicalUrl: 'https://4all.tools/blog/development/json-guides/',
+    expectedLink: '/blog/development/json-guides/what-is-json/',
+  },
+  {
+    locale: 'es',
+    relativeFile: 'es/blog/desarrollo/index.html',
+    htmlLang: 'es',
+    title: 'Guías de desarrollo',
+    canonicalUrl: 'https://4all.tools/es/blog/desarrollo/',
+    expectedLink: '/es/blog/desarrollo/guias-json/',
+  },
+  {
+    locale: 'es',
+    relativeFile: 'es/blog/desarrollo/guias-json/index.html',
+    htmlLang: 'es',
+    title: 'Guías y tutoriales de JSON',
+    canonicalUrl: 'https://4all.tools/es/blog/desarrollo/guias-json/',
+    expectedLink: '/es/blog/desarrollo/guias-json/que-es-json/',
+  },
+  {
+    locale: 'pt',
+    relativeFile: 'pt/blog/desenvolvimento/index.html',
+    htmlLang: 'pt',
+    title: 'Guias de desenvolvimento',
+    canonicalUrl: 'https://4all.tools/pt/blog/desenvolvimento/',
+    expectedLink: '/pt/blog/desenvolvimento/guias-json/',
+  },
+  {
+    locale: 'pt',
+    relativeFile: 'pt/blog/desenvolvimento/guias-json/index.html',
+    htmlLang: 'pt',
+    title: 'Guias e tutoriais de JSON',
+    canonicalUrl: 'https://4all.tools/pt/blog/desenvolvimento/guias-json/',
+    expectedLink: '/pt/blog/desenvolvimento/guias-json/o-que-e-json/',
+  },
+  {
+    locale: 'fr',
+    relativeFile: 'fr/blog/developpement/index.html',
+    htmlLang: 'fr',
+    title: 'Guides de développement',
+    canonicalUrl: 'https://4all.tools/fr/blog/developpement/',
+    expectedLink: '/fr/blog/developpement/guides-json/',
+  },
+  {
+    locale: 'fr',
+    relativeFile: 'fr/blog/developpement/guides-json/index.html',
+    htmlLang: 'fr',
+    title: 'Guides et tutoriels JSON',
+    canonicalUrl: 'https://4all.tools/fr/blog/developpement/guides-json/',
+    expectedLink: '/fr/blog/developpement/guides-json/qu-est-ce-que-json/',
+  },
+] as const satisfies readonly ExpectedBuiltBlogPage[];
+
+const EXPECTED_BLOG_ARTICLE_PAGES = [
+  {
+    locale: 'en',
+    relativeFile: 'blog/development/json-guides/what-is-json/index.html',
+    htmlLang: 'en',
+    title: 'What Is JSON? Syntax, Examples, and Uses',
+    canonicalUrl: 'https://4all.tools/blog/development/json-guides/what-is-json/',
+    expectedLink: '/blog/development/json-guides/',
+    articleTitle: 'What Is JSON?',
+    articleExcerpt: 'Learn what JSON is, how its syntax works, and why developers use it to exchange structured data.',
+    section: 'JSON Guides',
+    publishedAt: '2026-07-21T00:00:00.000Z',
+    publishedDate: 'July 21, 2026',
+  },
+  {
+    locale: 'es',
+    relativeFile: 'es/blog/desarrollo/guias-json/que-es-json/index.html',
+    htmlLang: 'es',
+    title: '¿Qué es JSON? Sintaxis, ejemplos y usos',
+    canonicalUrl: 'https://4all.tools/es/blog/desarrollo/guias-json/que-es-json/',
+    expectedLink: '/es/blog/desarrollo/guias-json/',
+    articleTitle: '¿Qué es JSON? Guía práctica de su sintaxis',
+    articleExcerpt: 'Aprende qué es JSON, cómo funciona su sintaxis y por qué se utiliza para intercambiar datos estructurados.',
+    section: 'Guías de JSON',
+    publishedAt: '2026-07-21T00:00:00.000Z',
+    publishedDate: '21 de julio de 2026',
+  },
+  {
+    locale: 'pt',
+    relativeFile: 'pt/blog/desenvolvimento/guias-json/o-que-e-json/index.html',
+    htmlLang: 'pt',
+    title: 'O que é JSON? Sintaxe, exemplos e usos',
+    canonicalUrl: 'https://4all.tools/pt/blog/desenvolvimento/guias-json/o-que-e-json/',
+    expectedLink: '/pt/blog/desenvolvimento/guias-json/',
+    articleTitle: 'O que é JSON? Guia prático da sintaxe JSON',
+    articleExcerpt: 'Entenda o que é JSON, como sua sintaxe funciona e por que ele é usado para trocar dados estruturados.',
+    section: 'Guias de JSON',
+    publishedAt: '2026-07-21T00:00:00.000Z',
+    publishedDate: '21 de julho de 2026',
+  },
+  {
+    locale: 'fr',
+    relativeFile: 'fr/blog/developpement/guides-json/qu-est-ce-que-json/index.html',
+    htmlLang: 'fr',
+    title: 'Qu’est-ce que JSON ? Syntaxe, exemples et usages',
+    canonicalUrl: 'https://4all.tools/fr/blog/developpement/guides-json/qu-est-ce-que-json/',
+    expectedLink: '/fr/blog/developpement/guides-json/',
+    articleTitle: 'Qu’est-ce que JSON ? Guide pratique de sa syntaxe',
+    articleExcerpt: 'Découvrez ce qu’est JSON, comment fonctionne sa syntaxe et pourquoi ce format sert à échanger des données structurées.',
+    section: 'Guides JSON',
+    publishedAt: '2026-07-21T00:00:00.000Z',
+    publishedDate: '21 juillet 2026',
+  },
+] as const satisfies readonly ExpectedBuiltArticlePage[];
+
+const BLOG_FORBIDDEN_OUTPUTS = [
+  'en/blog/index.html',
+  'blog/development/json-guides/what-is-json.html',
+  'es/blog/desarrollo/guias-json/que-es-json.html',
+  'pt/blog/desenvolvimento/guias-json/o-que-e-json.html',
+  'fr/blog/developpement/guides-json/qu-est-ce-que-json.html',
+] as const;
+
+const EXPECTED_BLOG_CATEGORY_ALTERNATES = [
+  [
+    'https://4all.tools/blog/development/',
+    'https://4all.tools/es/blog/desarrollo/',
+    'https://4all.tools/pt/blog/desenvolvimento/',
+    'https://4all.tools/fr/blog/developpement/',
+  ],
+  [
+    'https://4all.tools/blog/development/json-guides/',
+    'https://4all.tools/es/blog/desarrollo/guias-json/',
+    'https://4all.tools/pt/blog/desenvolvimento/guias-json/',
+    'https://4all.tools/fr/blog/developpement/guides-json/',
+  ],
+] as const;
+
+const EXPECTED_BLOG_ARTICLE_ALTERNATES = [
+  'https://4all.tools/blog/development/json-guides/what-is-json/',
+  'https://4all.tools/es/blog/desarrollo/guias-json/que-es-json/',
+  'https://4all.tools/pt/blog/desenvolvimento/guias-json/o-que-e-json/',
+  'https://4all.tools/fr/blog/developpement/guides-json/qu-est-ce-que-json/',
 ] as const;
 
 const MOJIBAKE_MARKERS = [
