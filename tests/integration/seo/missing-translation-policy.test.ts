@@ -9,7 +9,10 @@ import {
   type LocalizedPageAvailability,
   type SeoIndexabilityResolver,
 } from '@/seo';
-import { getToolAreaStaticPathEntries } from '@/routing/static-paths';
+import {
+  getBlogStaticPathEntries,
+  getToolAreaStaticPathEntries,
+} from '@/routing/static-paths';
 import { createRouteRegistryFromRecords } from '@/routing/registry';
 import type { Locale } from '@/i18n/types';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
@@ -17,6 +20,11 @@ import type { RouteRecord, RouteTarget } from '@/routing/types';
 const TARGET = {
   kind: 'tool',
   toolId: 'json-validator-missing-es',
+} as const satisfies RouteTarget;
+
+const BLOG_TARGET = {
+  kind: 'article',
+  articleId: 'what-is-json',
 } as const satisfies RouteTarget;
 
 describe('P07 missing translation policy', () => {
@@ -65,6 +73,32 @@ describe('P07 missing translation policy', () => {
     );
 
     assertReciprocalSeoAlternates([english, portuguese]);
+  });
+
+  it('keeps a missing localized blog route absent without English fallback', async () => {
+    const registry = missingSpanishBlogRegistry();
+    const english = await composeBlog(registry, 'en');
+    const switcher = buildLanguageSwitcherModel({
+      cluster: english.localizedRouteCluster,
+      messages: getGlobalMessages('en').language,
+    });
+
+    expect(registry.getCanonical('en', BLOG_TARGET)).not.toBeNull();
+    expect(registry.getCanonical('es', BLOG_TARGET)).toBeNull();
+    expect(getBlogStaticPathEntries(registry, 'en')).toHaveLength(1);
+    expect(getBlogStaticPathEntries(registry, 'es')).toEqual([]);
+    expect(english.localizedRouteCluster.variants.map((variant) => variant.locale)).toEqual([
+      'en',
+    ]);
+    expect(switcher.items.find((item) => item.locale === 'es')).toEqual({
+      state: 'unavailable',
+      locale: 'es',
+      label: 'Espa\u00f1ol',
+      htmlLang: 'es',
+    });
+    expect(switcher.items.find((item) => item.locale === 'es')).not.toHaveProperty(
+      'url',
+    );
   });
 
   it('keeps a published noindex locale routable but outside SEO alternates', async () => {
@@ -182,11 +216,37 @@ async function compose(
   );
 }
 
+async function composeBlog(
+  registry: ReturnType<typeof createRouteRegistryFromRecords>,
+  locale: Locale,
+) {
+  return composeSeoPageModel(
+    {
+      subject: { kind: 'route', target: BLOG_TARGET },
+      locale,
+      title: 'What Is JSON',
+      description: 'A practical introduction to JSON.',
+      noindex: false,
+      openGraphType: 'website',
+    },
+    {
+      routeRegistry: registry,
+      indexabilityResolver: allIndexable,
+    },
+  );
+}
+
 function missingSpanishRegistry() {
   return createRouteRegistryFromRecords([
     route('en', ['developer', 'json-validator']),
     route('pt', ['desenvolvedor', 'validador-json']),
     route('fr', ['developpement', 'validateur-json']),
+  ]);
+}
+
+function missingSpanishBlogRegistry() {
+  return createRouteRegistryFromRecords([
+    blogRoute('en', ['blog', 'development', 'json-guides', 'what-is-json']),
   ]);
 }
 
@@ -218,5 +278,15 @@ function route(locale: Locale, segments: readonly string[]): RouteRecord {
     segments,
     target: TARGET,
     sourceId: 'fixture:missing-translation-policy',
+  };
+}
+
+function blogRoute(locale: Locale, segments: readonly string[]): RouteRecord {
+  return {
+    area: 'blog',
+    locale,
+    segments,
+    target: BLOG_TARGET,
+    sourceId: 'fixture:missing-blog-translation-policy',
   };
 }

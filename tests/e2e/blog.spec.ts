@@ -83,3 +83,41 @@ test('navigates from the blog index to a localized article and category', async 
     page.getByRole('heading', { level: 1, name: 'Guías de JSON' }),
   ).toBeVisible();
 });
+
+test('returns 404 for a missing localized blog request without fallback', async ({
+  page,
+}) => {
+  const requestedPath = '/es/blog/desarrollo/guias-json/articulo-inexistente/';
+  const response = await page.goto(requestedPath);
+
+  expect(response?.status()).toBe(404);
+  clearExpected404ConsoleMessage(page);
+  await expect(page).toHaveURL(`http://127.0.0.1:4321${requestedPath}`);
+  expect(page.url()).not.toBe('http://127.0.0.1:4321/es/');
+  expect(page.url()).not.toBe('http://127.0.0.1:4321/');
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'What Is JSON?' }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole('heading', {
+      level: 1,
+      name: 'Â¿QuÃ© es JSON? GuÃ­a prÃ¡ctica de su sintaxis',
+    }),
+  ).toHaveCount(0);
+});
+
+function clearExpected404ConsoleMessage(page: Page): void {
+  const errors = observedErrors.get(page);
+
+  if (errors === undefined) {
+    return;
+  }
+
+  const expectedMessage =
+    'Failed to load resource: the server responded with a status of 404 (Not Found)';
+  errors.consoleErrors.splice(
+    0,
+    errors.consoleErrors.length,
+    ...errors.consoleErrors.filter((message) => message !== expectedMessage),
+  );
+}

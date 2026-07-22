@@ -188,6 +188,17 @@ const FORBIDDEN_OUTPUTS = [
 ] as const;
 
 describe('static build output', () => {
+  it('matches the exact frozen blog HTML inventory', async () => {
+    const htmlFiles = await listHtmlFiles(DIST_ROOT);
+    const actualBlogHtmlFiles = htmlFiles.filter(isBlogHtmlArtifact);
+
+    expect(actualBlogHtmlFiles).toEqual([...EXPECTED_BLOG_HTML_FILES]);
+
+    for (const pattern of BLOG_FORBIDDEN_OUTPUT_PATTERNS) {
+      expect(htmlFiles.some((file) => pattern.test(file))).toBe(false);
+    }
+  });
+
   for (const expected of EXPECTED_HOME_PAGES) {
     it(`verifies localized home output for ${expected.locale}`, async () => {
       const html = await readDistFile(expected.relativeFile);
@@ -622,6 +633,36 @@ const BLOG_FORBIDDEN_OUTPUTS = [
   'fr/blog/developpement/guides-json/qu-est-ce-que-json.html',
 ] as const;
 
+const EXPECTED_BLOG_HTML_FILES = [
+  'blog/index.html',
+  'blog/development/index.html',
+  'blog/development/json-guides/index.html',
+  'blog/development/json-guides/what-is-json/index.html',
+  'es/blog/index.html',
+  'es/blog/desarrollo/index.html',
+  'es/blog/desarrollo/guias-json/index.html',
+  'es/blog/desarrollo/guias-json/que-es-json/index.html',
+  'pt/blog/index.html',
+  'pt/blog/desenvolvimento/index.html',
+  'pt/blog/desenvolvimento/guias-json/index.html',
+  'pt/blog/desenvolvimento/guias-json/o-que-e-json/index.html',
+  'fr/blog/index.html',
+  'fr/blog/developpement/index.html',
+  'fr/blog/developpement/guides-json/index.html',
+  'fr/blog/developpement/guides-json/qu-est-ce-que-json/index.html',
+].sort(compareCodePointOrder);
+
+const BLOG_FORBIDDEN_OUTPUT_PATTERNS = [
+  /^en\/blog\//,
+  /(^|\/)blog\/blog\//,
+  /(^|\/)blog\/what-is-json\//,
+  /(^|\/)blog\/json-guides\/what-is-json\//,
+  /what-is-json\.html$/,
+  /que-es-json\.html$/,
+  /o-que-e-json\.html$/,
+  /qu-est-ce-que-json\.html$/,
+] as const;
+
 const EXPECTED_BLOG_CATEGORY_ALTERNATES = [
   [
     'https://4all.tools/blog/development/',
@@ -681,6 +722,47 @@ async function expectDistFileMissing(relativeFile: string): Promise<void> {
 
 function toDistUrl(relativeFile: string): URL {
   return new URL(relativeFile, DIST_ROOT);
+}
+
+async function listHtmlFiles(root: URL): Promise<readonly string[]> {
+  const files: string[] = [];
+
+  async function visit(directory: URL, prefix: string): Promise<void> {
+    const entries = await readdir(directory, { withFileTypes: true });
+
+    await Promise.all(
+      entries.map(async (entry) => {
+        const relativePath = `${prefix}${entry.name}`.replaceAll('\\', '/');
+        const entryUrl = new URL(
+          `${entry.name}${entry.isDirectory() ? '/' : ''}`,
+          directory,
+        );
+
+        if (entry.isDirectory()) {
+          await visit(entryUrl, `${relativePath}/`);
+        } else if (entry.isFile() && entry.name.endsWith('.html')) {
+          files.push(relativePath);
+        }
+      }),
+    );
+  }
+
+  await visit(root, '');
+  return files.sort(compareCodePointOrder);
+}
+
+function isBlogHtmlArtifact(relativeFile: string): boolean {
+  return (
+    relativeFile.startsWith('blog/') ||
+    ['en/', 'es/', 'pt/', 'fr/'].some((prefix) =>
+      relativeFile.startsWith(`${prefix}blog/`),
+    ) ||
+    BLOG_FORBIDDEN_OUTPUT_PATTERNS.some((pattern) => pattern.test(relativeFile))
+  );
+}
+
+function compareCodePointOrder(first: string, second: string): number {
+  return first < second ? -1 : first > second ? 1 : 0;
 }
 
 function countMatches(value: string, pattern: RegExp): number {
