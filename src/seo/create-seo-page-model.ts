@@ -19,30 +19,42 @@ import type {
   NoindexSeoRobotsModel,
   SeoLocaleAlternate,
   SeoOpenGraphImage,
+  SeoOpenGraphArticleMetadata,
   SeoOpenGraphModel,
   SeoRobotsModel,
 } from './types';
 
-interface SeoBaseInput {
+interface SeoBaseFields {
   readonly title: string;
   readonly description: string;
   readonly canonicalUrl: string;
-  readonly openGraphType?: SeoOpenGraphModel['type'];
   readonly openGraphImage?: SeoOpenGraphImage;
   readonly siteUrl?: URL;
 }
 
-export interface CreateIndexableSeoPageModelInput extends SeoBaseInput {
+type SeoOpenGraphInput =
+  | {
+      readonly openGraphType?: 'website';
+      readonly openGraphArticle?: never;
+    }
+  | {
+      readonly openGraphType: 'article';
+      readonly openGraphArticle: SeoOpenGraphArticleMetadata;
+    };
+
+type SeoBaseInput = SeoBaseFields & SeoOpenGraphInput;
+
+export type CreateIndexableSeoPageModelInput = SeoBaseInput & {
   readonly noindex?: false;
   readonly alternates?: readonly SeoLocaleAlternate[];
   readonly xDefaultUrl?: string;
-}
+};
 
-export interface CreateNoindexSeoPageModelInput extends SeoBaseInput {
+export type CreateNoindexSeoPageModelInput = SeoBaseInput & {
   readonly noindex: true;
   readonly alternates?: readonly [];
   readonly xDefaultUrl?: never;
-}
+};
 
 export type CreateSeoPageModelInput =
   | CreateIndexableSeoPageModelInput
@@ -64,19 +76,12 @@ export function createSeoPageModel(
   const title = normalizeTitle(input.title);
   const description = normalizeDescription(input.description);
   const canonicalUrl = assertCanonicalUrl(input.canonicalUrl, siteUrl);
-  const image =
-    input.openGraphImage === undefined
-      ? undefined
-      : normalizeOpenGraphImage(input.openGraphImage);
-
-  const openGraph = Object.freeze({
-    type: input.openGraphType ?? 'website',
+  const openGraph = createOpenGraphModel(
+    input,
     title,
     description,
-    url: canonicalUrl,
-    siteName: '4all.tools',
-    ...(image === undefined ? {} : { image }),
-  });
+    canonicalUrl,
+  );
 
   if (input.noindex === true) {
     assertNoindexSeoConflicts(input, canonicalUrl);
@@ -249,6 +254,50 @@ function normalizeOpenGraphImage(
     alt,
     ...(image.width === undefined ? {} : { width: image.width }),
     ...(image.height === undefined ? {} : { height: image.height }),
+  });
+}
+
+function createOpenGraphModel(
+  input: SeoBaseInput,
+  title: string,
+  description: string,
+  canonicalUrl: string,
+): SeoOpenGraphModel {
+  const base = {
+    title,
+    description,
+    url: canonicalUrl,
+    siteName: '4all.tools' as const,
+    ...(input.openGraphImage === undefined
+      ? {}
+      : { image: normalizeOpenGraphImage(input.openGraphImage) }),
+  };
+
+  if (input.openGraphType === 'article') {
+    const article = input.openGraphArticle;
+
+    if (article === undefined) {
+      throw new Error(
+        'Article Open Graph metadata is required when openGraphType is article.',
+      );
+    }
+
+    return Object.freeze({
+      ...base,
+      type: 'article' as const,
+      article: Object.freeze({ ...article }),
+    });
+  }
+
+  if (input.openGraphArticle !== undefined) {
+    throw new Error(
+      'Article Open Graph metadata is only valid when openGraphType is article.',
+    );
+  }
+
+  return Object.freeze({
+    ...base,
+    type: 'website' as const,
   });
 }
 

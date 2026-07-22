@@ -10,6 +10,13 @@ export const pt = {
     home: 'Início',
     breadcrumbsLabel: 'Caminho de navegação',
   },
+  blog: {
+    label: 'Blog',
+    articles: 'Artigos',
+    categories: 'Categorias',
+    published: 'Publicado',
+    updated: 'Atualizado',
+  },
   common: {
     copy: 'Copiar',
     copied: 'Copiado',

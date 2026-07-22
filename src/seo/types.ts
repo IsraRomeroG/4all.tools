@@ -27,14 +27,34 @@ export interface SeoOpenGraphImage {
   readonly height?: number;
 }
 
-export interface SeoOpenGraphModel {
-  readonly type: 'website' | 'article';
+export interface SeoOpenGraphArticleMetadata {
+  readonly publishedTime: string;
+  readonly modifiedTime?: string;
+  readonly section: string;
+}
+
+export interface SeoOpenGraphWebsiteModel {
+  readonly type: 'website';
   readonly title: string;
   readonly description: string;
   readonly url: string;
   readonly siteName: '4all.tools';
   readonly image?: SeoOpenGraphImage;
 }
+
+export interface SeoOpenGraphArticleModel {
+  readonly type: 'article';
+  readonly title: string;
+  readonly description: string;
+  readonly url: string;
+  readonly siteName: '4all.tools';
+  readonly image?: SeoOpenGraphImage;
+  readonly article: SeoOpenGraphArticleMetadata;
+}
+
+export type SeoOpenGraphModel =
+  | SeoOpenGraphWebsiteModel
+  | SeoOpenGraphArticleModel;
 
 export interface IndexableSeoPageModel {
   readonly title: string;

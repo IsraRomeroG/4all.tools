@@ -16,20 +16,31 @@ import {
   type SeoHomeIndexabilityResolver,
 } from './localized-route-cluster';
 import type {
+  SeoOpenGraphArticleMetadata,
   SeoOpenGraphImage,
-  SeoOpenGraphModel,
   SeoPageModel,
 } from './types';
 
-export interface ComposeSeoPageModelInput {
+interface ComposeSeoPageModelBaseInput {
   readonly subject: LocaleNavigationSubject;
   readonly locale: Locale;
   readonly title: string;
   readonly description: string;
   readonly noindex: boolean;
-  readonly openGraphType: SeoOpenGraphModel['type'];
   readonly openGraphImage?: SeoOpenGraphImage;
 }
+
+export type ComposeSeoPageModelInput = ComposeSeoPageModelBaseInput &
+  (
+    | {
+        readonly openGraphType: 'website';
+        readonly openGraphArticle?: never;
+      }
+    | {
+        readonly openGraphType: 'article';
+        readonly openGraphArticle: SeoOpenGraphArticleMetadata;
+      }
+  );
 
 export interface SeoCompositionDependencies {
   readonly routeRegistry?: Pick<RouteRegistry, 'getCanonical' | 'getByTarget'>;
@@ -79,18 +90,34 @@ export async function composeSeoPageModel(
     title: input.title,
     description: input.description,
     canonicalUrl: localizedRouteCluster.current.absoluteUrl,
-    openGraphType: input.openGraphType,
     ...(input.openGraphImage === undefined
       ? {}
       : { openGraphImage: input.openGraphImage }),
   };
 
   const seo = input.noindex
-    ? createSeoPageModel({
-        ...seoBaseInput,
-        noindex: true,
-      })
-    : createIndexableSeoPageModel(localizedRouteCluster, seoBaseInput);
+    ? input.openGraphType === 'article'
+      ? createSeoPageModel({
+          ...seoBaseInput,
+          noindex: true,
+          openGraphType: 'article',
+          openGraphArticle: input.openGraphArticle,
+        })
+      : createSeoPageModel({
+          ...seoBaseInput,
+          noindex: true,
+          openGraphType: 'website',
+        })
+    : input.openGraphType === 'article'
+      ? createIndexableSeoPageModel(localizedRouteCluster, {
+          ...seoBaseInput,
+          openGraphType: 'article',
+          openGraphArticle: input.openGraphArticle,
+        })
+      : createIndexableSeoPageModel(localizedRouteCluster, {
+          ...seoBaseInput,
+          openGraphType: 'website',
+        });
 
   return Object.freeze({
     seo,
@@ -104,7 +131,14 @@ function createIndexableSeoPageModel(
     readonly title: string;
     readonly description: string;
     readonly canonicalUrl: string;
-    readonly openGraphType: SeoOpenGraphModel['type'];
+    readonly openGraphType?: 'website';
+    readonly openGraphArticle?: never;
+  } | {
+    readonly title: string;
+    readonly description: string;
+    readonly canonicalUrl: string;
+    readonly openGraphType: 'article';
+    readonly openGraphArticle: SeoOpenGraphArticleMetadata;
     readonly openGraphImage?: SeoOpenGraphImage;
   },
 ) {
@@ -115,14 +149,28 @@ function createIndexableSeoPageModel(
     (variant) => variant.locale === DEFAULT_LOCALE,
   );
 
+  const alternates = seoVariants.map((variant) => ({
+    locale: variant.locale,
+    hrefLang: variant.hrefLang,
+    url: variant.absoluteUrl,
+  }));
+
+  if (input.openGraphType === 'article') {
+    return createSeoPageModel({
+      ...input,
+      noindex: false,
+      alternates,
+      ...(defaultVariant === undefined
+        ? {}
+        : { xDefaultUrl: defaultVariant.absoluteUrl }),
+    });
+  }
+
   return createSeoPageModel({
     ...input,
     noindex: false,
-    alternates: seoVariants.map((variant) => ({
-      locale: variant.locale,
-      hrefLang: variant.hrefLang,
-      url: variant.absoluteUrl,
-    })),
+    openGraphType: 'website',
+    alternates,
     ...(defaultVariant === undefined
       ? {}
       : { xDefaultUrl: defaultVariant.absoluteUrl }),

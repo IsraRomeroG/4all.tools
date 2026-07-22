@@ -1,12 +1,7 @@
 import type { MarkdownHeading } from 'astro';
 import type { RenderResult } from 'astro:content';
 
-import type {
-  ArticleId,
-  BlogCategoryId,
-  ToolCategoryId,
-  ToolId,
-} from '@/domain/shared/ids';
+import type { ToolCategoryId, ToolId } from '@/domain/shared/ids';
 import type { ToolExecutionType } from '@/domain/tools';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import type { Locale } from '@/i18n/types';
@@ -83,13 +78,12 @@ export interface ToolCategoryPageModel extends PageDocumentModel {
   };
 }
 
-export interface BlogIndexPageModel extends PageDocumentModel {
-  readonly kind: 'blog-index';
-  readonly categoryId?: BlogCategoryId;
-}
-
-export interface ArticlePageModel extends PageDocumentModel {
-  readonly kind: 'article';
-  readonly route: RouteRecord | null;
-  readonly articleId: ArticleId;
-}
+export type {
+  ArticleCategoryReferenceModel,
+  ArticleDateModel,
+  ArticlePageModel,
+  ArticleSummaryModel,
+  BlogCategoryPageModel,
+  BlogCategorySummaryModel,
+  BlogIndexPageModel,
+} from './blog';

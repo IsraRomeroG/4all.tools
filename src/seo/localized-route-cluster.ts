@@ -23,6 +23,9 @@ export type LocaleNavigationSubject =
     }
   | {
       readonly kind: 'home';
+    }
+  | {
+      readonly kind: 'blog-index';
     };
 
 export interface LocalizedRouteVariant {
@@ -62,7 +65,9 @@ export async function buildLocalizedRouteCluster(
   const variants =
     input.subject.kind === 'home'
       ? await buildHomeVariants(dependencies.homeIndexabilityResolver)
-      : await buildRouteVariants(
+      : input.subject.kind === 'blog-index'
+        ? await buildBlogIndexVariants()
+        : await buildRouteVariants(
           {
             subject: input.subject,
             currentLocale: input.currentLocale,
@@ -83,7 +88,9 @@ export async function buildLocalizedRouteCluster(
     subject: Object.freeze(
       input.subject.kind === 'home'
         ? { kind: 'home' as const }
-        : {
+        : input.subject.kind === 'blog-index'
+          ? { kind: 'blog-index' as const }
+          : {
             kind: 'route' as const,
             target: Object.freeze({ ...input.subject.target }) as RouteTarget,
           },
@@ -97,7 +104,13 @@ export async function buildLocalizedRouteCluster(
 export function getLocaleNavigationSubjectKey(
   subject: LocaleNavigationSubject,
 ): string {
-  return subject.kind === 'home' ? 'home' : getRouteTargetKey(subject.target);
+  if (subject.kind === 'home') {
+    return 'home';
+  }
+
+  return subject.kind === 'blog-index'
+    ? 'blog-index'
+    : getRouteTargetKey(subject.target);
 }
 
 async function buildRouteVariants(
@@ -153,6 +166,19 @@ async function buildHomeVariants(
           homeIndexabilityResolver === undefined
             ? true
             : await homeIndexabilityResolver.isHomeIndexable(locale),
+      }),
+    ),
+  );
+}
+
+async function buildBlogIndexVariants(): Promise<readonly LocalizedRouteVariant[]> {
+  return Promise.all(
+    SUPPORTED_LOCALES.map(async (locale) =>
+      createVariant({
+        locale,
+        route: null,
+        segments: ['blog'],
+        indexable: true,
       }),
     ),
   );

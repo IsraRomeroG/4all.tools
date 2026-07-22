@@ -7,6 +7,8 @@ export type PageModelCompositionErrorCode =
   | 'MISSING_TOOL_PRESENTATION'
   | 'MISSING_TAXONOMY_NODE'
   | 'TOOL_PRESENTATION_MISMATCH'
+  | 'ARTICLE_ROUTE_CONTENT_MISMATCH'
+  | 'UNKNOWN_BLOG_CATEGORY_REFERENCE'
   | 'UNSUPPORTED_LOCALE'
   | 'UNSUPPORTED_PAGE_TARGET';
 
@@ -100,6 +102,52 @@ export class UnsupportedPageTargetError extends PageModelCompositionError {
       context,
     );
     this.name = 'UnsupportedPageTargetError';
+  }
+}
+
+export class ArticleRouteContentMismatchError extends PageModelCompositionError {
+  readonly articleId: string;
+  readonly routeCategoryId: string;
+  readonly contentCategoryId: string;
+
+  constructor(input: {
+    readonly articleId: string;
+    readonly routeCategoryId: string;
+    readonly contentCategoryId: string;
+    readonly locale: Locale;
+  }) {
+    super(
+      'ARTICLE_ROUTE_CONTENT_MISMATCH',
+      `Article ${input.articleId}:${input.locale} route category ${input.routeCategoryId} does not match content category ${input.contentCategoryId}.`,
+      {
+        locale: input.locale,
+        targetKind: 'article',
+        entityId: input.articleId,
+      },
+    );
+    this.name = 'ArticleRouteContentMismatchError';
+    this.articleId = input.articleId;
+    this.routeCategoryId = input.routeCategoryId;
+    this.contentCategoryId = input.contentCategoryId;
+  }
+}
+
+export class UnknownBlogCategoryReferenceError extends PageModelCompositionError {
+  constructor(input: {
+    readonly categoryId: string;
+    readonly locale?: Locale;
+    readonly articleId?: string;
+  }) {
+    super(
+      'UNKNOWN_BLOG_CATEGORY_REFERENCE',
+      `Unknown blog category reference ${input.categoryId}${input.articleId === undefined ? '' : ` on article ${input.articleId}`}.`,
+      {
+        ...(input.locale === undefined ? {} : { locale: input.locale }),
+        targetKind: 'blog-category',
+        entityId: input.categoryId,
+      },
+    );
+    this.name = 'UnknownBlogCategoryReferenceError';
   }
 }
 

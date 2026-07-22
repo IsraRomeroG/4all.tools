@@ -35,6 +35,17 @@ const image = seo.openGraph.image;
 <meta property="og:url" content={seo.openGraph.url} />
 <meta property="og:site_name" content={seo.openGraph.siteName} />
 {
+  seo.openGraph.type === 'article' && (
+    <>
+      <meta property="article:published_time" content={seo.openGraph.article.publishedTime} />
+      {seo.openGraph.article.modifiedTime !== undefined && (
+        <meta property="article:modified_time" content={seo.openGraph.article.modifiedTime} />
+      )}
+      <meta property="article:section" content={seo.openGraph.article.section} />
+    </>
+  )
+}
+{
   image && (
     <>
       <meta property="og:image" content={image.url} />

@@ -10,6 +10,13 @@ export const fr = {
     home: 'Accueil',
     breadcrumbsLabel: 'Fil d’Ariane',
   },
+  blog: {
+    label: 'Blog',
+    articles: 'Articles',
+    categories: 'Catégories',
+    published: 'Publié',
+    updated: 'Mis à jour',
+  },
   common: {
     copy: 'Copier',
     copied: 'Copié',

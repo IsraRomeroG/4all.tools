@@ -8,6 +8,13 @@ export const en = {
     home: 'Home',
     breadcrumbsLabel: 'Breadcrumbs',
   },
+  blog: {
+    label: 'Blog',
+    articles: 'Articles',
+    categories: 'Categories',
+    published: 'Published',
+    updated: 'Updated',
+  },
   common: {
     copy: 'Copy',
     copied: 'Copied',

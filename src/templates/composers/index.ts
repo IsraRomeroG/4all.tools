@@ -1,4 +1,5 @@
 export * from './category';
+export * from './blog';
 export { getDeliveryRouteRegistry } from './delivery-route-registry';
 export * from './errors';
 export * from './home';

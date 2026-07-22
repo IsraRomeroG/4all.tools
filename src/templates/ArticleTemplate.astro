@@ -7,6 +7,9 @@ interface Props {
 }
 
 const { page } = Astro.props;
+const legacyPage = page as unknown as { title?: string };
+const title = page.content?.title ?? legacyPage.title ?? page.articleId;
+const excerpt = page.content?.excerpt;
 ---
 
 <ArticleLayout locale={page.locale}>
@@ -14,8 +17,8 @@ const { page } = Astro.props;
 
   <Fragment slot="article-header">
     <p class="text-sm font-medium text-slate-600" data-template-identity={page.articleId}>{page.articleId}</p>
-    <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{page.title}</h1>
-    {page.description && <p class="text-lg leading-8 text-slate-700">{page.description}</p>}
+    <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{title}</h1>
+    {excerpt && <p class="text-lg leading-8 text-slate-700">{excerpt}</p>}
   </Fragment>
 
   <div slot="metadata" class="grid gap-2" data-template-region="article-metadata">

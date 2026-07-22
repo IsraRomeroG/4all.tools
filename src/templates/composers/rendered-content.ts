@@ -5,7 +5,9 @@ import type { RenderedContentModel } from '@/templates/models/shared';
 
 export type RenderableContentEntry =
   | CollectionEntry<'tools'>
-  | CollectionEntry<'toolCategories'>;
+  | CollectionEntry<'toolCategories'>
+  | CollectionEntry<'blog'>
+  | CollectionEntry<'blogCategories'>;
 
 export type RenderContent = (
   entry: RenderableContentEntry,
