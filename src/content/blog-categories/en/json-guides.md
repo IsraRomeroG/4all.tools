@@ -12,4 +12,5 @@ seo:
   noindex: false
 ---
 
-Explore practical JSON guides for developers.
+Explore practical guides about JSON syntax, validation, formatting, and daily
+development workflows.
