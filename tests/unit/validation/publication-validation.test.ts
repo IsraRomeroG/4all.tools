@@ -36,7 +36,6 @@ describe('architecture publication and SEO validation', () => {
       'PUBLIC_ROUTE_COMPOSITION_FAILED',
       'DUPLICATE_ROUTE_RECORD',
       'PUBLISHED_ROUTE_DEFINITION_WITHOUT_PUBLIC_VARIANT',
-      'NON_RECIPROCAL_SEO_CLUSTER',
     ]);
   });
 
@@ -62,7 +61,13 @@ describe('architecture publication and SEO validation', () => {
 
         return fixedPage('home', locale, false);
       },
-      composeBlogIndex: async (locale) => fixedPage('blog-index', locale, true),
+      composeBlogIndex: async (locale) => {
+        if (locale === 'pt') {
+          throw new Error('blog index failed');
+        }
+
+        return fixedPage('blog-index', locale, true);
+      },
     });
     const issues = await validatePublicationAndSeo({
       routeDefinitions: [],
@@ -72,9 +77,154 @@ describe('architecture publication and SEO validation', () => {
 
     expect(issues.map((issue) => issue.code)).toEqual([
       'FIXED_ROOT_COMPOSITION_FAILED',
+      'FIXED_ROOT_COMPOSITION_FAILED',
       'NOINDEX_SEO_ALTERNATE_CONFLICT',
       'NON_RECIPROCAL_SEO_CLUSTER',
     ]);
+  });
+
+  it('rejects a route cluster whose subject targets a different stable entity', async () => {
+    const route = record('article', 'article-a', 'article-a');
+    const page = pageForRoute(route, true);
+
+    const issues = await validatePublicationAndSeo({
+      routeDefinitions: [],
+      routeRegistry: fakeRouteRegistry([route]),
+      composition: compositionPorts({
+        composeRoute: async () => ({
+          ...page,
+          localizedRouteCluster: {
+            ...page.localizedRouteCluster,
+            subject: { kind: 'route', target: { kind: 'article', articleId: 'article-b' } },
+          },
+        }),
+      }),
+    });
+
+    expect(issues).toContainEqual(
+      expect.objectContaining({
+        code: 'SEO_CLUSTER_TARGET_MISMATCH',
+        entityKey: 'article:article-a',
+        details: expect.objectContaining({
+          expectedTarget: 'article:article-a',
+          actualSubjectTarget: 'article:article-b',
+        }),
+      }),
+    );
+  });
+
+  it('rejects a routed variant whose target differs from the stable cluster target', async () => {
+    const route = record('article', 'article-a', 'article-a');
+    const page = pageForRoute(route, true);
+    const wrongVariant = {
+      ...page.localizedRouteCluster.current,
+      locale: 'es' as const,
+      hrefLang: 'es',
+      relativeUrl: '/es/article-b',
+      absoluteUrl: 'https://4all.tools/es/article-b',
+      route: {
+        ...route,
+        locale: 'es' as const,
+        segments: ['article-b'],
+        target: { kind: 'article' as const, articleId: 'article-b' },
+      },
+    };
+
+    const issues = await validatePublicationAndSeo({
+      routeDefinitions: [],
+      routeRegistry: fakeRouteRegistry([route]),
+      composition: compositionPorts({
+        composeRoute: async () => ({
+          ...page,
+          localizedRouteCluster: {
+            ...page.localizedRouteCluster,
+            variants: [page.localizedRouteCluster.current, wrongVariant],
+          },
+        }),
+      }),
+    });
+
+    expect(issues).toContainEqual(
+      expect.objectContaining({
+        code: 'SEO_CLUSTER_TARGET_MISMATCH',
+        details: expect.objectContaining({
+          expectedTarget: 'article:article-a',
+          mismatchedVariants: [
+            { locale: 'es', target: 'article:article-b', path: '/es/article-b' },
+          ],
+        }),
+      }),
+    );
+  });
+
+  it('keeps route/page target mismatch as a public composition failure', async () => {
+    const route = record('article', 'article-a', 'article-a');
+    const mismatchedRoute = {
+      ...route,
+      target: { kind: 'article' as const, articleId: 'article-b' },
+      segments: ['article-b'],
+    };
+
+    const issues = await validatePublicationAndSeo({
+      routeDefinitions: [],
+      routeRegistry: fakeRouteRegistry([route]),
+      composition: compositionPorts({
+        composeRoute: async () => pageForRoute(mismatchedRoute, true),
+      }),
+    });
+
+    expect(issues.map((issue) => issue.code)).toContain(
+      'PUBLIC_ROUTE_COMPOSITION_FAILED',
+    );
+  });
+
+  it.each([
+    ['tool', 'json-validator', 'json-validator'],
+    ['tool-category', 'json', 'json'],
+    ['article', 'what-is-json', 'blog/what-is-json'],
+    ['blog-category', 'json-guides', 'blog/development/json-guides'],
+  ] as const)('accepts the %s route-target kind', async (kind, id, segment) => {
+    const route = record(kind, id, segment);
+
+    const issues = await validatePublicationAndSeo({
+      routeDefinitions: [],
+      routeRegistry: fakeRouteRegistry([route]),
+      composition: compositionPorts(),
+    });
+
+    expect(issues).toEqual([]);
+  });
+
+  it('accepts a reciprocal routed cluster with a missing locale', async () => {
+    const english = record('tool', 'json-validator', 'json-validator');
+    const spanish = {
+      ...english,
+      locale: 'es' as const,
+      segments: ['validador-json'],
+    };
+    const routes = [english, spanish];
+
+    const issues = await validatePublicationAndSeo({
+      routeDefinitions: [],
+      routeRegistry: fakeRouteRegistry(routes),
+      composition: compositionPorts({
+        composeRoute: async (route) => pageForRoute(route, true, routes),
+      }),
+    });
+
+    expect(issues).toEqual([]);
+  });
+
+  it('does not fabricate routes for route-less articles or classification-only categories', async () => {
+    const route = record('tool', 'json-validator', 'json-validator');
+
+    const issues = await validatePublicationAndSeo({
+      routeDefinitions: [toolDefinition('json-validator', 'published')],
+      routeRegistry: fakeRouteRegistry([route]),
+      composition: compositionPorts(),
+    });
+
+    expect(issues).toEqual([]);
   });
 });
 
@@ -92,8 +242,24 @@ function compositionPorts(
 function pageForRoute(
   route: RouteRecord,
   reciprocal: boolean,
+  clusterRecords: readonly RouteRecord[] = [route],
 ): ArchitectureComposedPageModel {
   const url = buildAbsoluteUrl({ locale: route.locale, segments: route.segments });
+  const variants = clusterRecords.map((clusterRecord) => ({
+    locale: clusterRecord.locale,
+    hrefLang: clusterRecord.locale,
+    relativeUrl: buildAbsoluteUrl({
+      locale: clusterRecord.locale,
+      segments: clusterRecord.segments,
+    }),
+    absoluteUrl: buildAbsoluteUrl({
+      locale: clusterRecord.locale,
+      segments: clusterRecord.segments,
+    }),
+    route: clusterRecord,
+    published: true as const,
+    indexable: true,
+  }));
 
   return page({
     kind: route.target.kind,
@@ -102,7 +268,8 @@ function pageForRoute(
     subject: route.target,
     url,
     indexable: reciprocal,
-    alternateUrls: reciprocal ? [url] : [],
+    alternateUrls: reciprocal ? variants.map((variant) => variant.absoluteUrl) : [],
+    variants,
   });
 }
 
@@ -132,6 +299,7 @@ function page(input: {
   readonly url: string;
   readonly indexable: boolean;
   readonly alternateUrls: readonly string[];
+  readonly variants?: ArchitectureComposedPageModel['localizedRouteCluster']['variants'];
 }): ArchitectureComposedPageModel {
   const current = {
     locale: input.locale,
@@ -142,11 +310,14 @@ function page(input: {
     published: true as const,
     indexable: input.indexable,
   };
+  const subject = input.subject.kind === 'home' || input.subject.kind === 'blog-index'
+    ? input.subject
+    : { kind: 'route' as const, target: input.subject as RouteTarget };
   const cluster = {
-    subject: input.subject as never,
+    subject,
     currentLocale: input.locale,
-    current,
-    variants: [current],
+    current: input.variants?.find((variant) => variant.locale === input.locale) ?? current,
+    variants: input.variants ?? [current],
   };
   const seo = {
     title: input.kind,
@@ -178,14 +349,16 @@ function record(
   id: string,
   segment: string,
 ): RouteRecord {
-  const target = kind === 'tool'
+  const target: RouteTarget = kind === 'tool'
     ? { kind, toolId: id }
-    : kind === 'article'
-      ? { kind, articleId: id }
-      : { kind: 'tool-category' as const, categoryId: id };
+    : kind === 'tool-category'
+      ? { kind, categoryId: id }
+      : kind === 'article'
+        ? { kind, articleId: id }
+        : { kind, categoryId: id };
 
   return {
-    area: kind === 'article' ? 'blog' : 'tools',
+    area: kind === 'article' || kind === 'blog-category' ? 'blog' : 'tools',
     locale: 'en',
     segments: segment.split('/'),
     target,

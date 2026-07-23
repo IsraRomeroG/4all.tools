@@ -47,13 +47,17 @@ export async function validatePublicationAndSeo(
 
   for (const locale of SUPPORTED_LOCALES) {
     try {
-      composedPages.push(await composition.composeHome(locale));
+      const page = await composition.composeHome(locale);
+      validateFixedRoot(issues, 'home', locale, page);
+      composedPages.push(page);
     } catch (error) {
       issues.push(fixedRootIssue('home', locale, error));
     }
 
     try {
-      composedPages.push(await composition.composeBlogIndex(locale));
+      const page = await composition.composeBlogIndex(locale);
+      validateFixedRoot(issues, 'blog-index', locale, page);
+      composedPages.push(page);
     } catch (error) {
       issues.push(fixedRootIssue('blog-index', locale, error));
     }
@@ -117,6 +121,7 @@ function validateComposedRoute(
   const route = page.route;
   const pageTarget = route === null ? null : getRouteTargetKey(route.target);
   const expectedTarget = getRouteTargetKey(record.target);
+  validateSeoClusterTarget(issues, record, page);
   const valid =
     page.locale === record.locale &&
     page.kind === record.target.kind &&
@@ -142,6 +147,92 @@ function validateComposedRoute(
         actualTarget: pageTarget,
         expectedUrl,
         actualCanonicalUrl: page.seo.canonicalUrl,
+      },
+    }),
+  );
+}
+
+function validateSeoClusterTarget(
+  issues: ArchitectureValidationIssue[],
+  record: RouteRecord,
+  page: ArchitectureComposedPageModel,
+): void {
+  const expectedTarget = getRouteTargetKey(record.target);
+  const actualPageTarget = page.route === null ? null : getRouteTargetKey(page.route.target);
+  const actualSubjectTarget = page.localizedRouteCluster.subject.kind === 'route'
+    ? getRouteTargetKey(page.localizedRouteCluster.subject.target)
+    : page.localizedRouteCluster.subject.kind;
+  const currentVariantTarget = page.localizedRouteCluster.current.route === null
+    ? null
+    : getRouteTargetKey(page.localizedRouteCluster.current.route.target);
+  const mismatchedVariants = page.localizedRouteCluster.variants
+    .filter((variant) =>
+      variant.route === null || getRouteTargetKey(variant.route.target) !== expectedTarget,
+    )
+    .map((variant) => ({
+      locale: variant.locale,
+      target: variant.route === null ? null : getRouteTargetKey(variant.route.target),
+      path: variant.relativeUrl,
+    }));
+
+  if (
+    actualPageTarget === expectedTarget &&
+    actualSubjectTarget === expectedTarget &&
+    currentVariantTarget === expectedTarget &&
+    mismatchedVariants.length === 0
+  ) {
+    return;
+  }
+
+  issues.push(
+    createArchitectureValidationIssue({
+      code: 'SEO_CLUSTER_TARGET_MISMATCH',
+      scope: 'seo',
+      message: `SEO cluster target does not match route target ${expectedTarget}.`,
+      entityKey: expectedTarget,
+      locale: record.locale,
+      sourceId: record.sourceId,
+      details: {
+        expectedTarget,
+        actualPageTarget,
+        actualSubjectTarget,
+        currentVariantTarget,
+        mismatchedVariants,
+      },
+    }),
+  );
+}
+
+function validateFixedRoot(
+  issues: ArchitectureValidationIssue[],
+  root: 'home' | 'blog-index',
+  locale: Locale,
+  page: ArchitectureComposedPageModel,
+): void {
+  const subjectMatches = page.localizedRouteCluster.subject.kind === root;
+  const variantsAreUnrouted = page.localizedRouteCluster.variants.every(
+    (variant) => variant.route === null,
+  );
+
+  if (page.kind === root && subjectMatches && page.route === null && variantsAreUnrouted) {
+    return;
+  }
+
+  issues.push(
+    createArchitectureValidationIssue({
+      code: 'FIXED_ROOT_COMPOSITION_FAILED',
+      scope: 'composition',
+      message: `Composed ${root} page model has an invalid fixed-root identity.`,
+      entityKey: root,
+      locale,
+      details: {
+        causeCode: 'INVALID_FIXED_ROOT_MODEL',
+        actualKind: page.kind,
+        actualSubjectKind: page.localizedRouteCluster.subject.kind,
+        hasRoute: page.route !== null,
+        routedVariantLocales: page.localizedRouteCluster.variants
+          .filter((variant) => variant.route !== null)
+          .map((variant) => variant.locale),
       },
     }),
   );
