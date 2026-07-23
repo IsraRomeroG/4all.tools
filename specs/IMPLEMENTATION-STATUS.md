@@ -2,13 +2,13 @@
 
 > Last updated: 2026-07-22
 > Repository: `IsraRomeroG/4all.tools`  
-> Implementation reference: P07R is included in `origin/main` through `9a9cbe295bca89b317d84096bd2177f052493c95`; P08R and P09 are included in `origin/main` through `ff732e6bdd796834022aee14aad1545579cdbefe`
+> Implementation reference: P07R is included in `origin/main` through `9a9cbe295bca89b317d84096bd2177f052493c95`; P08R, P09, and P09R are included in `origin/main` through `b1390cd183eb64273619009799ff44b0ed543374`
 
 This ledger records implementation state without rewriting historical task specs. Some historical P06 task files still carry `Blocked` metadata because their original dependency order was written before the vertical slice existed in this repository; the implementation state below is the current repository truth.
 
 ## Verification Status
 
-The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. P07R local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-20 and is included in the merged `origin/main` history. P08 local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-21 and is merged at `origin/main` commit `9a9cbe295bca89b317d84096bd2177f052493c95`. P08R and P09 clean-install plus full `npm.cmd run verify` passed locally on 2026-07-22. The published delivery head `ff732e6bdd796834022aee14aad1545579cdbefe` passed GitHub Actions `Verify` run `29946436729` on 2026-07-22 ([run details](https://github.com/IsraRomeroG/4all.tools/actions/runs/29946436729)). P09R clean-install, `npm.cmd run validate:architecture`, and full `npm.cmd run verify` passed locally on 2026-07-22; GitHub Actions evidence for the new P09R final head is pending publication.
+The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. P07R local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-20 and is included in the merged `origin/main` history. P08 local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-21 and is merged at `origin/main` commit `9a9cbe295bca89b317d84096bd2177f052493c95`. P08R and P09 clean-install plus full `npm.cmd run verify` passed locally on 2026-07-22. The published delivery head `ff732e6bdd796834022aee14aad1545579cdbefe` passed GitHub Actions `Verify` run `29946436729` on 2026-07-22 ([run details](https://github.com/IsraRomeroG/4all.tools/actions/runs/29946436729)). P09R clean-install, `npm.cmd run validate:architecture`, and full `npm.cmd run verify` passed locally on 2026-07-22. The final published P09R head `b1390cd183eb64273619009799ff44b0ed543374` passed GitHub Actions `Verify` run `29975592313` on 2026-07-23 ([run details](https://github.com/IsraRomeroG/4all.tools/actions/runs/29975592313)).
 
 ## P00-P06
 
@@ -169,13 +169,13 @@ Global UI translations are required for every supported locale, while entity-pag
 | P09R-T01 | Commit `472b53d` | `npm.cmd run verify` passed locally | Added direct negative fixtures for duplicate article identity, unknown tool content, orphan/mismatched modules, and missing module component/messages. |
 | P09R-T02 | Commit `cfcdfc6` | `npm.cmd run verify` passed locally | Bound SEO cluster subject, current variant, and every routed variant to the authoritative stable RouteRecord target; added route-kind and acceptance fixtures. |
 | P09R-T03 | Commit `1861829` | `npm.cmd run verify` passed locally | Added pure-engine component boundary policy and recursive public validation-output proof while preserving feature UI component usage and client-bundle isolation. |
-| P09R-T04 | Commit `e1049fa` | `npm.cmd ci`, `npm.cmd run validate:architecture`, and `npm.cmd run verify` passed locally on 2026-07-22 | Final local candidate is ready for publication; CI must cover the exact final P09R SHA before closure. |
+| P09R-T04 | Commits `e1049fa`, `b1390cd` | `npm.cmd ci`, `npm.cmd run validate:architecture`, and `npm.cmd run verify` passed locally on 2026-07-22; GitHub Actions `Verify` run `29975592313` passed on exact final SHA `b1390cd183eb64273619009799ff44b0ed543374` on 2026-07-23 | Final P09R closure evidence is complete and externally verified. |
 
 ### P09R gate status
 
 | Phase | Status | Evidence |
 | ----- | ------ | -------- |
 | P09 | Complete | Previous P09 delivery head `ff732e6` passed GitHub Actions `Verify` run `29946436729` |
-| P09R | Locally Verified / CI Pending | T01-T03 commits are present; clean install, architecture validation, and full verify passed locally on 2026-07-22 |
-| M5 | Pending P09R CI closure | P09R changes validator/test behavior, so strict milestone authority requires a successful run on the final P09R head |
-| P10 | Blocked by P09R closure | P10 remains unimplemented and cannot be marked ready until P09R final-head CI evidence is recorded |
+| P09R | Complete | T01-T04 commits are present; clean install, architecture validation, full verify, and GitHub Actions `Verify` run `29975592313` passed on exact final SHA `b1390cd183eb64273619009799ff44b0ed543374` |
+| M5 | Verified | P09R local and exact-final-head CI gates are green |
+| P10 | Unblocked / Ready | P10 remains unimplemented; sitemap, redirects, and production SEO hardening remain its scope |
