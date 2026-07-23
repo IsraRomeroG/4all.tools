@@ -48,6 +48,65 @@ describe('architecture identity validation', () => {
     });
   });
 
+  it('rejects duplicate article identities across statuses', () => {
+    const snapshot = contentSnapshot({
+      blog: [
+        entry('blog/es/article-draft', {
+          articleId: 'article',
+          locale: 'es',
+          status: 'draft',
+        }),
+        entry('blog/es/article-published', {
+          articleId: 'article',
+          locale: 'es',
+          status: 'published',
+        }),
+      ],
+    });
+
+    const issues = validateContentIdentities({ content: snapshot });
+
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({
+      code: 'DUPLICATE_CONTENT_IDENTITY',
+      scope: 'content',
+      entityKey: 'article',
+      locale: 'es',
+      details: {
+        collection: 'blog',
+        matches: [
+          { entryId: 'blog/es/article-draft', status: 'draft' },
+          { entryId: 'blog/es/article-published', status: 'published' },
+        ],
+      },
+    });
+  });
+
+  it('rejects tool content that references an unknown definition', () => {
+    const issues = validateTaxonomyReferences({
+      content: contentSnapshot({
+        tools: [
+          entry('tools/en/unknown-tool', {
+            toolId: 'unknown-tool',
+            locale: 'en',
+            status: 'draft',
+          }),
+        ],
+      }),
+      toolDefinitions: fakeToolDefinitions([]),
+      toolTaxonomy,
+      blogTaxonomy,
+    });
+
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({
+      code: 'UNKNOWN_TOOL_CONTENT_ID',
+      entityKey: 'unknown-tool',
+      locale: 'en',
+      sourceId: 'tools/en/unknown-tool',
+    });
+  });
+
   it('validates all content taxonomy and translation references', () => {
     const snapshot = contentSnapshot({
       toolCategories: [
@@ -145,6 +204,95 @@ describe('architecture identity validation', () => {
       'TOOL_FEATURE_PATH_MISMATCH',
     ]);
   });
+
+  it('rejects an orphan tool module', () => {
+    const orphanDefinition = {
+      ...jsonValidatorDefinition,
+      id: 'orphan-tool',
+    } as ToolDefinition;
+    const orphanModule = moduleFor(orphanDefinition);
+    const context = {
+      toolDefinitions: fakeToolDefinitions([]),
+      toolModules: fakeToolModules([orphanModule]),
+      toolModuleRegistrations: [{ toolId: 'orphan-tool', module: orphanModule }],
+      toolModuleSourceDirectories: {},
+      toolTaxonomy,
+    } as Pick<
+      ArchitectureValidationContext,
+      | 'toolDefinitions'
+      | 'toolModules'
+      | 'toolModuleRegistrations'
+      | 'toolModuleSourceDirectories'
+      | 'toolTaxonomy'
+    >;
+
+    expect(validateToolRegistryIntegrity(context).map((issue) => issue.code)).toEqual([
+      'ORPHAN_TOOL_MODULE',
+    ]);
+  });
+
+  it.each([
+    {
+      label: 'primary category',
+      definition: {
+        ...jsonValidatorDefinition,
+        taxonomy: { primaryCategoryId: 'developer' },
+      },
+    },
+    {
+      label: 'execution type',
+      definition: {
+        ...jsonValidatorDefinition,
+        execution: { type: 'backend-api' },
+      },
+    },
+  ])('rejects tool module metadata mismatch: $label', ({ definition }) => {
+    const mismatchedModule = moduleFor(definition as ToolDefinition);
+    const context = {
+      toolDefinitions: fakeToolDefinitions([jsonValidatorDefinition]),
+      toolModules: fakeToolModules([mismatchedModule]),
+      toolModuleRegistrations: [
+        { toolId: jsonValidatorDefinition.id, module: mismatchedModule },
+      ],
+      toolModuleSourceDirectories: { 'json-validator': 'developer/json-validator' },
+      toolTaxonomy,
+    } as Pick<
+      ArchitectureValidationContext,
+      | 'toolDefinitions'
+      | 'toolModules'
+      | 'toolModuleRegistrations'
+      | 'toolModuleSourceDirectories'
+      | 'toolTaxonomy'
+    >;
+
+    expect(validateToolRegistryIntegrity(context).map((issue) => issue.code)).toEqual([
+      'TOOL_MODULE_IDENTITY_MISMATCH',
+    ]);
+  });
+
+  it('rejects a published module without a component', () => {
+    const module = {
+      ...moduleFor(jsonValidatorDefinition),
+      component: null,
+    } as unknown as ReturnType<typeof moduleFor>;
+    const context = moduleValidationContext(module);
+
+    expect(validateToolRegistryIntegrity(context).map((issue) => issue.code)).toEqual([
+      'MISSING_TOOL_MODULE_COMPONENT',
+    ]);
+  });
+
+  it('rejects a published module without a message resolver', () => {
+    const module = {
+      ...moduleFor(jsonValidatorDefinition),
+      getMessages: undefined,
+    } as unknown as ReturnType<typeof moduleFor>;
+    const context = moduleValidationContext(module);
+
+    expect(validateToolRegistryIntegrity(context).map((issue) => issue.code)).toEqual([
+      'MISSING_TOOL_MODULE_MESSAGES',
+    ]);
+  });
 });
 
 function contentSnapshot(fixtures: {
@@ -186,6 +334,25 @@ function fakeToolModules(modules: readonly ReturnType<typeof moduleFor>[]) {
     getToolModule: (toolId: string) => byId.get(toolId)!,
     getAllToolModules: () => modules,
   } as ArchitectureValidationContext['toolModules'];
+}
+
+function moduleValidationContext(module: ReturnType<typeof moduleFor>) {
+  return {
+    toolDefinitions: fakeToolDefinitions([jsonValidatorDefinition]),
+    toolModules: fakeToolModules([module]),
+    toolModuleRegistrations: [
+      { toolId: jsonValidatorDefinition.id, module },
+    ],
+    toolModuleSourceDirectories: { 'json-validator': 'developer/json-validator' },
+    toolTaxonomy,
+  } as Pick<
+    ArchitectureValidationContext,
+    | 'toolDefinitions'
+    | 'toolModules'
+    | 'toolModuleRegistrations'
+    | 'toolModuleSourceDirectories'
+    | 'toolTaxonomy'
+  >;
 }
 
 function moduleFor(definition: ToolDefinition) {
