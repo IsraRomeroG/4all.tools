@@ -169,7 +169,7 @@ Global UI translations are required for every supported locale, while entity-pag
 | P09R-T01 | Commit `472b53d` | `npm.cmd run verify` passed locally | Added direct negative fixtures for duplicate article identity, unknown tool content, orphan/mismatched modules, and missing module component/messages. |
 | P09R-T02 | Commit `cfcdfc6` | `npm.cmd run verify` passed locally | Bound SEO cluster subject, current variant, and every routed variant to the authoritative stable RouteRecord target; added route-kind and acceptance fixtures. |
 | P09R-T03 | Commit `1861829` | `npm.cmd run verify` passed locally | Added pure-engine component boundary policy and recursive public validation-output proof while preserving feature UI component usage and client-bundle isolation. |
-| P09R-T04 | T04 closure evidence in this ledger; commit follows | `npm.cmd ci`, `npm.cmd run validate:architecture`, and `npm.cmd run verify` passed locally on 2026-07-22 | Final local candidate is ready for publication; CI must cover the exact final P09R SHA before closure. |
+| P09R-T04 | Commit `e1049fa` | `npm.cmd ci`, `npm.cmd run validate:architecture`, and `npm.cmd run verify` passed locally on 2026-07-22 | Final local candidate is ready for publication; CI must cover the exact final P09R SHA before closure. |
 
 ### P09R gate status
 
