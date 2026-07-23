@@ -76,6 +76,12 @@ export const SOURCE_DEPENDENCY_RULES: readonly SourceDependencyRule[] = Object.f
     rationale: 'Feature engines remain independent from delivery and content orchestration.',
   },
   {
+    id: 'pure-feature-engines-no-components',
+    from: ['src/features/**/engine.ts', 'src/features/**/engine/**', 'src/features/**/core/**'],
+    forbiddenTargets: ['src/components/**'],
+    rationale: 'Pure feature engines and cores remain independent from shared presentation components.',
+  },
+  {
     id: 'runtime-no-architecture-validation',
     from: ['src/pages/**', 'src/templates/**', 'src/features/**'],
     forbiddenTargets: ['src/validation/architecture/**'],

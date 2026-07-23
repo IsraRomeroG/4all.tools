@@ -187,6 +187,11 @@ const FORBIDDEN_OUTPUTS = [
   'fr/developpement/validateur-json.html',
 ] as const;
 
+const FORBIDDEN_VALIDATION_OUTPUT_PATTERNS = [
+  /^(?:[a-z]{2}\/)?(?:validate|architecture|validation)\/index\.html$/,
+  /^(?:[a-z]{2}\/)?api\/(?:validate|architecture|validation)(?:\/|\.|$)/,
+] as const;
+
 describe('static build output', () => {
   it('matches the exact frozen blog HTML inventory', async () => {
     const htmlFiles = await listHtmlFiles(DIST_ROOT);
@@ -197,6 +202,15 @@ describe('static build output', () => {
     for (const pattern of BLOG_FORBIDDEN_OUTPUT_PATTERNS) {
       expect(htmlFiles.some((file) => pattern.test(file))).toBe(false);
     }
+  });
+
+  it('does not emit public architecture-validation pages or API artifacts', async () => {
+    const distFiles = await listDistFiles(DIST_ROOT);
+    const forbiddenFiles = distFiles.filter((relativeFile) =>
+      FORBIDDEN_VALIDATION_OUTPUT_PATTERNS.some((pattern) => pattern.test(relativeFile)),
+    );
+
+    expect(forbiddenFiles).toEqual([]);
   });
 
   for (const expected of EXPECTED_HOME_PAGES) {
@@ -725,6 +739,11 @@ function toDistUrl(relativeFile: string): URL {
 }
 
 async function listHtmlFiles(root: URL): Promise<readonly string[]> {
+  const files = await listDistFiles(root);
+  return files.filter((file) => file.endsWith('.html'));
+}
+
+async function listDistFiles(root: URL): Promise<readonly string[]> {
   const files: string[] = [];
 
   async function visit(directory: URL, prefix: string): Promise<void> {
@@ -740,7 +759,7 @@ async function listHtmlFiles(root: URL): Promise<readonly string[]> {
 
         if (entry.isDirectory()) {
           await visit(entryUrl, `${relativePath}/`);
-        } else if (entry.isFile() && entry.name.endsWith('.html')) {
+        } else if (entry.isFile()) {
           files.push(relativePath);
         }
       }),

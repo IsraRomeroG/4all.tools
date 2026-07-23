@@ -5,6 +5,7 @@ import {
   extractSourceImports,
   matchesPolicyPattern,
   resolveProjectImport,
+  SOURCE_DEPENDENCY_RULES,
   validateSourceBoundaries,
 } from '@/validation/architecture';
 
@@ -101,5 +102,35 @@ describe('architecture source graph', () => {
       rules: [],
       forbiddenNamespaceExists: true,
     }).map((issue) => issue.code)).toEqual(['FORBIDDEN_SOURCE_NAMESPACE']);
+  });
+
+  it('forbids pure engine component dependencies without banning feature UI components', () => {
+    const pureEngineGraph = createSourceGraph([
+      {
+        sourcePath: 'src/features/example/engine.ts',
+        source: "import Button from '@/components/Button.astro';",
+      },
+      { sourcePath: 'src/components/Button.astro', source: '' },
+    ]);
+    const pureEngineIssues = validateSourceBoundaries(pureEngineGraph);
+
+    expect(pureEngineIssues).toHaveLength(1);
+    expect(pureEngineIssues[0]).toMatchObject({
+      code: 'FORBIDDEN_SOURCE_DEPENDENCY',
+      details: { ruleId: 'pure-feature-engines-no-components' },
+    });
+
+    const featureUiGraph = createSourceGraph([
+      {
+        sourcePath: 'src/features/example/ui.ts',
+        source: "import Button from '@/components/Button.astro';",
+      },
+      { sourcePath: 'src/components/Button.astro', source: '' },
+    ]);
+
+    expect(validateSourceBoundaries(featureUiGraph)).toEqual([]);
+    expect(SOURCE_DEPENDENCY_RULES).toContainEqual(
+      expect.objectContaining({ id: 'pure-feature-engines-no-components' }),
+    );
   });
 });
