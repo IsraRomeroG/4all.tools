@@ -1,13 +1,18 @@
 import { describe, expect, it } from 'vitest';
 
 import type { RouteDefinition } from '@/routing/definitions';
+import { createRouteRegistryFromRecords } from '@/routing/registry/route-index';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
 import { buildAbsoluteUrl } from '@/routing/builders';
 import type {
   ArchitectureComposedPageModel,
   ArchitectureCompositionPorts,
 } from '@/validation/architecture';
-import { validatePublicationAndSeo } from '@/validation/architecture';
+import {
+  createProductionArchitectureContext,
+  validateArchitecture,
+  validatePublicationAndSeo,
+} from '@/validation/architecture';
 
 describe('architecture publication and SEO validation', () => {
   it('reuses route validation and reports zero-variant and composition failures', async () => {
@@ -216,15 +221,52 @@ describe('architecture publication and SEO validation', () => {
   });
 
   it('does not fabricate routes for route-less articles or classification-only categories', async () => {
-    const route = record('tool', 'json-validator', 'json-validator');
+    const productionContext = await createProductionArchitectureContext();
+    const routeDefinitions = productionContext.routeDefinitions.filter(
+      (route) => route.kind !== 'article' && route.kind !== 'blog-category',
+    );
+    const routeRecords = productionContext.routeRegistry
+      .getAll()
+      .filter(
+        (route) => route.target.kind !== 'article' && route.target.kind !== 'blog-category',
+      );
+    const routeRegistry = createRouteRegistryFromRecords(routeRecords);
+    const article = productionContext.content.all.blog.find(
+      (entry) => entry.data.articleId === 'what-is-json' && entry.data.status === 'published',
+    );
+    const category = productionContext.content.all.blogCategories.find(
+      (entry) => entry.data.categoryId === 'json-guides' && entry.data.status === 'published',
+    );
 
-    const issues = await validatePublicationAndSeo({
-      routeDefinitions: [toolDefinition('json-validator', 'published')],
-      routeRegistry: fakeRouteRegistry([route]),
-      composition: compositionPorts(),
+    expect(article).toBeDefined();
+    expect(category).toBeDefined();
+    expect(
+      routeDefinitions.every(
+        (route) => route.kind === 'tool' || route.kind === 'tool-category',
+      ),
+    ).toBe(true);
+    expect(
+      routeRegistry.getByTarget({ kind: 'article', articleId: 'what-is-json' }),
+    ).toEqual([]);
+    expect(
+      routeRegistry.getByTarget({ kind: 'blog-category', categoryId: 'json-guides' }),
+    ).toEqual([]);
+
+    const report = await validateArchitecture({
+      context: {
+        ...productionContext,
+        routeDefinitions,
+        routeRegistry,
+        composition: compositionPorts({
+          composeRoute: async (route) =>
+            pageForRoute(route, true, routeRegistry.getByTarget(route.target)),
+        }),
+      },
+      sourceGraph: { files: [], edges: [] },
     });
 
-    expect(issues).toEqual([]);
+    expect(report.issues).toEqual([]);
+    expect(routeRegistry.getAll()).toEqual(routeRecords);
   });
 });
 

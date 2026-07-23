@@ -188,8 +188,20 @@ const FORBIDDEN_OUTPUTS = [
 ] as const;
 
 const FORBIDDEN_VALIDATION_OUTPUT_PATTERNS = [
-  /^(?:[a-z]{2}\/)?(?:validate|architecture|validation)\/index\.html$/,
-  /^(?:[a-z]{2}\/)?api\/(?:validate|architecture|validation)(?:\/|\.|$)/,
+  /^(?:[a-z]{2}\/)?(?:validate|architecture|validation)(?:\/|\.|$)/,
+  /^(?:[a-z]{2}\/)?api\/(?:validate|architecture|validation)/,
+] as const;
+
+const FORBIDDEN_VALIDATION_OUTPUT_EXAMPLES = [
+  'architecture/index.html',
+  'validation/report.html',
+  'validate.json',
+  'api/validate.json',
+  'api/validate-report.json',
+  'api/architecture-debug.json',
+  'api/validationReport.js',
+  'es/architecture/index.html',
+  'fr/api/validation-debug.json',
 ] as const;
 
 describe('static build output', () => {
@@ -211,6 +223,14 @@ describe('static build output', () => {
     );
 
     expect(forbiddenFiles).toEqual([]);
+  });
+
+  it('recognizes validation namespaces across public files and locales', () => {
+    const detected = FORBIDDEN_VALIDATION_OUTPUT_EXAMPLES.filter((relativeFile) =>
+      FORBIDDEN_VALIDATION_OUTPUT_PATTERNS.some((pattern) => pattern.test(relativeFile)),
+    );
+
+    expect(detected).toEqual([...FORBIDDEN_VALIDATION_OUTPUT_EXAMPLES]);
   });
 
   for (const expected of EXPECTED_HOME_PAGES) {
