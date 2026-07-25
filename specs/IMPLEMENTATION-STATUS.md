@@ -1,14 +1,14 @@
 # Implementation Status Ledger
 
-> Last updated: 2026-07-22
+> Last updated: 2026-07-25
 > Repository: `IsraRomeroG/4all.tools`  
-> Implementation reference: P07R is included in `origin/main` through `9a9cbe295bca89b317d84096bd2177f052493c95`; P08R, P09, and P09R are included in `origin/main` through `b1390cd183eb64273619009799ff44b0ed543374`
+> Implementation reference: P07R is included in `origin/main` through `9a9cbe295bca89b317d84096bd2177f052493c95`; P08R and P09 are included in `origin/main` through `b1390cd183eb64273619009799ff44b0ed543374`; the accepted P09R baseline before P10 is `1dfaa544c95971c0cc694b9f52c495eb500e23ff`
 
 This ledger records implementation state without rewriting historical task specs. Some historical P06 task files still carry `Blocked` metadata because their original dependency order was written before the vertical slice existed in this repository; the implementation state below is the current repository truth.
 
 ## Verification Status
 
-The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. P07R local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-20 and is included in the merged `origin/main` history. P08 local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-21 and is merged at `origin/main` commit `9a9cbe295bca89b317d84096bd2177f052493c95`. P08R and P09 clean-install plus full `npm.cmd run verify` passed locally on 2026-07-22. The published delivery head `ff732e6bdd796834022aee14aad1545579cdbefe` passed GitHub Actions `Verify` run `29946436729` on 2026-07-22 ([run details](https://github.com/IsraRomeroG/4all.tools/actions/runs/29946436729)). P09R clean-install, `npm.cmd run validate:architecture`, and full `npm.cmd run verify` passed locally on 2026-07-22. The final published P09R head `b1390cd183eb64273619009799ff44b0ed543374` passed GitHub Actions `Verify` run `29975592313` on 2026-07-23 ([run details](https://github.com/IsraRomeroG/4all.tools/actions/runs/29975592313)).
+The local verification gate is `npm run verify`. P06R-F local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-17. P07R local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-20 and is included in the merged `origin/main` history. P08 local closure ran `npm.cmd ci` and `npm.cmd run verify` on 2026-07-21 and is merged at `origin/main` commit `9a9cbe295bca89b317d84096bd2177f052493c95`. P08R and P09 clean-install plus full `npm.cmd run verify` passed locally on 2026-07-22. The published delivery head `ff732e6bdd796834022aee14aad1545579cdbefe` passed GitHub Actions `Verify` run `29946436729` on 2026-07-22 ([run details](https://github.com/IsraRomeroG/4all.tools/actions/runs/29946436729)). The accepted P09R baseline `1dfaa544c95971c0cc694b9f52c495eb500e23ff` is synchronized before P10. P10 clean-install plus full `npm.cmd run verify` passed locally on 2026-07-25 after installing the required Playwright Chromium binary; external GitHub Actions evidence remains pending publication of the P10 commits.
 
 ## P00-P06
 
@@ -160,7 +160,15 @@ Global UI translations are required for every supported locale, while entity-pag
 | M4 | Verified | P08R local and published CI gates are green |
 | P09 | Complete | T01-T06 commits are present; clean `npm.cmd ci`, full `npm.cmd run verify`, and GitHub Actions `Verify` run `29946436729` passed on published head `ff732e6` |
 | M5 | Verified | Global architecture validation is enforced by `verify` and passed in local and GitHub Actions gates |
-| P10 | Unblocked / Ready | P10 remains unimplemented; sitemap, redirects, and production SEO hardening remain its scope |
+| P10 | Complete locally | T01-T03 implemented; local clean-install and full verification passed on 2026-07-25 |
+
+## P10
+
+| Task ID | Implementation reference | Verification status | Notes |
+| ------- | ------------------------ | ------------------- | ----- |
+| P10-T01 | Commits `7c0c482`, `ba69bde` | `npm.cmd run verify` passed locally before T02/T03 closure; clean install/full verify reconfirmed on 2026-07-25 | Official `@astrojs/sitemap` integration, eligibility filtering, fixed-root handling, and focused unit coverage. |
+| P10-T02 | Commit `1d7cd4b` | `npm.cmd run test:build` and full `npm.cmd run verify` passed locally on 2026-07-25 | Static `public/robots.txt` with the approved sitemap-index policy. |
+| P10-T03 | Commit `1d7cd4b` plus this ledger closure | Clean `npm.cmd ci` and full `npm.cmd run verify` passed locally on 2026-07-25; external GitHub Actions evidence pending publication | Existing build tests assert sitemap/robots artifacts, representative URLs, English URL policy, and no semantic sitemap filenames. |
 
 ## P09R
 
@@ -169,13 +177,14 @@ Global UI translations are required for every supported locale, while entity-pag
 | P09R-T01 | Commit `472b53d` | `npm.cmd run verify` passed locally | Added direct negative fixtures for duplicate article identity, unknown tool content, orphan/mismatched modules, and missing module component/messages. |
 | P09R-T02 | Commit `cfcdfc6` | `npm.cmd run verify` passed locally | Bound SEO cluster subject, current variant, and every routed variant to the authoritative stable RouteRecord target; added route-kind and acceptance fixtures. |
 | P09R-T03 | Commit `1861829` | `npm.cmd run verify` passed locally | Added pure-engine component boundary policy and recursive public validation-output proof while preserving feature UI component usage and client-bundle isolation. |
-| P09R-T04 | Commits `e1049fa`, `b1390cd` | `npm.cmd ci`, `npm.cmd run validate:architecture`, and `npm.cmd run verify` passed locally on 2026-07-22; GitHub Actions `Verify` run `29975592313` passed on exact final SHA `b1390cd183eb64273619009799ff44b0ed543374` on 2026-07-23 | Final P09R closure evidence is complete and externally verified. |
+| P09R-T04 | Accepted baseline `1dfaa544c95971c0cc694b9f52c495eb500e23ff` | Baseline synchronized before P10; clean-install and full verification reconfirmed during P10 closure on 2026-07-25 | Final P09R baseline reference corrected before P10 implementation. |
 
 ### P09R gate status
 
 | Phase | Status | Evidence |
 | ----- | ------ | -------- |
 | P09 | Complete | Previous P09 delivery head `ff732e6` passed GitHub Actions `Verify` run `29946436729` |
-| P09R | Complete | T01-T04 commits are present; clean install, architecture validation, full verify, and GitHub Actions `Verify` run `29975592313` passed on exact final SHA `b1390cd183eb64273619009799ff44b0ed543374` |
-| M5 | Verified | P09R local and exact-final-head CI gates are green |
-| P10 | Unblocked / Ready | P10 remains unimplemented; sitemap, redirects, and production SEO hardening remain its scope |
+| P09R | Complete | Accepted baseline `1dfaa544c95971c0cc694b9f52c495eb500e23ff` synchronized before P10 |
+| M5 | Verified | P09R accepted baseline is the P10 starting point |
+| P10 | Complete locally | T01 commit `7c0c482`, dependency-lock regeneration `ba69bde`, and T02/T03 commit `1d7cd4b`; clean `npm.cmd ci` and full `npm.cmd run verify` passed locally on 2026-07-25 |
+| M6 | Verified locally | Official sitemap artifacts, static robots policy, build assertions, and full local verification passed; GitHub Actions evidence is pending publication |
