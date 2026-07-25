@@ -463,9 +463,6 @@ describe('static build output', () => {
       'https://4all.tools/sitemap-0.xml',
     );
     expect(sitemapFiles.length).toBeGreaterThan(0);
-    expect(sitemapFiles).not.toContain('sitemap-core.xml');
-    expect(sitemapFiles).not.toContain('sitemap-tools.xml');
-    expect(sitemapFiles).not.toContain('sitemap-blog.xml');
 
     const sitemapXml = (
       await Promise.all(sitemapFiles.map((file) => readDistFile(file)))

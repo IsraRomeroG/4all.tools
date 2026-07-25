@@ -1,4 +1,4 @@
-import { RoutingInvariantError } from '../errors';
+import { RoutingInvariantError } from '@/routing/errors';
 
 export const ROUTE_SEGMENT_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 

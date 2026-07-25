@@ -1,6 +1,6 @@
-import { SITE_URL, TRAILING_SLASH_POLICY } from '../../config/site';
-import { LOCALES } from '../../i18n/config';
-import type { Locale } from '../../i18n/types';
+import { SITE_URL, TRAILING_SLASH_POLICY } from '@/config/site';
+import { LOCALES } from '@/i18n/config';
+import type { Locale } from '@/i18n/types';
 
 import { assertValidRouteSegment } from './segment-validation';
 
