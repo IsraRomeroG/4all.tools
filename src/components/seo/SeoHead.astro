@@ -1,5 +1,6 @@
 ---
 import { serializeRobots } from '@/seo';
+import { registerSitemapUrlIndexability } from '@/seo/sitemap-eligibility';
 import type { SeoPageModel } from '@/seo/types';
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
 }
 
 const { seo } = Astro.props;
+registerSitemapUrlIndexability(seo.canonicalUrl, seo.robots.index);
 const robots = serializeRobots(seo.robots);
 const image = seo.openGraph.image;
 ---
