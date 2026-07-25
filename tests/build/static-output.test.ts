@@ -455,6 +455,38 @@ describe('static build output', () => {
     await expectDistFileMissing('es/desarrollo/missing-json-validator/index.html');
   });
 
+  it('emits the official sitemap artifacts and representative production URLs', async () => {
+    const distFiles = await listDistFiles(DIST_ROOT);
+    const sitemapFiles = distFiles.filter((file) => /^sitemap-\d+\.xml$/.test(file));
+
+    expect(await readDistFile('sitemap-index.xml')).toContain(
+      'https://4all.tools/sitemap-0.xml',
+    );
+    expect(sitemapFiles.length).toBeGreaterThan(0);
+    expect(sitemapFiles).not.toContain('sitemap-core.xml');
+    expect(sitemapFiles).not.toContain('sitemap-tools.xml');
+    expect(sitemapFiles).not.toContain('sitemap-blog.xml');
+
+    const sitemapXml = (
+      await Promise.all(sitemapFiles.map((file) => readDistFile(file)))
+    ).join('\n');
+
+    expect(sitemapXml).toContain('<loc>https://4all.tools/</loc>');
+    expect(sitemapXml).toContain(
+      '<loc>https://4all.tools/developer/json-validator/</loc>',
+    );
+    expect(sitemapXml).toContain(
+      '<loc>https://4all.tools/blog/development/json-guides/what-is-json/</loc>',
+    );
+    expect(sitemapXml).not.toContain('https://4all.tools/en/');
+  });
+
+  it('emits the approved static robots policy', async () => {
+    await expect(readDistFile('robots.txt')).resolves.toBe(
+      'User-agent: *\nAllow: /\nSitemap: https://4all.tools/sitemap-index.xml\n',
+    );
+  });
+
   it('does not include the server-side content index in client bundles', async () => {
     const clientBundle = await readClientJavaScriptBundle();
 

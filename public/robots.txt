@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://4all.tools/sitemap-index.xml
