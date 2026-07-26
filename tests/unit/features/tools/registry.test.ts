@@ -1,127 +1,91 @@
-import { access } from 'node:fs/promises';
-
 import { describe, expect, it } from 'vitest';
 
 import type { ToolDefinition } from '@/domain/tools';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
-import { jsonValidatorDefinition } from '@/features/tools/developer/json-validator/tool.config';
-import { JSON_VALIDATOR_TOOL_ID } from '@/features/tools/developer/json-validator/types';
 import {
-  DuplicateToolDefinitionError,
+  DuplicateToolError,
   TOOL_DEFINITIONS,
+  TOOL_MODULES,
   ToolTaxonomyMismatchError,
-  UnknownToolDefinitionError,
+  UnknownToolError,
   createToolRegistry,
+  defineToolModule,
   findToolDefinition,
   getAllToolDefinitions,
   getToolDefinition,
-} from '@/features/tools/registry';
-import {
-  MissingToolModuleError,
   getToolModule,
-} from '@/features/tools/module-registry';
+  jsonValidatorModule,
+  toolRegistry,
+} from '@/features/tools/registry';
 
-const PROJECT_ROOT = new URL('../../../../', import.meta.url);
-
-describe('tool feature registry', () => {
-  it('defines json-validator with stable production invariants', () => {
-    expect(JSON_VALIDATOR_TOOL_ID).toBe('json-validator');
-    expect(jsonValidatorDefinition.id).toBe('json-validator');
-    expect(jsonValidatorDefinition.rootCategoryId).toBe('developer');
-    expect(jsonValidatorDefinition.taxonomy.primaryCategoryId).toBe('json');
-    expect(jsonValidatorDefinition.route.strategy).toBe('flat');
-    expect(jsonValidatorDefinition.execution.type).toBe('client');
-    expect(jsonValidatorDefinition.status).toBe('published');
-    expect(Object.keys(jsonValidatorDefinition.route.localized)).toEqual([
-      'en',
-      'es',
-      'pt',
-      'fr',
-    ]);
-    expect(jsonValidatorDefinition).not.toHaveProperty('canonicalUrl');
-    expect(jsonValidatorDefinition).not.toHaveProperty('hreflang');
-  });
-
-  it('keeps the first real feature under the expected source namespace', async () => {
-    await expect(
-      access(
-        new URL(
-          'src/features/tools/developer/json-validator/tool.config.ts',
-          PROJECT_ROOT,
-        ),
-      ),
-    ).resolves.toBeUndefined();
-    expect(toolTaxonomy.getRoot('json').id).toBe('developer');
-    expect(toolTaxonomy.getNode('developer').localized.en.slug).toBe('developer');
-    expect(jsonValidatorDefinition.route.localized.en?.slug).toBe(
-      'json-validator',
+describe('canonical tool registry', () => {
+  it('registers each production tool as one definition/component/messages module', () => {
+    expect(TOOL_MODULES).toHaveLength(1);
+    expect(TOOL_MODULES[0]).toBe(jsonValidatorModule);
+    expect(toolRegistry.get('json-validator')).toBe(jsonValidatorModule);
+    expect(TOOL_DEFINITIONS).toEqual({
+      'json-validator': jsonValidatorModule.definition,
+    });
+    expect(findToolDefinition('json-validator')).toBe(
+      jsonValidatorModule.definition,
     );
-  });
-
-  it('registers production definitions by stable ID with deterministic lookup', () => {
-    expect(Object.keys(TOOL_DEFINITIONS)).toEqual(['json-validator']);
-    expect(findToolDefinition('json-validator')).toBe(jsonValidatorDefinition);
-    expect(getToolDefinition('json-validator')).toBe(jsonValidatorDefinition);
     expect(getToolDefinition('json-validator')).toBe(
-      getToolModule('json-validator').definition,
+      jsonValidatorModule.definition,
     );
-    expect(findToolDefinition('missing-tool')).toBeNull();
-    expect(() => getToolDefinition('missing-tool')).toThrow(
-      UnknownToolDefinitionError,
-    );
-    expect(getAllToolDefinitions().map((definition) => definition.id)).toEqual([
-      'json-validator',
-    ]);
+    expect(getAllToolDefinitions()).toEqual([jsonValidatorModule.definition]);
   });
 
-  it('sorts registry definitions by stable ID instead of input order', () => {
-    const jsonFormatterDefinition = {
-      ...jsonValidatorDefinition,
-      id: 'json-formatter',
-      route: {
-        ...jsonValidatorDefinition.route,
-        localized: {
-          en: { slug: 'json-formatter' },
-        },
-      },
-    } as const satisfies ToolDefinition;
-
-    const registry = createToolRegistry([
-      jsonValidatorDefinition,
-      jsonFormatterDefinition,
-    ]);
-
-    expect(registry.getAllToolDefinitions().map((definition) => definition.id))
-      .toEqual(['json-formatter', 'json-validator']);
-  });
-
-  it('rejects duplicate tool IDs and taxonomy root mismatches', () => {
-    expect(() =>
-      createToolRegistry([jsonValidatorDefinition, jsonValidatorDefinition]),
-    ).toThrow(DuplicateToolDefinitionError);
-
-    expect(() =>
-      createToolRegistry([
-        {
-          ...jsonValidatorDefinition,
-          rootCategoryId: 'data-formats',
-        },
-      ]),
-    ).toThrow(ToolTaxonomyMismatchError);
-  });
-
-  it('resolves components and messages through the canonical tool module', () => {
-    const module = getToolModule('json-validator');
+  it('resolves the component and localized messages through the same module', () => {
+    const module = toolRegistry.get('json-validator');
 
     expect(module.component).toBeTypeOf('function');
-    expect(() => getToolModule('missing-tool')).toThrow(MissingToolModuleError);
     expect(module.getMessages('en')).toMatchObject({
-      input: {
-        label: 'Input JSON',
-      },
-      actions: {
-        validate: 'Validate JSON',
-      },
+      input: { label: 'Input JSON' },
+      actions: { validate: 'Validate JSON' },
     });
+    expect(getToolModule('json-validator')).toBe(module);
+  });
+
+  it('sorts modules by stable ID and rejects duplicates', () => {
+    const jsonFormatterModule = defineToolModule({
+      ...jsonValidatorModule,
+      definition: {
+        ...jsonValidatorModule.definition,
+        id: 'json-formatter',
+        route: {
+          ...jsonValidatorModule.definition.route,
+          localized: { en: { slug: 'json-formatter' } },
+        },
+      } as const satisfies ToolDefinition,
+    });
+
+    const registry = createToolRegistry([
+      jsonValidatorModule,
+      jsonFormatterModule,
+    ]);
+
+    expect(registry.getAll().map((module) => module.definition.id)).toEqual([
+      'json-formatter',
+      'json-validator',
+    ]);
+    expect(() =>
+      createToolRegistry([jsonValidatorModule, jsonValidatorModule]),
+    ).toThrow(DuplicateToolError);
+  });
+
+  it('rejects taxonomy mismatches and makes unknown lookup explicit', () => {
+    expect(() => toolRegistry.get('missing-tool')).toThrow(UnknownToolError);
+    expect(toolRegistry.find('missing-tool')).toBeNull();
+    expect(() =>
+      createToolRegistry([
+        defineToolModule({
+          ...jsonValidatorModule,
+          definition: {
+            ...jsonValidatorModule.definition,
+            rootCategoryId: 'data-formats',
+          } as const satisfies ToolDefinition,
+        }),
+      ], { taxonomy: toolTaxonomy }),
+    ).toThrow(ToolTaxonomyMismatchError);
   });
 });
