@@ -10,11 +10,9 @@ import type { ArchitectureValidationIssue } from '../types';
 export function validateRouteIntegrity(
   context: Pick<ArchitectureValidationContext, 'routeRegistry'>,
 ): readonly ArchitectureValidationIssue[] {
-  return Object.freeze(
-    inspectRouteRecords(context.routeRegistry.getAll())
-      .map(adaptRouteIssue)
-      .sort(compareArchitectureValidationIssues),
-  );
+  return inspectRouteRecords(context.routeRegistry.getAll())
+    .map(adaptRouteIssue)
+    .sort(compareArchitectureValidationIssues);
 }
 
 function adaptRouteIssue(issue: RouteValidationIssue): ArchitectureValidationIssue {

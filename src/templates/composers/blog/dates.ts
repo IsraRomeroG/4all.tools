@@ -12,5 +12,5 @@ export function formatArticleDate(
     timeZone: 'UTC',
   }).format(date);
 
-  return Object.freeze({ iso, display });
+  return { iso, display };
 }

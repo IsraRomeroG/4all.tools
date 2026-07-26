@@ -29,42 +29,42 @@ export function buildLanguageSwitcherModel(
     const localeDefinition = LOCALES[locale];
 
     if (locale === input.cluster.currentLocale) {
-      return Object.freeze({
+      return {
         state: 'current' as const,
         locale,
         label: localeDefinition.label,
         htmlLang: localeDefinition.htmlLang,
-      });
+      };
     }
 
     const variant = variantsByLocale.get(locale);
 
     if (variant === undefined) {
-      return Object.freeze({
+      return {
         state: 'unavailable' as const,
         locale,
         label: localeDefinition.label,
         htmlLang: localeDefinition.htmlLang,
-      });
+      };
     }
 
     assertInternalRelativeUrl(variant.relativeUrl, locale);
 
-    return Object.freeze({
+    return {
       state: 'available' as const,
       locale,
       label: localeDefinition.label,
       htmlLang: localeDefinition.htmlLang,
       url: variant.relativeUrl,
-    });
+    };
   });
 
-  return Object.freeze({
+  return {
     ariaLabel: input.messages.switcherLabel,
     currentLanguage: input.messages.currentLanguage,
     unavailableLabel: input.messages.unavailable,
-    items: Object.freeze(items),
-  });
+    items,
+  };
 }
 
 function assertInternalRelativeUrl(url: string, locale: string): void {

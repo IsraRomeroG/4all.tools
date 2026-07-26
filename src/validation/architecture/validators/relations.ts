@@ -76,7 +76,7 @@ export function validateContentRelations(
     }
   }
 
-  return Object.freeze([...issues].sort(compareArchitectureValidationIssues));
+  return [...issues].sort(compareArchitectureValidationIssues);
 }
 
 function relationIssue(input: {

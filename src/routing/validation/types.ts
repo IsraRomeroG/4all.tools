@@ -49,15 +49,15 @@ export function createRouteValidationIssue(
 ): RouteValidationIssue {
   const sourceIds = normalizeStringList(input.sourceIds);
 
-  return Object.freeze({
+  return {
     code: input.code,
     message: input.message,
     ...(input.locale !== undefined ? { locale: input.locale } : {}),
     ...(input.path !== undefined ? { path: input.path } : {}),
     ...(input.targetKey !== undefined ? { targetKey: input.targetKey } : {}),
     ...(sourceIds.length > 0 ? { sourceIds } : {}),
-    context: Object.freeze({ ...(input.context ?? {}) }),
-  });
+    context: { ...(input.context ?? {}) },
+  };
 }
 
 export function compareRouteValidationIssues(
@@ -85,10 +85,10 @@ export function compareRouteValidationIssues(
 
 function normalizeStringList(values: readonly string[] | undefined): readonly string[] {
   if (!values) {
-    return Object.freeze([]);
+    return [];
   }
 
-  return Object.freeze([...new Set(values)].sort(compareText));
+  return [...new Set(values)].sort(compareText);
 }
 
 function getLocaleOrder(locale: Locale | undefined): number {

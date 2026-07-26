@@ -86,19 +86,19 @@ export function createSeoPageModel(
   if (input.noindex === true) {
     assertNoindexSeoConflicts(input, canonicalUrl);
 
-    return Object.freeze({
+    return {
       title,
       description,
       canonicalUrl,
       robots: normalizeRobots(false),
-      alternates: Object.freeze([] as const),
+      alternates: [],
       openGraph,
-    });
+    };
   }
 
   const alternates = normalizeAlternates(input.alternates ?? [], siteUrl);
 
-  return Object.freeze({
+  return {
     title,
     description,
     canonicalUrl,
@@ -108,7 +108,7 @@ export function createSeoPageModel(
       ? {}
       : { xDefaultUrl: assertCanonicalUrl(input.xDefaultUrl, siteUrl, 'x-default') }),
     openGraph,
-  });
+  };
 }
 
 export function serializeRobots(robots: SeoRobotsModel): string {
@@ -176,10 +176,10 @@ function normalizeDescription(description: string): string {
 function normalizeRobots(indexable: true): IndexableSeoRobotsModel;
 function normalizeRobots(indexable: false): NoindexSeoRobotsModel;
 function normalizeRobots(indexable: boolean): SeoRobotsModel {
-  return Object.freeze({
+  return {
     index: indexable,
     follow: true,
-  });
+  };
 }
 
 function assertNoindexSeoConflicts(
@@ -203,8 +203,7 @@ function normalizeAlternates(
   const hrefLangs = new Set<string>();
   const urls = new Set<string>();
 
-  return Object.freeze(
-    alternates.map((alternate) => {
+  return alternates.map((alternate) => {
       if (!isLocale(alternate.locale)) {
         throw new InvalidSeoAlternateError(
           `unsupported locale "${String(alternate.locale)}"`,
@@ -230,13 +229,12 @@ function normalizeAlternates(
       assertUnique(hrefLangs, hrefLang, 'hrefLang');
       assertUnique(urls, url, 'url');
 
-      return Object.freeze({
+      return {
         locale: alternate.locale,
         hrefLang,
         url,
-      });
-    }),
-  );
+      };
+    });
 }
 
 function normalizeOpenGraphImage(
@@ -249,12 +247,12 @@ function normalizeOpenGraphImage(
     throw new InvalidSeoAlternateError('Open Graph image alt must be non-empty');
   }
 
-  return Object.freeze({
+  return {
     url,
     alt,
     ...(image.width === undefined ? {} : { width: image.width }),
     ...(image.height === undefined ? {} : { height: image.height }),
-  });
+  };
 }
 
 function createOpenGraphModel(
@@ -282,11 +280,11 @@ function createOpenGraphModel(
       );
     }
 
-    return Object.freeze({
+    return {
       ...base,
       type: 'article' as const,
-      article: Object.freeze({ ...article }),
-    });
+      article: { ...article },
+    };
   }
 
   if (input.openGraphArticle !== undefined) {
@@ -295,10 +293,10 @@ function createOpenGraphModel(
     );
   }
 
-  return Object.freeze({
+  return {
     ...base,
     type: 'website' as const,
-  });
+  };
 }
 
 function parseAbsoluteUrl(url: string, purpose: SeoUrlPurpose): URL {

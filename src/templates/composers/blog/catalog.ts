@@ -63,7 +63,7 @@ export function createArticleSummary(
     });
   }
 
-  return Object.freeze({
+  return {
     articleId: entry.data.articleId,
     title: entry.data.title,
     excerpt: entry.data.excerpt,
@@ -73,7 +73,7 @@ export function createArticleSummary(
       categoryId: category.id,
       label: category.localized[locale].label,
     },
-  });
+  };
 }
 
 export function createBlogCategorySummary(
@@ -90,11 +90,11 @@ export function createBlogCategorySummary(
     return null;
   }
 
-  return Object.freeze({
+  return {
     categoryId: node.id,
     label: node.localized[locale].label,
     url: buildLocalizedPath({ locale, segments: route.segments }),
-  });
+  };
 }
 
 export function filterArticlesForBlogCategory(input: {
@@ -138,7 +138,7 @@ export function filterArticlesForBlogCategory(input: {
     }
   }
 
-  return Object.freeze(matches);
+  return matches;
 }
 
 function validateArticleCategories(
@@ -171,11 +171,9 @@ function validateArticleCategories(
 export function sortBlogCategories(
   categories: readonly TaxonomyNode<BlogCategoryId>[],
 ): readonly TaxonomyNode<BlogCategoryId>[] {
-  return Object.freeze(
-    [...categories].sort(
-      (first, second) =>
-        first.sortOrder - second.sortOrder || compareStableIds(first.id, second.id),
-    ),
+  return [...categories].sort(
+    (first, second) =>
+      first.sortOrder - second.sortOrder || compareStableIds(first.id, second.id),
   );
 }
 

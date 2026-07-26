@@ -28,20 +28,19 @@ export class RouteValidationError extends RoutingInvariantError {
   readonly issues: readonly RouteValidationIssue[];
 
   constructor(issues: readonly RouteValidationIssue[]) {
-    const frozenIssues = Object.freeze([...issues]);
-    const firstIssue = frozenIssues[0];
+    const firstIssue = issues[0];
 
     super(
       firstIssue?.code ?? 'INVALID_ROUTE_RECORD',
-      formatRouteValidationIssues(frozenIssues),
+      formatRouteValidationIssues(issues),
       {
-        issueCount: frozenIssues.length,
-        issues: frozenIssues,
+        issueCount: issues.length,
+        issues,
       },
     );
 
     this.name = 'RouteValidationError';
-    this.issues = frozenIssues;
+    this.issues = issues;
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
@@ -87,7 +86,7 @@ export function inspectRouteRecords(
 
   issues.push(...inspectRouteCollisions(collisionRecords));
 
-  return Object.freeze([...issues].sort(compareRouteValidationIssues));
+  return [...issues].sort(compareRouteValidationIssues);
 }
 
 export function assertValidRouteRecords(

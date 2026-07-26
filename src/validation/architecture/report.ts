@@ -16,7 +16,7 @@ const EMPTY_COUNTS: ArchitectureValidationCounts = {
 export function createArchitectureValidationIssue(
   input: ArchitectureValidationIssueInput,
 ): ArchitectureValidationIssue {
-  return freezeIssue(input);
+  return { ...input };
 }
 
 export function createArchitectureValidationReport(
@@ -26,19 +26,16 @@ export function createArchitectureValidationReport(
   const uniqueIssues = new Map<string, ArchitectureValidationIssue>();
 
   for (const issue of issues) {
-    const frozenIssue = freezeIssue(issue);
-    uniqueIssues.set(issueKey(frozenIssue), frozenIssue);
+    uniqueIssues.set(issueKey(issue), issue);
   }
 
-  const sortedIssues = Object.freeze(
-    [...uniqueIssues.values()].sort(compareArchitectureValidationIssues),
-  );
-  const counts = Object.freeze({ ...EMPTY_COUNTS, ...inspected });
+  const sortedIssues = [...uniqueIssues.values()].sort(compareArchitectureValidationIssues);
+  const counts = { ...EMPTY_COUNTS, ...inspected };
 
-  return Object.freeze({
+  return {
     issues: sortedIssues,
     inspected: counts,
-  });
+  };
 }
 
 export function compareArchitectureValidationIssues(
@@ -96,39 +93,6 @@ export function assertArchitectureValid(
   if (report.issues.length > 0) {
     throw new ArchitectureValidationError(report);
   }
-}
-
-function freezeIssue(
-  issue: ArchitectureValidationIssue,
-): ArchitectureValidationIssue {
-  return Object.freeze({
-    ...issue,
-    ...(issue.details === undefined
-      ? {}
-      : { details: freezeRecord(issue.details) }),
-  });
-}
-
-function freezeRecord(
-  record: Readonly<Record<string, unknown>>,
-): Readonly<Record<string, unknown>> {
-  return freezeValue(record) as Readonly<Record<string, unknown>>;
-}
-
-function freezeValue(value: unknown): unknown {
-  if (Array.isArray(value)) {
-    return Object.freeze(value.map(freezeValue));
-  }
-
-  if (value !== null && typeof value === 'object') {
-    const entries = Object.entries(value).map(([key, child]) => [
-      key,
-      freezeValue(child),
-    ]);
-    return Object.freeze(Object.fromEntries(entries));
-  }
-
-  return value;
 }
 
 function issueKey(issue: ArchitectureValidationIssue): string {

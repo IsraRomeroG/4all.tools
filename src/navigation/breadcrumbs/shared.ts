@@ -83,10 +83,10 @@ export function createBreadcrumbModel(
     throw new BreadcrumbCurrentItemError();
   }
 
-  return Object.freeze({
+  return {
     ariaLabel,
-    items: Object.freeze(items.map((item) => Object.freeze(item))),
-  });
+    items: items.map((item) => ({ ...item })),
+  };
 }
 
 function getTaxonomyLabel(

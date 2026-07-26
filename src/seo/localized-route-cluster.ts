@@ -84,21 +84,20 @@ export async function buildLocalizedRouteCluster(
     );
   }
 
-  return Object.freeze({
-    subject: Object.freeze(
+  return {
+    subject:
       input.subject.kind === 'home'
         ? { kind: 'home' as const }
         : input.subject.kind === 'blog-index'
           ? { kind: 'blog-index' as const }
           : {
-            kind: 'route' as const,
-            target: Object.freeze({ ...input.subject.target }) as RouteTarget,
-          },
-    ),
+              kind: 'route' as const,
+              target: { ...input.subject.target } as RouteTarget,
+            },
     currentLocale: input.currentLocale,
     current,
-    variants: Object.freeze(variants),
-  });
+    variants,
+  };
 }
 
 export function getLocaleNavigationSubjectKey(
@@ -190,7 +189,7 @@ function createVariant(input: {
   readonly segments: readonly string[];
   readonly indexable: boolean;
 }): LocalizedRouteVariant {
-  return Object.freeze({
+  return {
     locale: input.locale,
     hrefLang: LOCALES[input.locale].htmlLang,
     relativeUrl: buildLocalizedPath({
@@ -204,7 +203,7 @@ function createVariant(input: {
     route: input.route,
     published: true,
     indexable: input.indexable,
-  });
+  };
 }
 
 function requireRouteRegistry(

@@ -22,8 +22,8 @@ export async function renderContentEntry(
 export function toRenderedContentModel(
   rendered: RenderResult,
 ): RenderedContentModel {
-  return Object.freeze({
+  return {
     Content: rendered.Content,
-    headings: Object.freeze([...rendered.headings]),
-  });
+    headings: [...rendered.headings],
+  };
 }

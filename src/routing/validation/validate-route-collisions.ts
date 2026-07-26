@@ -32,10 +32,10 @@ export function inspectRouteCollisions(
 ): readonly RouteValidationIssue[] {
   const candidates = records.map(createCollisionCandidate);
 
-  return Object.freeze([
+  return [
     ...inspectPublicPathCollisions(candidates),
     ...inspectCanonicalTargetCollisions(candidates),
-  ]);
+  ];
 }
 
 function inspectPublicPathCollisions(
@@ -155,46 +155,36 @@ function createCollisionCandidate(
 function getOwners(
   candidates: readonly RouteCollisionCandidate[],
 ): readonly CollisionOwner[] {
-  return Object.freeze(
-    candidates
-      .map((candidate) =>
-        Object.freeze({
-          path: candidate.path,
-          targetKey: candidate.targetKey,
-          sourceId: candidate.record.sourceId,
-        }),
-      )
-      .sort(compareCollisionOwners),
-  );
+  return candidates
+    .map((candidate) => ({
+      path: candidate.path,
+      targetKey: candidate.targetKey,
+      sourceId: candidate.record.sourceId,
+    }))
+    .sort(compareCollisionOwners);
 }
 
 function getSourceIds(
   candidates: readonly RouteCollisionCandidate[],
 ): readonly string[] {
-  return Object.freeze(
-    [...new Set(candidates.map((candidate) => candidate.record.sourceId))].sort(
-      compareText,
-    ),
+  return [...new Set(candidates.map((candidate) => candidate.record.sourceId))].sort(
+    compareText,
   );
 }
 
 function getTargetKeys(
   candidates: readonly RouteCollisionCandidate[],
 ): readonly RouteTargetKey[] {
-  return Object.freeze(
-    [...new Set(candidates.map((candidate) => candidate.targetKey))].sort(
-      compareText,
-    ),
+  return [...new Set(candidates.map((candidate) => candidate.targetKey))].sort(
+    compareText,
   );
 }
 
 function getPaths(
   candidates: readonly RouteCollisionCandidate[],
 ): readonly string[] {
-  return Object.freeze(
-    [...new Set(candidates.map((candidate) => candidate.path))].sort(
-      compareText,
-    ),
+  return [...new Set(candidates.map((candidate) => candidate.path))].sort(
+    compareText,
   );
 }
 
@@ -217,14 +207,12 @@ function groupBy<TKey extends string, TValue>(
 function sortedGroups<TKey extends string, TValue>(
   groups: ReadonlyMap<TKey, readonly TValue[]>,
 ): readonly { readonly key: TKey; readonly items: readonly TValue[] }[] {
-  return Object.freeze(
-    [...groups]
-      .map(([key, items]) => ({
-        key,
-        items: Object.freeze([...items]),
-      }))
-      .sort((first, second) => compareText(first.key, second.key)),
-  );
+  return [...groups]
+    .map(([key, items]) => ({
+      key,
+      items: [...items],
+    }))
+    .sort((first, second) => compareText(first.key, second.key));
 }
 
 function compareCollisionOwners(

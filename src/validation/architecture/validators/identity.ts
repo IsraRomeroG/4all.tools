@@ -336,6 +336,6 @@ function compareText(first: string, second: string): number {
 function sortIssues(
   issues: readonly ArchitectureValidationIssue[],
 ): readonly ArchitectureValidationIssue[] {
-  return Object.freeze([...issues].sort(compareArchitectureValidationIssues));
+  return [...issues].sort(compareArchitectureValidationIssues);
 }
 import { accessSync } from 'node:fs';

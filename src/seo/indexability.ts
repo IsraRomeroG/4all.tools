@@ -10,7 +10,7 @@ export interface SeoIndexabilityResolver {
 export function createPublishedContentSeoIndexabilityResolver(
   indexes: PublishedContentIndexes,
 ): SeoIndexabilityResolver {
-  return Object.freeze({
+  return {
     isIndexable: (target: RouteTarget, locale: Locale): boolean => {
       switch (target.kind) {
         case 'tool': {
@@ -47,7 +47,7 @@ export function createPublishedContentSeoIndexabilityResolver(
           return assertNever(target);
       }
     },
-  });
+  };
 }
 
 export async function createDefaultSeoIndexabilityResolver(): Promise<SeoIndexabilityResolver> {

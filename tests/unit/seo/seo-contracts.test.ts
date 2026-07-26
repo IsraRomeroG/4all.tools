@@ -119,7 +119,6 @@ describe('SEO contracts', () => {
     });
     expect(serializeRobots(model.robots)).toBe('noindex,follow');
     expect(model.alternates).toEqual([]);
-    expect(Object.isFrozen(model.alternates)).toBe(true);
     expect(Object.prototype.hasOwnProperty.call(model, 'xDefaultUrl')).toBe(
       false,
     );

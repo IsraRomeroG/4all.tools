@@ -119,10 +119,10 @@ export async function composeSeoPageModel(
           openGraphType: 'website',
         });
 
-  return Object.freeze({
+  return {
     seo,
     localizedRouteCluster,
-  });
+  };
 }
 
 function createIndexableSeoPageModel(

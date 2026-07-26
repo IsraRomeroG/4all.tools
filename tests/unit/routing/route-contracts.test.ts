@@ -172,7 +172,7 @@ describe('routing route contracts', () => {
     ).toBe('tool json-validator');
   });
 
-  it('provides typed routing invariant errors with frozen context', () => {
+  it('provides typed routing invariant errors with stable context', () => {
     const error = new RoutingInvariantError(
       'DUPLICATE_PUBLIC_PATH',
       'Duplicate public path.',
@@ -189,7 +189,6 @@ describe('routing route contracts', () => {
       locale: 'en',
       path: 'developer/json-validator',
     });
-    expect(Object.isFrozen(error.context)).toBe(true);
   });
 });
 
