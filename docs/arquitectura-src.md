@@ -212,6 +212,8 @@ El routing usa IDs estables para identificar destinos y slugs localizados para c
 
 En los artículos del blog, cada entrada localizada es la autoridad de `routeSlug`, `primaryCategoryId` y `status`. Las categorías publicadas también se derivan directamente del contenido localizado; no existen catálogos ni providers de rutas paralelos.
 
+La URL pública de un artículo usa la ruta jerárquica completa de su taxonomía (`blog` + categorías desde la raíz) y termina con el `routeSlug` localizado. Un nodo taxonómico sin contenido de categoría publicado sigue siendo clasificación y no crea por sí solo una landing.
+
 ## `src/seo/`
 
 Contiene los contratos y la composición de la información SEO.
@@ -226,6 +228,8 @@ Sus responsabilidades incluyen:
 - validar que los alternates sean recíprocos y no estén duplicados.
 
 `components/seo/SeoHead.astro` solo renderiza el modelo ya compuesto; la lógica de decisión pertenece a esta carpeta.
+
+La indexabilidad observada por el SEO renderizado continúa registrándose mediante el mecanismo P10 y la integración oficial de sitemap de Astro. `public/robots.txt` apunta al índice oficial; no existe un inventario alternativo de URLs para sitemap.
 
 ## `src/validation/`
 
@@ -276,7 +280,6 @@ Es la capa de presentación basada en modelos. Recibe datos ya compuestos y los 
 - `templates/models/`: contratos de los modelos de página.
 - `templates/composers/`: funciones que combinan routing, dominio, contenido, navegación y SEO.
 - `templates/composers/blog/`: composición específica del índice, categorías, artículos, catálogos y fechas del blog.
-- `templates/page-models/providers/`: proveedores de presentación para features, como el JSON Validator.
 
 La regla principal es que los templates no descubren rutas ni realizan consultas editoriales arbitrarias. Reciben un modelo preparado por los composers.
 
@@ -329,4 +332,4 @@ Contenido del artículo + taxonomía del blog
 - `seo/` compone metadatos; `SeoHead.astro` solo los presenta.
 - `services/` y `server/` están reservados y no contienen lógica productiva actualmente.
 
-Esta separación permite agregar una herramienta nueva incorporando su módulo tipado, mensajes, contenido localizado con metadatos de ruta, presentación y pruebas sin modificar el núcleo genérico de las páginas existentes.
+Esta separación permite agregar una herramienta nueva incorporando su módulo tipado, mensajes, contenido localizado con metadatos de ruta, presentación y pruebas sin modificar el núcleo genérico de las páginas existentes. Los composers importan directamente las autoridades estables y reciben sólo el `RouteRegistry` que varía durante la entrega.

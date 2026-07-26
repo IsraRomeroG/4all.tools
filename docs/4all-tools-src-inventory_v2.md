@@ -2,13 +2,13 @@
 
 **Repositorio:** `IsraRomeroG/4all.tools`  
 **Rama revisada:** `main`  
-**Fecha de revisión:** 21 de julio de 2026
-**Total de archivos dentro de `src/`:** 185
+**Fecha de revisión:** 25 de julio de 2026
+**Total de archivos dentro de `src/`:** 177
 
 ## Conclusiones principales
 
 1. **El vertical slice del JSON Validator está activo de extremo a extremo.** Incluye definición de dominio, taxonomía, registro tipado, rutas localizadas, contenido editorial, UI, lógica cliente, mensajes, SEO y renderizado.
-2. **El blog está conectado al flujo público de entrega.** Cuenta con contenido Markdown localizado, schemas, consultas indexadas, taxonomía independiente, rutas de categorías explícitas y rutas de artículos derivadas de `routeSlug`, modelos de página, composers, templates y adaptadores Astro para los cuatro idiomas.
+2. **El blog está conectado al flujo público de entrega.** Cuenta con contenido Markdown localizado, schemas, consultas indexadas, taxonomía independiente, categorías publicadas derivadas del contenido, artículos derivados de `routeSlug`, modelos de página, composers, templates y adaptadores Astro para los cuatro idiomas.
 3. **La categoría pública de herramientas activa es `developer` en inglés.** Los adaptadores de categorías localizadas existen y están conectados, pero no generan una categoría raíz de herramientas en español, portugués o francés porque todavía no existe contenido localizado publicado para esa categoría.
 4. **La infraestructura SEO y de navegación está activa.** `src/components/` ya contiene componentes de SEO y navegación; `src/services/` y `src/server/` permanecen como límites reservados para futuras integraciones y lógica de servidor.
 5. **El sitio conserva una política estricta de identidad y traducción.** Las entidades usan IDs estables separados de sus slugs localizados, y el contenido faltante no se sustituye silenciosamente por otro idioma.
@@ -183,7 +183,6 @@
 | `src/templates/composers/route-adapters.ts` | Convierte destinos de routing en modelos de página. | Activo |
 | `src/templates/composers/rendered-content.ts` | Adapta contenido Astro renderizable. | Activo |
 | `src/templates/composers/seo.ts` | Integra modelos de página con el modelo SEO. | Activo |
-| `src/templates/page-models/providers/tool-presentation-provider.ts` | Provee identidad y presentación de herramientas. | Activo |
 
 ## Rutas públicas canónicas actuales
 
@@ -250,19 +249,21 @@ src/pages/*/blog/[...path].astro
 En ambos flujos, el contenido publicado se obtiene mediante los índices de `src/content/queries/`. El routing y las consultas comparten el snapshot de contenido publicado en producción; en desarrollo el registro puede reconstruirse para reflejar cambios de contenido.
 
 Las entradas localizadas de artículos son propietarias de `routeSlug`, `primaryCategoryId` y `status`. No hay un catálogo de rutas de artículos separado que pueda divergir de ese contenido.
+La política actual construye las rutas de artículos con la jerarquía completa de categorías del blog y el `routeSlug` localizado. La ausencia de contenido de categoría mantiene un nodo como texto de clasificación, sin publicar una landing.
+
+La elegibilidad del sitemap sigue observando el SEO/noindex renderizado mediante el flujo P10 y la integración oficial de sitemap de Astro; `public/robots.txt` apunta al índice oficial.
 
 ## Estado del blog
 
 El blog ya no está en estado “preparado”. La implementación pública actual incluye:
 
-1. definiciones explícitas para artículos y categorías;
-2. proveedores conectados al registro de entrega;
-3. consultas indexadas y catálogos localizados;
+1. contenido localizado publicado para categorías y artículos;
+2. consultas indexadas y catálogos localizados;
+3. RouteRecords derivados desde contenido y taxonomía;
 4. composers para índice, categorías, artículos, fechas, breadcrumbs y SEO;
 5. templates y layout de artículos;
 6. adaptadores Astro en inglés, español, portugués y francés;
-7. contenido publicado localizado;
-8. cobertura unitaria, de integración, de build y E2E.
+7. cobertura genérica de rutas/build, golden por arquetipo y pruebas de comportamiento.
 
 ## Alcance actual
 

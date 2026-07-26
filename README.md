@@ -4,7 +4,7 @@ Astro static site for localized web tools.
 
 ## Project Status
 
-P00-P15 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, validation/test guardrail slimming, the single tool registry, and content-owned route publication exist in source.
+P00-P16 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, validation/test guardrail slimming, the single tool registry, content-owned route publication, simplified composers, selective runtime immutability, and scalable verification exist in source.
 
 ## Canonical JSON Validator Routes
 
@@ -76,7 +76,11 @@ Adding a production tool requires all of the following:
 
 Published content queries must not silently fall back to another locale. Missing localized content is either `null` or a `ContentNotFoundError` for required APIs; duplicate exact matches remain `AmbiguousContentError`.
 
-Production and static-build route composition shares the same memoized published-content snapshot used by content query APIs. Development route-registry access reconstructs from the current content snapshot so newly published localized content can affect route availability without a process restart.
+Production and static-build route composition shares the same memoized published-content snapshot used by content query APIs. Development route-registry access reconstructs from the current content snapshot so newly published localized content can affect route availability without a process restart. Page composers consume stable authorities directly and expose only the route registry input that varies at page delivery time.
+
+Verification combines generic route/build invariants, a small set of home/category/blog/client-tool golden pages, and feature-specific behavior tests. Published locales receive generic render smoke coverage without duplicating identical interaction scenarios per locale.
+
+Rendered SEO/noindex state remains the authority for sitemap eligibility: the existing P10 registration path feeds the official Astro sitemap integration, while `public/robots.txt` points to the sitemap index. Routing does not recreate a second sitemap inventory.
 
 ## Client Privacy
 
