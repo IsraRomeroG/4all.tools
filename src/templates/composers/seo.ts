@@ -1,9 +1,9 @@
 import type { SeoContentData } from '@/content/schemas/shared';
 import type { Locale } from '@/i18n/types';
+import type { RouteRegistry } from '@/routing/registry';
 import type { RouteRecord } from '@/routing/types';
 import {
   composeSeoPageModel,
-  type SeoCompositionDependencies,
   type SeoPageComposition,
 } from '@/seo';
 
@@ -12,7 +12,7 @@ export function composeRouteSeoPageModel(
     readonly route: RouteRecord;
     readonly seo: SeoContentData;
   },
-  dependencies: SeoCompositionDependencies,
+  routeRegistry: Pick<RouteRegistry, 'getCanonical' | 'getByTarget'>,
 ): Promise<SeoPageComposition> {
   return composeSeoPageModel({
     subject: {
@@ -24,7 +24,7 @@ export function composeRouteSeoPageModel(
     description: input.seo.description,
     noindex: input.seo.noindex,
     openGraphType: 'website',
-  }, dependencies);
+  }, { routeRegistry });
 }
 
 export function composeHomeSeoPageModel(
@@ -34,7 +34,6 @@ export function composeHomeSeoPageModel(
     readonly description: string;
     readonly noindex?: boolean;
   },
-  dependencies: SeoCompositionDependencies = {},
 ): Promise<SeoPageComposition> {
   return composeSeoPageModel({
     subject: {
@@ -45,5 +44,5 @@ export function composeHomeSeoPageModel(
     description: input.description,
     noindex: input.noindex ?? false,
     openGraphType: 'website',
-  }, dependencies);
+  });
 }

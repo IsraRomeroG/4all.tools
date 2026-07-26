@@ -1,18 +1,12 @@
-import type { ToolCategoryId, ToolId } from '@/domain/shared/ids';
+import type { ToolId } from '@/domain/shared/ids';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
-import type { TaxonomyTree } from '@/domain/taxonomy/shared/types';
-import { toolRegistry, type ToolRegistry } from '@/features/tools/registry';
-import {
-  requirePublishedToolContent,
-  type ToolContentEntry,
-} from '@/content/queries/tools';
+import { toolRegistry } from '@/features/tools/registry';
+import { requirePublishedToolContent } from '@/content/queries/tools';
 import type { Locale } from '@/i18n/types';
 import { getGlobalMessages } from '@/i18n/messages/registry';
-import type { GlobalMessages } from '@/i18n/messages/types';
 import type { RouteRegistry } from '@/routing/registry';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
 import { buildToolBreadcrumbs } from '@/navigation/breadcrumbs';
-import type { SeoIndexabilityResolver } from '@/seo';
 import type {
   ToolPageModel,
   ToolPresentationDefinition,
@@ -24,24 +18,11 @@ import {
 } from './errors';
 import {
   renderContentEntry,
-  type RenderContent,
 } from './rendered-content';
 import { composeRouteSeoPageModel } from './seo';
 
 export interface ToolPageComposerDependencies {
   readonly routeRegistry: Pick<RouteRegistry, 'getCanonical' | 'getByTarget'>;
-  readonly seoIndexabilityResolver?: SeoIndexabilityResolver;
-  readonly toolTaxonomy?: Pick<
-    TaxonomyTree<ToolCategoryId>,
-    'findNode' | 'getPathFromRoot'
-  >;
-  readonly requirePublishedToolContent?: (
-    toolId: ToolId,
-    locale: Locale,
-  ) => Promise<ToolContentEntry>;
-  readonly renderContent?: RenderContent;
-  readonly toolRegistry?: Pick<ToolRegistry, 'get'>;
-  readonly getGlobalMessages?: (locale: Locale) => GlobalMessages;
 }
 
 export async function composeToolPageModel(
@@ -63,23 +44,17 @@ export async function composeToolPageModel(
     throw new MissingCanonicalRouteError(context);
   }
 
-  const contentQuery =
-    dependencies.requirePublishedToolContent ?? requirePublishedToolContent;
-  const renderContent = dependencies.renderContent ?? renderContentEntry;
-  const globalMessages = dependencies.getGlobalMessages ?? getGlobalMessages;
-  const taxonomy = dependencies.toolTaxonomy ?? toolTaxonomy;
   const contentEntry = await withToolCompositionContext(
     context,
-    () => contentQuery(toolId, locale),
+    () => requirePublishedToolContent(toolId, locale),
     'Failed to load published tool content.',
   );
   const editorial = await withToolCompositionContext(
     context,
-    () => renderContent(contentEntry),
+    () => renderContentEntry(contentEntry),
     'Failed to render tool editorial content.',
   );
-  const definition = (dependencies.toolRegistry ?? toolRegistry).get(toolId)
-    .definition;
+  const definition = toolRegistry.get(toolId).definition;
   const presentation = normalizePresentation({
     toolId: definition.id,
     primaryCategoryId: definition.taxonomy.primaryCategoryId,
@@ -91,25 +66,20 @@ export async function composeToolPageModel(
       route,
       seo: contentEntry.data.seo,
     },
-    {
-      routeRegistry: dependencies.routeRegistry,
-      ...(dependencies.seoIndexabilityResolver === undefined
-        ? {}
-        : { indexabilityResolver: dependencies.seoIndexabilityResolver }),
-    },
+    dependencies.routeRegistry,
   );
-  const messages = globalMessages(locale);
+  const messages = getGlobalMessages(locale);
   const breadcrumbs = buildToolBreadcrumbs({
     locale,
     toolId,
     primaryCategoryId: presentation.primaryCategoryId,
     currentTitle: contentEntry.data.title,
-    taxonomy,
+    taxonomy: toolTaxonomy,
     routeRegistry: dependencies.routeRegistry,
     messages: messages.navigation,
   });
 
-  return Object.freeze({
+  return {
     kind: 'tool',
     locale,
     route,
@@ -130,17 +100,17 @@ export async function composeToolPageModel(
       editorial,
     },
     presentation,
-  });
+  };
 }
 
 function normalizePresentation(
   presentation: ToolPresentationDefinition,
 ): ToolPresentationDefinition {
-  return Object.freeze({
+  return {
     toolId: presentation.toolId,
     primaryCategoryId: presentation.primaryCategoryId,
     executionType: presentation.executionType,
-  });
+  };
 }
 
 async function withToolCompositionContext<T>(

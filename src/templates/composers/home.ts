@@ -1,5 +1,4 @@
 import { getGlobalMessages } from '@/i18n/messages/registry';
-import type { GlobalMessages } from '@/i18n/messages/types';
 import { isLocale } from '@/i18n/guards';
 import type { Locale } from '@/i18n/types';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
@@ -7,14 +6,6 @@ import type { HomePageModel } from '@/templates/models/home';
 
 import { UnsupportedLocaleError } from './errors';
 import { composeHomeSeoPageModel } from './seo';
-
-export interface HomePageComposerDependencies {
-  readonly getGlobalMessages: (locale: Locale) => GlobalMessages;
-}
-
-const defaultHomePageComposerDependencies = {
-  getGlobalMessages,
-} satisfies HomePageComposerDependencies;
 
 const HOME_SEO = {
   en: {
@@ -37,7 +28,6 @@ const HOME_SEO = {
 
 export async function composeHomePageModel(
   locale: Locale,
-  dependencies: HomePageComposerDependencies = defaultHomePageComposerDependencies,
 ): Promise<HomePageModel> {
   if (!isLocale(locale)) {
     throw new UnsupportedLocaleError(locale);
@@ -49,9 +39,9 @@ export async function composeHomePageModel(
     title: homeSeo.title,
     description: homeSeo.description,
   });
-  const messages = dependencies.getGlobalMessages(locale);
+  const messages = getGlobalMessages(locale);
 
-  return Object.freeze({
+  return {
     kind: 'home',
     locale,
     route: null,
@@ -64,5 +54,5 @@ export async function composeHomePageModel(
     title: homeSeo.title,
     description: homeSeo.description,
     messages,
-  });
+  };
 }

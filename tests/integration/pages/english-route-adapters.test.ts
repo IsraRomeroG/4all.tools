@@ -1,7 +1,7 @@
 import { access } from 'node:fs/promises';
 
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import HomePage from '@/pages/index.astro';
 import RootCategoryPage, {
@@ -12,14 +12,6 @@ import {
   getDeliveryRouteRegistry,
   UnsupportedPageTargetError,
 } from '@/templates/composers';
-import { getGlobalMessages } from '@/i18n/messages/registry';
-import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
-import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
-import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
-import type {
-  ToolCategoryPageModel,
-  ToolPageModel,
-} from '@/templates/models/shared';
 import {
   getToolAreaStaticPathEntries,
   type StaticPathFactory,
@@ -27,9 +19,6 @@ import {
 } from '@/routing/static-paths';
 import { createRouteRegistryFromRecords } from '@/routing/registry';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
-import { createSeoPageModel } from '@/seo';
-
-import FixtureContent from '../../fixtures/templates/FixtureContent.astro';
 
 const PROJECT_ROOT = new URL('../../../', import.meta.url);
 const STATIC_PATH_OPTIONS = {} as Parameters<StaticPathFactory>[0];
@@ -119,30 +108,6 @@ describe('English route adapters', () => {
     });
   });
 
-  it('dispatches catch-all route targets by discriminant', async () => {
-    const composeToolPageModel = vi.fn(async () => fixtureToolModel());
-    const page = await composeToolAreaAdapterPage(
-      'en',
-      {
-        kind: 'tool',
-        toolId: 'json-validator',
-      },
-      {
-        routeRegistry: fixtureRouteRegistry(),
-        composeToolPageModel,
-      },
-    );
-
-    expect(page.kind).toBe('tool');
-    expect(composeToolPageModel).toHaveBeenCalledWith(
-      'en',
-      'json-validator',
-      expect.objectContaining({
-        routeRegistry: expect.any(Object),
-      }),
-    );
-  });
-
   it('fails explicitly for unsupported catch-all targets', async () => {
     await expect(
       composeToolAreaAdapterPage(
@@ -153,8 +118,6 @@ describe('English route adapters', () => {
         },
         {
           routeRegistry: fixtureRouteRegistry(),
-          composeCategoryPageModel: async () => fixtureCategoryModel(),
-          composeToolPageModel: async () => fixtureToolModel(),
         },
       ),
     ).rejects.toBeInstanceOf(UnsupportedPageTargetError);
@@ -232,136 +195,5 @@ function route(input: {
     segments: input.segments,
     target: input.target,
     sourceId: 'fixture:english-route-adapters',
-  };
-}
-
-function fixtureToolModel(): ToolPageModel {
-  return {
-    kind: 'tool',
-    locale: 'en',
-    route: route({
-      locale: 'en',
-      segments: ['developer', 'json-validator'],
-      target: {
-        kind: 'tool',
-        toolId: 'json-validator',
-      },
-    }),
-    seo: seo({
-      title: 'JSON Validator',
-      description: 'Validate JSON.',
-      canonicalUrl: 'https://4all.tools/developer/json-validator/',
-    }),
-    languageSwitcher: languageSwitcher('en'),
-    breadcrumbs: breadcrumbs('en', 'JSON Validator', 'entity'),
-    toolId: 'json-validator',
-    title: 'JSON Validator',
-    messages: getGlobalMessages('en'),
-    content: {
-      title: 'JSON Validator',
-      description: 'Validate JSON.',
-      editorial: {
-        Content: FixtureContent,
-        headings: [],
-      },
-    },
-    presentation: {
-      toolId: 'json-validator',
-      primaryCategoryId: 'json',
-      executionType: 'client',
-    },
-  };
-}
-
-function fixtureCategoryModel(): ToolCategoryPageModel {
-  return {
-    kind: 'tool-category',
-    locale: 'en',
-    route: route({
-      locale: 'en',
-      segments: ['developer'],
-      target: {
-        kind: 'tool-category',
-        categoryId: 'developer',
-      },
-    }),
-    seo: seo({
-      title: 'Developer Tools',
-      description: 'Developer utilities.',
-      canonicalUrl: 'https://4all.tools/developer/',
-    }),
-    languageSwitcher: languageSwitcher('en'),
-    breadcrumbs: breadcrumbs('en', 'Developer Tools', 'taxonomy'),
-    categoryId: 'developer',
-    title: 'Developer Tools',
-    messages: getGlobalMessages('en'),
-    category: {
-      label: 'Developer Tools',
-    },
-    content: {
-      title: 'Developer Tools',
-      description: 'Developer utilities.',
-      editorial: {
-        Content: FixtureContent,
-        headings: [],
-      },
-    },
-  };
-}
-
-function seo(input: {
-  readonly title: string;
-  readonly description: string;
-  readonly canonicalUrl: string;
-}) {
-  return createSeoPageModel(input);
-}
-
-function languageSwitcher(locale: 'en'): LanguageSwitcherModel {
-  return {
-    ariaLabel: 'Languages',
-    currentLanguage: 'Current language',
-    unavailableLabel: 'Not available',
-    items: SUPPORTED_LOCALES.map((itemLocale) =>
-      itemLocale === locale
-        ? {
-            state: 'current' as const,
-            locale: itemLocale,
-            label: LOCALES[itemLocale].label,
-            htmlLang: LOCALES[itemLocale].htmlLang,
-          }
-        : {
-            state: 'available' as const,
-            locale: itemLocale,
-            label: LOCALES[itemLocale].label,
-            htmlLang: LOCALES[itemLocale].htmlLang,
-            url: `/${itemLocale}/`,
-          },
-    ),
-  };
-}
-
-function breadcrumbs(
-  locale: 'en',
-  currentTitle: string,
-  currentKind: 'entity' | 'taxonomy',
-): BreadcrumbModel {
-  const messages = getGlobalMessages(locale).navigation;
-
-  return {
-    ariaLabel: messages.breadcrumbsLabel,
-    items: [
-      {
-        kind: 'home',
-        state: 'link',
-        label: messages.home,
-        url: '/',
-      },
-      {
-        kind: currentKind,
-        state: 'current',
-        label: currentTitle,
-      },
-    ],
   };
 }

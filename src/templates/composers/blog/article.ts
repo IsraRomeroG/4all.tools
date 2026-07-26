@@ -1,18 +1,15 @@
 import {
   requirePublishedArticleContent,
-  type ArticleContentEntry,
 } from '@/content/queries';
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
-import type { ArticleId, BlogCategoryId } from '@/domain/shared/ids';
-import type { TaxonomyTree } from '@/domain/taxonomy/shared/types';
+import type { ArticleId } from '@/domain/shared/ids';
 import { getGlobalMessages } from '@/i18n/messages/registry';
-import type { GlobalMessages } from '@/i18n/messages/types';
 import type { Locale } from '@/i18n/types';
 import { buildArticleBreadcrumbs } from '@/navigation/breadcrumbs';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
 import type { RouteRegistry } from '@/routing/registry';
 import { buildLocalizedPath } from '@/routing/builders';
-import { composeSeoPageModel, type SeoIndexabilityResolver } from '@/seo';
+import { composeSeoPageModel } from '@/seo';
 import type { ArticlePageModel } from '@/templates/models/blog';
 
 import {
@@ -21,22 +18,11 @@ import {
   UnknownBlogCategoryReferenceError,
   wrapCompositionCause,
 } from '../errors';
-import { renderContentEntry, type RenderContent } from '../rendered-content';
+import { renderContentEntry } from '../rendered-content';
 import { formatArticleDate } from './dates';
 
 export interface ArticlePageComposerDependencies {
   readonly routeRegistry: Pick<RouteRegistry, 'getCanonical' | 'getByTarget'>;
-  readonly blogTaxonomy?: Pick<
-    TaxonomyTree<BlogCategoryId>,
-    'findNode' | 'getPathFromRoot'
-  >;
-  readonly requirePublishedArticleContent?: (
-    articleId: ArticleId,
-    locale: Locale,
-  ) => Promise<ArticleContentEntry>;
-  readonly renderContent?: RenderContent;
-  readonly getGlobalMessages?: (locale: Locale) => GlobalMessages;
-  readonly seoIndexabilityResolver?: SeoIndexabilityResolver;
 }
 
 export async function composeArticlePageModel(
@@ -57,10 +43,9 @@ export async function composeArticlePageModel(
   const contentEntry = await loadArticleContent(
     articleId,
     locale,
-    dependencies.requirePublishedArticleContent ?? requirePublishedArticleContent,
     context,
   );
-  const taxonomy = dependencies.blogTaxonomy ?? blogTaxonomy;
+  const taxonomy = blogTaxonomy;
   const primaryCategory = taxonomy.findNode(contentEntry.data.primaryCategoryId);
 
   if (primaryCategory === undefined) {
@@ -81,8 +66,7 @@ export async function composeArticlePageModel(
     }
   }
 
-  const renderContent = dependencies.renderContent ?? renderContentEntry;
-  const editorial = await loadArticleEditorial(contentEntry, renderContent, context);
+  const editorial = await loadArticleEditorial(contentEntry, context);
   const publishedAt = formatArticleDate(contentEntry.data.publishedAt, locale);
   const updatedAt =
     contentEntry.data.updatedAt === undefined
@@ -108,7 +92,7 @@ export async function composeArticlePageModel(
             segments: categoryRoute.segments,
           }),
         };
-  const messages = (dependencies.getGlobalMessages ?? getGlobalMessages)(locale);
+  const messages = getGlobalMessages(locale);
   const seoComposition = await composeSeoPageModel(
     {
       subject: { kind: 'route', target: route.target },
@@ -123,15 +107,10 @@ export async function composeArticlePageModel(
         section: primaryCategory.localized[locale].label,
       },
     },
-    {
-      routeRegistry: dependencies.routeRegistry,
-      ...(dependencies.seoIndexabilityResolver === undefined
-        ? {}
-        : { indexabilityResolver: dependencies.seoIndexabilityResolver }),
-    },
+    { routeRegistry: dependencies.routeRegistry },
   );
 
-  return Object.freeze({
+  return {
     kind: 'article',
     locale,
     route,
@@ -162,29 +141,27 @@ export async function composeArticlePageModel(
       ...(updatedAt === undefined ? {} : { updatedAt }),
       primaryCategory: primaryCategoryReference,
     },
-  });
+  };
 }
 
 async function loadArticleContent(
   articleId: ArticleId,
   locale: Locale,
-  query: (articleId: ArticleId, locale: Locale) => Promise<ArticleContentEntry>,
   context: { readonly locale: Locale; readonly targetKind: 'article'; readonly entityId: ArticleId },
-): Promise<ArticleContentEntry> {
+): ReturnType<typeof requirePublishedArticleContent> {
   try {
-    return await query(articleId, locale);
+    return await requirePublishedArticleContent(articleId, locale);
   } catch (error) {
     throw wrapCompositionCause('Failed to load published article content.', context, error);
   }
 }
 
 async function loadArticleEditorial(
-  entry: ArticleContentEntry,
-  renderContent: RenderContent,
+  entry: Awaited<ReturnType<typeof requirePublishedArticleContent>>,
   context: { readonly locale: Locale; readonly targetKind: 'article'; readonly entityId: ArticleId },
 ) {
   try {
-    return await renderContent(entry);
+    return await renderContentEntry(entry);
   } catch (error) {
     throw wrapCompositionCause('Failed to render article editorial content.', context, error);
   }

@@ -1,7 +1,7 @@
 import { access } from 'node:fs/promises';
 
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import FrenchHomePage from '@/pages/fr/index.astro';
 import PortugueseHomePage from '@/pages/pt/index.astro';
@@ -10,11 +10,6 @@ import {
   composeToolAreaAdapterPage,
   UnsupportedPageTargetError,
 } from '@/templates/composers';
-import { getGlobalMessages } from '@/i18n/messages/registry';
-import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
-import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
-import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
-import type { ToolPageModel } from '@/templates/models/shared';
 import {
   getRootCategoryStaticPathEntries,
   getToolAreaStaticPathEntries,
@@ -22,9 +17,6 @@ import {
 import { createRouteRegistryFromRecords } from '@/routing/registry';
 import type { Locale } from '@/i18n/types';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
-import { createSeoPageModel } from '@/seo';
-
-import FixtureContent from '../../fixtures/templates/FixtureContent.astro';
 
 const PROJECT_ROOT = new URL('../../../', import.meta.url);
 const LOCALIZED_PAGE_FILES = [
@@ -144,31 +136,6 @@ describe('localized route adapters', () => {
     });
   });
 
-  it('reuses shared catch-all dispatch for localized tool targets', async () => {
-    const composeToolPageModel = vi.fn(async () => fixtureToolModel('es'));
-    const page = await composeToolAreaAdapterPage(
-      'es',
-      {
-        kind: 'tool',
-        toolId: 'json-validator',
-      },
-      {
-        routeRegistry: fixtureRouteRegistry(),
-        composeToolPageModel,
-      },
-    );
-
-    expect(page.kind).toBe('tool');
-    expect(page.locale).toBe('es');
-    expect(composeToolPageModel).toHaveBeenCalledWith(
-      'es',
-      'json-validator',
-      expect.objectContaining({
-        routeRegistry: expect.any(Object),
-      }),
-    );
-  });
-
   it('fails explicitly for unsupported localized targets', async () => {
     await expect(
       composeToolAreaAdapterPage(
@@ -179,32 +146,9 @@ describe('localized route adapters', () => {
         },
         {
           routeRegistry: fixtureRouteRegistry(),
-          composeToolPageModel: async () => fixtureToolModel('fr'),
         },
       ),
     ).rejects.toBeInstanceOf(UnsupportedPageTargetError);
-  });
-
-  it('does not fall back to English for missing localized tool content', async () => {
-    const requestedLocales: Locale[] = [];
-
-    await expect(
-      composeToolAreaAdapterPage(
-        'es',
-        {
-          kind: 'tool',
-          toolId: 'json-validator',
-        },
-        {
-          routeRegistry: fixtureRouteRegistry(),
-          composeToolPageModel: async (locale) => {
-            requestedLocales.push(locale);
-            throw new Error('Missing localized content');
-          },
-        },
-      ),
-    ).rejects.toThrow('Missing localized content');
-    expect(requestedLocales).toEqual(['es']);
   });
 
   it('keeps localized route adapter files available without an English page tree', async () => {
@@ -322,93 +266,5 @@ function route(input: {
     segments: input.segments,
     target: input.target,
     sourceId: 'fixture:localized-route-adapters',
-  };
-}
-
-function fixtureToolModel(locale: Locale): ToolPageModel {
-  return {
-    kind: 'tool',
-    locale,
-    route: route({
-      locale,
-      segments: ['fixture', 'json-validator'],
-      target: {
-        kind: 'tool',
-        toolId: 'json-validator',
-      },
-    }),
-    seo: createSeoPageModel({
-      title: 'JSON Validator',
-      description: 'Validate JSON.',
-      canonicalUrl:
-        locale === 'en'
-          ? 'https://4all.tools/fixture/json-validator/'
-          : `https://4all.tools/${locale}/fixture/json-validator/`,
-    }),
-    languageSwitcher: languageSwitcher(locale),
-    breadcrumbs: breadcrumbs(locale),
-    toolId: 'json-validator',
-    title: 'JSON Validator',
-    messages: getGlobalMessages(locale),
-    content: {
-      title: 'JSON Validator',
-      description: 'Validate JSON.',
-      editorial: {
-        Content: FixtureContent,
-        headings: [],
-      },
-    },
-    presentation: {
-      toolId: 'json-validator',
-      primaryCategoryId: 'json',
-      executionType: 'client',
-    },
-  };
-}
-
-function languageSwitcher(locale: Locale): LanguageSwitcherModel {
-  const messages = getGlobalMessages(locale).language;
-
-  return {
-    ariaLabel: messages.switcherLabel,
-    currentLanguage: messages.currentLanguage,
-    unavailableLabel: messages.unavailable,
-    items: SUPPORTED_LOCALES.map((itemLocale) =>
-      itemLocale === locale
-        ? {
-            state: 'current' as const,
-            locale: itemLocale,
-            label: LOCALES[itemLocale].label,
-            htmlLang: LOCALES[itemLocale].htmlLang,
-          }
-        : {
-            state: 'available' as const,
-            locale: itemLocale,
-            label: LOCALES[itemLocale].label,
-            htmlLang: LOCALES[itemLocale].htmlLang,
-            url: `/${itemLocale}/`,
-          },
-    ),
-  };
-}
-
-function breadcrumbs(locale: Locale): BreadcrumbModel {
-  const messages = getGlobalMessages(locale).navigation;
-
-  return {
-    ariaLabel: messages.breadcrumbsLabel,
-    items: [
-      {
-        kind: 'home',
-        state: 'link',
-        label: messages.home,
-        url: locale === 'en' ? '/' : `/${locale}/`,
-      },
-      {
-        kind: 'entity',
-        state: 'current',
-        label: 'JSON Validator',
-      },
-    ],
   };
 }
