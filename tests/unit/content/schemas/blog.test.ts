@@ -10,6 +10,7 @@ import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 const validArticleEntry = {
   articleId: 'what-is-json',
   locale: 'en',
+  routeSlug: 'what-is-json',
   primaryCategoryId: 'json-guides',
   secondaryCategoryIds: [],
   status: 'published',
@@ -78,6 +79,7 @@ describe('blog content schemas', () => {
     it.each([
       ['invalid article ID', { articleId: 'blog/what-is-json' }],
       ['invalid locale', { locale: 'en-US' }],
+      ['invalid route slug', { routeSlug: 'What Is JSON' }],
       ['missing primary category ID', { primaryCategoryId: undefined }],
       ['missing publishedAt', { publishedAt: undefined }],
       ['invalid date', { publishedAt: 'not-a-date' }],

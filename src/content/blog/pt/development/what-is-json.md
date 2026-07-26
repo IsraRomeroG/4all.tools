@@ -1,6 +1,7 @@
 ---
 articleId: what-is-json
 locale: pt
+routeSlug: o-que-e-json
 
 primaryCategoryId: json-guides
 secondaryCategoryIds: []

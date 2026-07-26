@@ -8,6 +8,7 @@ import {
   seoSchema,
   uniqueEntityIdListSchema,
 } from './shared';
+import { ROUTE_SEGMENT_PATTERN } from '@/routing/builders/segment-validation';
 
 interface ArticleDateMeta {
   publishedAt: Date;
@@ -31,6 +32,12 @@ export const articleContentSchema = z
   .object({
     articleId: entityIdSchema,
     locale: localeSchema,
+    routeSlug: z
+      .string()
+      .regex(
+        ROUTE_SEGMENT_PATTERN,
+        'Expected routeSlug to be a lowercase kebab-case route segment',
+      ),
     primaryCategoryId: entityIdSchema,
     secondaryCategoryIds: uniqueEntityIdListSchema,
     status: publicationStatusSchema,
