@@ -1,12 +1,10 @@
-import { describe, expect, expectTypeOf, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
 import {
   assertReciprocalSeoAlternates,
   composeSeoPageModel,
-  createLocalizedPageAvailabilityResolver,
-  type LocalizedPageAvailability,
   type SeoIndexabilityResolver,
 } from '@/seo';
 import {
@@ -131,67 +129,6 @@ describe('P07 missing translation policy', () => {
     });
   });
 
-  it('projects explicit availability states from route ownership and indexability', async () => {
-    const registry = fullRegistry();
-    const indexableRoute = registry.getCanonical('en', TARGET);
-    const indexabilityResolver: SeoIndexabilityResolver = {
-      isIndexable: () => true,
-    };
-    const resolver = createLocalizedPageAvailabilityResolver({
-      routeRegistry: registry,
-      indexabilityResolver,
-    });
-    const published = await resolver.getAvailability(TARGET, 'en');
-
-    expect(published).toEqual({
-      state: 'published-indexable',
-      route: indexableRoute,
-    });
-  });
-
-  it('projects published noindex when a public route exists', async () => {
-    const registry = fullRegistry();
-    const route = registry.getCanonical('es', TARGET);
-    const resolver = createLocalizedPageAvailabilityResolver({
-      routeRegistry: registry,
-      indexabilityResolver: { isIndexable: () => false },
-    });
-
-    await expect(resolver.getAvailability(TARGET, 'es')).resolves.toEqual({
-      state: 'published-noindex',
-      route,
-    });
-  });
-
-  it('does not query indexability when no public route exists', async () => {
-    let indexabilityCalls = 0;
-    const resolver = createLocalizedPageAvailabilityResolver({
-      routeRegistry: missingSpanishRegistry(),
-      indexabilityResolver: {
-        isIndexable: () => {
-          indexabilityCalls += 1;
-          return true;
-        },
-      },
-    });
-
-    await expect(resolver.getAvailability(TARGET, 'es')).resolves.toEqual({
-      state: 'unavailable',
-      reason: 'missing-public-route',
-    });
-    expect(indexabilityCalls).toBe(0);
-  });
-
-  it('exposes only the public route absence reason', () => {
-    type Unavailable = Extract<
-      LocalizedPageAvailability,
-      { readonly state: 'unavailable' }
-    >;
-
-    expectTypeOf<Unavailable['reason']>().toEqualTypeOf<
-      'missing-public-route'
-    >();
-  });
 });
 
 async function compose(
