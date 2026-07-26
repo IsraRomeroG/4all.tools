@@ -205,13 +205,15 @@ Es la infraestructura responsable de determinar qué URLs existen y a qué entid
 
 - `routing/builders/`: construye segmentos y URLs localizadas.
 - `routing/definitions/`: contratos y definiciones explícitas de rutas.
-- `routing/definitions/blog/`: definiciones de artículos y categorías del blog.
+- `routing/definitions/blog/`: definiciones explícitas de categorías públicas del blog; las rutas de artículos se derivan de contenido localizado publicado.
 - `routing/providers/`: adapta registros de herramientas y contenido a definiciones de ruta.
 - `routing/registry/`: crea el índice final de rutas y controla namespaces reservados.
 - `routing/static-paths/`: convierte registros en parámetros y props para `getStaticPaths()`.
 - `routing/validation/`: detecta colisiones, rutas reservadas y registros inválidos.
 
 El routing usa IDs estables para identificar destinos y slugs localizados para construir las URLs. Esto permite cambiar la presentación del slug sin cambiar la identidad de la entidad.
+
+En los artículos del blog, cada entrada localizada es la autoridad de `routeSlug`, `primaryCategoryId` y `status`. El proveedor de artículos adapta esas entradas al pipeline genérico actual; no existe un catálogo de rutas de artículos paralelo.
 
 ## `src/seo/`
 

@@ -8,6 +8,12 @@ import {
 import { getDeliveryRouteRegistry } from '@/templates/composers';
 
 const LOCALES = ['en', 'es', 'pt', 'fr'] as const;
+const ARTICLE_ROUTE_SLUGS = {
+  en: 'what-is-json',
+  es: 'que-es-json',
+  pt: 'o-que-e-json',
+  fr: 'qu-est-ce-que-json',
+} as const;
 
 describe('P08 production blog vertical slice', () => {
   it('publishes the same localized article identity with the frozen date and relation', async () => {
@@ -15,6 +21,7 @@ describe('P08 production blog vertical slice', () => {
       const article = await getPublishedArticleContent('what-is-json', locale);
 
       expect(article?.data.articleId).toBe('what-is-json');
+      expect(article?.data.routeSlug).toBe(ARTICLE_ROUTE_SLUGS[locale]);
       expect(article?.data.primaryCategoryId).toBe('json-guides');
       expect(article?.data.status).toBe('published');
       expect(article?.data.seo.noindex).toBe(false);
@@ -66,5 +73,15 @@ describe('P08 production blog vertical slice', () => {
             record.target.articleId === 'what-is-json',
         ),
     ).toBe(true);
+    expect(
+      blogRecords
+        .filter((record) => record.target.kind === 'article')
+        .map((record) => `${record.locale}:${record.segments.join('/')}`),
+    ).toEqual([
+      'en:blog/development/json-guides/what-is-json',
+      'es:blog/desarrollo/guias-json/que-es-json',
+      'pt:blog/desenvolvimento/guias-json/o-que-e-json',
+      'fr:blog/developpement/guides-json/qu-est-ce-que-json',
+    ]);
   });
 });

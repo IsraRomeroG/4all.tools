@@ -25,13 +25,13 @@ English is intentionally unprefixed. `/en/developer/json-validator/` is forbidde
 - `src/domain/taxonomy/` owns immutable taxonomy trees and selectors.
 - `src/content.config.ts` defines Astro content collections and schemas.
 - `src/content/queries/` owns published-content lookup, exact-match semantics, ambiguity errors, and build-time indexes.
-- `src/routing/` owns route targets, localized path builders, explicit route providers, route registry construction, static path projection, and collision validation.
+- `src/routing/` owns route targets, localized path builders, route providers, route registry construction, static path projection, and collision validation. Localized article content owns each article's `routeSlug`, primary category, and publication state; the article provider adapts that content into the current generic route pipeline.
 - `src/templates/` owns page model composition and Astro templates. `src/views/` is prohibited.
 - `src/features/tools/` owns tool modules, typed tool registration, feature components, engines, and localized feature messages.
 
 ### Validation ownership
 
-`src/validation/architecture/` validates catalog and cross-entity integrity: content identities, taxonomy references, tool-module coverage, editorial relations, route-definition coverage, route-record shape/collisions, and the direct `src/views/` filesystem prohibition. It does not parse source imports or compose pages. The Astro build and generic build-output tests are authoritative for page renderability, document language, canonical URLs, and rendered SEO; browser tests remain authoritative for interactive behavior. Route-definition coverage remains a live guard until P15 removes the underlying RouteDefinition/provider model.
+`src/validation/architecture/` validates catalog and cross-entity integrity: content identities, taxonomy references, tool-module coverage, editorial relations, route-definition coverage, route-record shape/collisions, and the direct `src/views/` filesystem prohibition. It does not parse source imports or compose pages. The Astro build and generic build-output tests are authoritative for page renderability, document language, canonical URLs, and rendered SEO; browser tests remain authoritative for interactive behavior. Route-definition coverage remains a live guard until P15 removes the underlying generic RouteDefinition/provider model; article route definitions themselves are derived from published localized content.
 
 The supported architecture-validation issue codes are:
 

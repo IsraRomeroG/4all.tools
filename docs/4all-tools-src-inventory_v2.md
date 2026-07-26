@@ -8,7 +8,7 @@
 ## Conclusiones principales
 
 1. **El vertical slice del JSON Validator está activo de extremo a extremo.** Incluye definición de dominio, taxonomía, registro tipado, rutas localizadas, contenido editorial, UI, lógica cliente, mensajes, SEO y renderizado.
-2. **El blog está conectado al flujo público de entrega.** Cuenta con contenido Markdown localizado, schemas, consultas indexadas, taxonomía independiente, definiciones y proveedores de rutas, modelos de página, composers, templates y adaptadores Astro para los cuatro idiomas.
+2. **El blog está conectado al flujo público de entrega.** Cuenta con contenido Markdown localizado, schemas, consultas indexadas, taxonomía independiente, rutas de categorías explícitas y rutas de artículos derivadas de `routeSlug`, modelos de página, composers, templates y adaptadores Astro para los cuatro idiomas.
 3. **La categoría pública de herramientas activa es `developer` en inglés.** Los adaptadores de categorías localizadas existen y están conectados, pero no generan una categoría raíz de herramientas en español, portugués o francés porque todavía no existe contenido localizado publicado para esa categoría.
 4. **La infraestructura SEO y de navegación está activa.** `src/components/` ya contiene componentes de SEO y navegación; `src/services/` y `src/server/` permanecen como límites reservados para futuras integraciones y lógica de servidor.
 5. **El sitio conserva una política estricta de identidad y traducción.** Las entidades usan IDs estables separados de sus slugs localizados, y el contenido faltante no se sustituye silenciosamente por otro idioma.
@@ -158,8 +158,8 @@
 | Archivo o grupo | Descripción | Estado |
 |---|---|---|
 | `src/routing/builders/` | Constructores de URLs localizadas para herramientas, categorías, artículos y blog. | Activo |
-| `src/routing/definitions/` | Contratos y definiciones explícitas de rutas, incluidas las de blog. | Activo |
-| `src/routing/definitions/blog/` | Definiciones de artículos y categorías públicas del blog. | Activo |
+| `src/routing/definitions/` | Contratos y definiciones explícitas de rutas; las rutas de artículos se derivan del contenido localizado. | Activo |
+| `src/routing/definitions/blog/` | Definiciones de categorías públicas del blog. | Activo |
 | `src/routing/providers/tool-route-provider.ts` | Proveedor de rutas de herramientas publicadas. | Activo |
 | `src/routing/providers/tool-category-route-provider.ts` | Proveedor explícito de categorías públicas de herramientas. | Activo |
 | `src/routing/providers/article-route-provider.ts` | Proveedor de rutas de artículos publicados. | Activo |
@@ -245,14 +245,16 @@ src/pages/*/[category]/[...path].astro
 ```text
 src/pages/*/blog/[...path].astro
   → blog static-path factory + delivery route registry
-  → article/blog-category route providers
-  → blog route adapter
+  → article content adapter / blog-category route provider
+  → blog route registry
   → blog page composers
   → BlogIndexTemplate, BlogCategoryTemplate o ArticleTemplate
   → ArticleLayout.astro + SEO + navegación localizada
 ```
 
 En ambos flujos, el contenido publicado se obtiene mediante los índices de `src/content/queries/`. El routing y las consultas comparten el snapshot de contenido publicado en producción; en desarrollo el registro puede reconstruirse para reflejar cambios de contenido.
+
+Las entradas localizadas de artículos son propietarias de `routeSlug`, `primaryCategoryId` y `status`. No hay un catálogo de rutas de artículos separado que pueda divergir de ese contenido.
 
 ## Estado del blog
 

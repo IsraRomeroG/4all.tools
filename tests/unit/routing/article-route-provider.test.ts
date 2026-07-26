@@ -130,6 +130,26 @@ describe('article route provider', () => {
       }),
     ).rejects.toMatchObject({ code: 'INVALID_SEGMENT' });
   });
+
+  it('rejects duplicate localized article paths through route validation', async () => {
+    const provider = createArticleRouteProvider(async (locale) =>
+      locale === 'en'
+        ? [
+            articleEntry('en', 'shared-article', 'first-article'),
+            articleEntry('en', 'shared-article', 'second-article'),
+          ]
+        : [],
+    );
+
+    await expect(
+      createRouteRegistry({
+        providers: [provider],
+        toolTaxonomy,
+        blogTaxonomy,
+        publicationAvailability: publishEverything,
+      }),
+    ).rejects.toMatchObject({ code: 'DUPLICATE_PUBLIC_PATH' });
+  });
 });
 
 const publishEverything: RoutePublicationAvailability = {
@@ -139,12 +159,13 @@ const publishEverything: RoutePublicationAvailability = {
 function articleEntry(
   locale: Locale,
   routeSlug = locale === 'en' ? 'what-is-json' : `${locale}-what-is-json`,
+  articleId = 'what-is-json',
 ): ArticleContentEntry {
   return {
     id: `blog/${locale}/development/what-is-json.md`,
     collection: 'blog',
     data: {
-      articleId: 'what-is-json',
+      articleId,
       locale,
       routeSlug,
       primaryCategoryId: 'json-guides',
