@@ -1,7 +1,6 @@
 import type { TaxonomyNode, TaxonomyTree } from '@/domain/taxonomy/shared/types';
 import type { Locale } from '@/i18n/types';
 import { RoutingInvariantError } from '@/routing/errors';
-import type { LocalizedRouteLeaf } from '@/routing/definitions/types';
 
 import { assertValidRouteSegments } from './segment-validation';
 
@@ -9,6 +8,10 @@ export interface BuildPathContext {
   readonly locale: Locale;
   readonly sourceId?: string;
   readonly [key: string]: unknown;
+}
+
+interface LocalizedRouteLeaf {
+  readonly slug: string;
 }
 
 export function freezeValidatedSegments(

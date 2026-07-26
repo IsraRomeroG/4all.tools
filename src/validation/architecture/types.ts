@@ -24,7 +24,6 @@ export type ArchitectureValidationIssueCode =
   | 'UNPUBLISHED_RELATED_TOOL'
   | 'UNKNOWN_RELATED_ARTICLE'
   | 'SELF_RELATED_ARTICLE'
-  | 'PUBLISHED_ROUTE_DEFINITION_WITHOUT_PUBLIC_VARIANT'
   | 'FORBIDDEN_SOURCE_NAMESPACE'
   | 'INVALID_ROUTE_RECORD'
   | 'EMPTY_SEGMENTS'
@@ -50,7 +49,6 @@ export interface ArchitectureValidationCounts {
   readonly contentEntries: number;
   readonly toolDefinitions: number;
   readonly toolModules: number;
-  readonly routeDefinitions: number;
   readonly routeRecords: number;
 }
 

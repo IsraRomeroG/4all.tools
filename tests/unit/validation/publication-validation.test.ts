@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { RouteDefinition } from '@/routing/definitions';
-import { createRouteRegistryFromRecords } from '@/routing/registry/route-index';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
+import type { RouteRegistry } from '@/routing/registry/route-index';
 import {
   createProductionArchitectureContext,
   validateArchitecture,
@@ -10,14 +9,10 @@ import {
 } from '@/validation/architecture';
 
 describe('architecture route integrity validation', () => {
-  it('reports route collisions and published definitions without public variants', () => {
+  it('reports collisions from final RouteRegistry records', () => {
     const validRecord = record('tool', 'json-validator', 'json-validator');
     const issues = validateRouteIntegrity({
-      routeDefinitions: [
-        toolDefinition('json-validator', 'published'),
-        toolDefinition('missing-tool', 'published'),
-      ],
-      routeRegistry: fakeRouteRegistry([
+      routeRegistry: fakeRegistry([
         validRecord,
         { ...validRecord, sourceId: 'duplicate' },
       ]),
@@ -25,7 +20,6 @@ describe('architecture route integrity validation', () => {
 
     expect(issues.map((issue) => issue.code)).toEqual([
       'DUPLICATE_ROUTE_RECORD',
-      'PUBLISHED_ROUTE_DEFINITION_WITHOUT_PUBLIC_VARIANT',
     ]);
   });
 
@@ -37,42 +31,21 @@ describe('architecture route integrity validation', () => {
   ] as const)('accepts the %s route-target kind', (kind, id, segment) => {
     expect(
       validateRouteIntegrity({
-        routeDefinitions: [],
-        routeRegistry: fakeRouteRegistry([record(kind, id, segment)]),
+        routeRegistry: fakeRegistry([record(kind, id, segment)]),
       }),
     ).toEqual([]);
   });
 
-  it('keeps route-less content out of route integrity validation', async () => {
-    const productionContext = await createProductionArchitectureContext();
-    const routeDefinitions = productionContext.routeDefinitions.filter(
-      (route) => route.kind !== 'article' && route.kind !== 'blog-category',
-    );
-    const routeRecords = productionContext.routeRegistry
-      .getAll()
-      .filter(
-        (route) => route.target.kind !== 'article' && route.target.kind !== 'blog-category',
-      );
-    const routeRegistry = createRouteRegistryFromRecords(routeRecords);
-
-    const report = await validateArchitecture({
-      context: {
-        ...productionContext,
-        routeDefinitions,
-        routeRegistry,
-      },
-    });
+  it('validates the production registry without route-definition coverage state', async () => {
+    const context = await createProductionArchitectureContext();
+    const report = await validateArchitecture({ context });
 
     expect(report.issues).toEqual([]);
-    expect(routeRegistry.getAll()).toEqual(routeRecords);
+    expect(report.inspected.routeRecords).toBeGreaterThan(0);
   });
 });
 
-function record(
-  kind: RouteTarget['kind'],
-  id: string,
-  segment: string,
-): RouteRecord {
+function record(kind: RouteTarget['kind'], id: string, segment: string): RouteRecord {
   const target: RouteTarget = kind === 'tool'
     ? { kind, toolId: id }
     : kind === 'tool-category'
@@ -87,24 +60,10 @@ function record(
     segments: segment.split('/'),
     target,
     sourceId: `${kind}-routes`,
-  } as RouteRecord;
-}
-
-function toolDefinition(id: string, status: string): RouteDefinition {
-  return {
-    kind: 'tool',
-    definition: {
-      toolId: id,
-      rootCategoryId: 'developer',
-      primaryCategoryId: 'json',
-      strategy: 'flat',
-      localized: { en: { slug: id } },
-      status: status as 'published' | 'draft' | 'archived',
-    },
   };
 }
 
-function fakeRouteRegistry(records: readonly RouteRecord[]) {
+function fakeRegistry(records: readonly RouteRecord[]): RouteRegistry {
   return {
     getAll: () => records,
     findByPath: () => null,

@@ -2,7 +2,6 @@ import type { ArticleId, BlogCategoryId } from '@/domain/shared/ids';
 import type { TaxonomyTree } from '@/domain/taxonomy/shared/types';
 import type { Locale } from '@/i18n/types';
 import { RoutingInvariantError } from '@/routing/errors';
-import type { BlogCategoryRouteDefinition } from '@/routing/definitions/types';
 
 import {
   freezeValidatedSegments,
@@ -23,7 +22,7 @@ export interface BuildArticlePathInput {
 }
 
 export interface BuildBlogCategoryPathInput {
-  readonly definition: BlogCategoryRouteDefinition;
+  readonly categoryId: BlogCategoryId;
   readonly locale: Locale;
   readonly taxonomy: TaxonomyTree<BlogCategoryId>;
   readonly sourceId?: string;
@@ -55,7 +54,7 @@ export function buildBlogCategoryPathSegments(
   const context = getBlogCategoryContext(input);
   const taxonomyPath = getRequiredPathFromRoot(
     input.taxonomy,
-    input.definition.categoryId,
+    input.categoryId,
     context,
   );
   const categoryNode = taxonomyPath[taxonomyPath.length - 1];
@@ -63,15 +62,15 @@ export function buildBlogCategoryPathSegments(
   if (!categoryNode) {
     throw new RoutingInvariantError(
       'UNKNOWN_TAXONOMY_NODE',
-      `Unknown taxonomy node ${input.definition.categoryId}.`,
+      `Unknown taxonomy node ${input.categoryId}.`,
       context,
     );
   }
 
-  const taxonomySegments =
-    input.definition.strategy === 'flat'
-      ? [categoryNode.localized[input.locale].slug]
-      : getLocalizedTaxonomySegments(taxonomyPath, input.locale);
+  const taxonomySegments = getLocalizedTaxonomySegments(
+    taxonomyPath,
+    input.locale,
+  );
 
   return freezeValidatedSegments(
     [BLOG_ROUTE_ROOT_SEGMENT, ...taxonomySegments],
@@ -96,8 +95,8 @@ function getBlogCategoryContext(
   return {
     locale: input.locale,
     routeKind: 'blog-category',
-    categoryId: input.definition.categoryId,
-    strategy: input.definition.strategy,
+    categoryId: input.categoryId,
+    strategy: 'hierarchical',
     ...(input.sourceId !== undefined ? { sourceId: input.sourceId } : {}),
   };
 }

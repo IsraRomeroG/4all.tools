@@ -19,13 +19,8 @@ import {
   composeToolAreaAdapterPage,
   getDeliveryRouteRegistry,
 } from '@/templates/composers';
-import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
-import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { getToolDefinition } from '@/features/tools/registry';
 import { getToolModule } from '@/features/tools/registry';
-import type { RouteDefinitionProvider } from '@/routing/definitions';
-import { createRouteRegistry } from '@/routing/registry';
-import { RouteValidationError } from '@/routing/validation';
 import type { StaticPathFactory } from '@/routing/static-paths';
 import { getToolAreaStaticPathEntries } from '@/routing/static-paths';
 import type { Locale } from '@/i18n/types';
@@ -115,7 +110,7 @@ describe('json-validator end-to-end route integration', () => {
           kind: 'tool',
           toolId: 'json-validator',
         },
-        sourceId: 'tool-registry',
+        sourceId: `tool-content:${locale}/developer/json-validator`,
       });
       expect(record?.segments).not.toContain('data-formats');
       expect(record?.segments).not.toContain('json');
@@ -258,58 +253,7 @@ describe('json-validator end-to-end route integration', () => {
     expect(await pathExists('src/pages/en')).toBe(false);
   });
 
-  it('rejects a duplicate localized tool path through route collision validation', async () => {
-    await expect(
-      createRouteRegistry({
-        providers: [duplicateSpanishToolPathProvider],
-        toolTaxonomy,
-        blogTaxonomy,
-        publicationAvailability: {
-          isPublishable: () => true,
-        },
-      }),
-    ).rejects.toMatchObject({
-      name: 'RouteValidationError',
-      code: 'DUPLICATE_PUBLIC_PATH',
-    } satisfies Partial<RouteValidationError>);
-  });
 });
-
-const duplicateSpanishToolPathProvider: RouteDefinitionProvider = {
-  sourceId: 'fixture:duplicate-spanish-tool-path',
-  getRouteDefinitions: () => [
-    {
-      kind: 'tool',
-      definition: {
-        toolId: 'json-validator',
-        rootCategoryId: 'developer',
-        primaryCategoryId: 'json',
-        strategy: 'flat',
-        localized: {
-          es: {
-            slug: 'validador-json',
-          },
-        },
-        status: 'published',
-      },
-    },
-    {
-      kind: 'tool',
-      definition: {
-        toolId: 'json-checker',
-        rootCategoryId: 'developer',
-        primaryCategoryId: 'json',
-        strategy: 'flat',
-        localized: {
-          es: {
-            slug: 'validador-json',
-          },
-        },
-        status: 'published',
-      },
-    },
-  ],
-};
 
 async function pathExists(path: string): Promise<boolean> {
   try {

@@ -23,14 +23,6 @@ export const ROUTE_STRATEGIES = ['flat', 'hierarchical'] as const;
 
 export type RouteStrategy = (typeof ROUTE_STRATEGIES)[number];
 
-export const TOOL_CATEGORY_ROUTE_STRATEGIES = [
-  'root',
-  'hierarchical',
-] as const;
-
-export type ToolCategoryRouteStrategy =
-  (typeof TOOL_CATEGORY_ROUTE_STRATEGIES)[number];
-
 export type RouteTarget =
   | {
       readonly kind: 'tool';

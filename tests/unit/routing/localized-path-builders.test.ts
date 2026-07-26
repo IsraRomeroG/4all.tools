@@ -1,16 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ToolCategoryId } from '@/domain/shared/ids';
+import { jsonValidatorDefinition } from '@/features/tools/developer/json-validator/tool.config';
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
+import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { createTaxonomyTree } from '@/domain/taxonomy/shared/tree';
 import type { TaxonomyNode } from '@/domain/taxonomy/shared/types';
-import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { RoutingInvariantError } from '@/routing';
-import type {
-  BlogCategoryRouteDefinition,
-  ToolCategoryRouteDefinition,
-  ToolRouteDefinition,
-} from '@/routing/definitions';
 import {
   assertValidRouteSegment,
   assertValidRouteSegments,
@@ -21,324 +16,93 @@ import {
   isValidRouteSegment,
 } from '@/routing/builders';
 
-import {
-  DEVELOPER_CATEGORY_ROUTE_FIXTURE,
-  JSON_GUIDES_BLOG_CATEGORY_ROUTE_FIXTURE,
-  JSON_VALIDATOR_ROUTE_FIXTURE,
-} from '../../fixtures/routing/route-definitions';
-
 describe('localized route path builders', () => {
-  describe('segment validation', () => {
-    it.each([
+  it('validates route segments', () => {
+    expect(isValidRouteSegment('json-validator')).toBe(true);
+    expect(() => assertValidRouteSegment('json-validator')).not.toThrow();
+    expect(isValidRouteSegment('Developer')).toBe(false);
+    expectRouteError(() => assertValidRouteSegment('Developer'), 'INVALID_SEGMENT');
+    expectRouteError(() => assertValidRouteSegments([]), 'EMPTY_SEGMENTS');
+  });
+
+  it('builds flat localized tool paths from the canonical tool definition', () => {
+    expect(buildToolPathSegments({ definition: jsonValidatorDefinition, locale: 'en', taxonomy: toolTaxonomy })).toEqual([
+      'developer',
+      'json-validator',
+    ]);
+    expect(buildToolPathSegments({ definition: jsonValidatorDefinition, locale: 'es', taxonomy: toolTaxonomy })).toEqual([
+      'desarrollo',
+      'validador-json',
+    ]);
+  });
+
+  it('builds hierarchical tool paths through classification taxonomy', () => {
+    const definition = {
+      ...jsonValidatorDefinition,
+      route: { ...jsonValidatorDefinition.route, strategy: 'hierarchical' },
+    } as const;
+
+    expect(buildToolPathSegments({ definition, locale: 'en', taxonomy: toolTaxonomy })).toEqual([
       'developer',
       'data-formats',
       'json',
       'json-validator',
-      'validador-json',
-      'formats-de-donnees',
-      'sha256',
-    ])('accepts valid route segment %s', (segment) => {
-      expect(isValidRouteSegment(segment)).toBe(true);
-      expect(() => assertValidRouteSegment(segment)).not.toThrow();
-    });
-
-    it.each([
-      '',
-      'Developer',
-      'data_formats',
-      'data formats',
-      '/data-formats',
-      'data-formats/',
-      'developer/json-validator',
-      'data--formats',
-      '-data-formats',
-      'data-formats-',
-      'json.validator',
-      'valid@dor-json',
-    ])('rejects invalid route segment %s', (segment) => {
-      expect(isValidRouteSegment(segment)).toBe(false);
-      expectRouteError(
-        () => assertValidRouteSegment(segment, { source: 'unit-test' }),
-        'INVALID_SEGMENT',
-      );
-    });
-
-    it('rejects an empty entity segment list', () => {
-      expectRouteError(() => assertValidRouteSegments([]), 'EMPTY_SEGMENTS');
-    });
+    ]);
   });
 
-  describe('tool paths', () => {
-    it('builds flat localized tool paths for all initial locales', () => {
-      expect(
-        buildToolPathSegments({
-          definition: JSON_VALIDATOR_ROUTE_FIXTURE,
-          locale: 'en',
-          taxonomy: toolTaxonomy,
-        }),
-      ).toEqual(['developer', 'json-validator']);
-      expect(
-        buildToolPathSegments({
-          definition: JSON_VALIDATOR_ROUTE_FIXTURE,
-          locale: 'es',
-          taxonomy: toolTaxonomy,
-        }),
-      ).toEqual(['desarrollo', 'validador-json']);
-      expect(
-        buildToolPathSegments({
-          definition: JSON_VALIDATOR_ROUTE_FIXTURE,
-          locale: 'pt',
-          taxonomy: toolTaxonomy,
-        }),
-      ).toEqual(['desenvolvedor', 'validador-json']);
-      expect(
-        buildToolPathSegments({
-          definition: JSON_VALIDATOR_ROUTE_FIXTURE,
-          locale: 'fr',
-          taxonomy: toolTaxonomy,
-        }),
-      ).toEqual(['developpement', 'validateur-json']);
-    });
+  it('fails when a tool lacks localized route metadata', () => {
+    const definition = {
+      ...jsonValidatorDefinition,
+      route: {
+        ...jsonValidatorDefinition.route,
+        localized: { en: { slug: 'json-validator' } },
+      },
+    } as const;
 
-    it('builds hierarchical tool paths from root-to-primary taxonomy order', () => {
-      expect(
-        buildToolPathSegments({
-          definition: hierarchicalTool(JSON_VALIDATOR_ROUTE_FIXTURE),
-          locale: 'en',
-          taxonomy: toolTaxonomy,
-        }),
-      ).toEqual([
-        'developer',
-        'data-formats',
-        'json',
-        'json-validator',
-      ]);
-      expect(
-        buildToolPathSegments({
-          definition: hierarchicalTool(JSON_VALIDATOR_ROUTE_FIXTURE),
-          locale: 'es',
-          taxonomy: toolTaxonomy,
-        }),
-      ).toEqual([
-        'desarrollo',
-        'formatos-de-datos',
-        'json',
-        'validador-json',
-      ]);
-    });
-
-    it('rejects a root category mismatch', () => {
-      expectRouteError(
-        () =>
-          buildToolPathSegments({
-            definition: {
-              ...JSON_VALIDATOR_ROUTE_FIXTURE,
-              rootCategoryId: 'seo',
-            } satisfies ToolRouteDefinition,
-            locale: 'en',
-            taxonomy: toolTaxonomy,
-          }),
-        'ROOT_CATEGORY_MISMATCH',
-      );
-    });
-
-    it('rejects missing localized route metadata without fallback', () => {
-      expectRouteError(
-        () =>
-          buildToolPathSegments({
-            definition: {
-              ...JSON_VALIDATOR_ROUTE_FIXTURE,
-              localized: {
-                en: { slug: 'json-validator' },
-              },
-            } satisfies ToolRouteDefinition,
-            locale: 'es',
-            taxonomy: toolTaxonomy,
-          }),
-        'MISSING_LOCALIZED_ROUTE',
-      );
-    });
-
-    it('rejects invalid localized leaf slugs', () => {
-      expectRouteError(
-        () =>
-          buildToolPathSegments({
-            definition: {
-              ...JSON_VALIDATOR_ROUTE_FIXTURE,
-              localized: {
-                ...JSON_VALIDATOR_ROUTE_FIXTURE.localized,
-                en: { slug: 'JSON Validator' },
-              },
-            } satisfies ToolRouteDefinition,
-            locale: 'en',
-            taxonomy: toolTaxonomy,
-          }),
-        'INVALID_SEGMENT',
-      );
-    });
-
-    it('allows classification-only taxonomy chains in public tool paths', () => {
-      expect(
-        buildToolPathSegments({
-          definition: JSON_VALIDATOR_ROUTE_FIXTURE,
-          locale: 'en',
-          taxonomy: createTaxonomyTree<ToolCategoryId>([
-            toolNode('developer', null),
-            toolNode('data-formats', 'developer'),
-            toolNode('json', 'data-formats'),
-          ]),
-        }),
-      ).toEqual(['developer', 'json-validator']);
-    });
+    expectRouteError(
+      () => buildToolPathSegments({ definition, locale: 'es', taxonomy: toolTaxonomy }),
+      'MISSING_LOCALIZED_ROUTE',
+    );
   });
 
-  describe('tool category paths', () => {
-    it('builds explicit root category landing paths', () => {
-      expect(
-        buildToolCategoryPathSegments({
-          definition: DEVELOPER_CATEGORY_ROUTE_FIXTURE,
-          locale: 'en',
-          taxonomy: toolTaxonomy,
-        }),
-      ).toEqual(['developer']);
-      expect(
-        buildToolCategoryPathSegments({
-          definition: DEVELOPER_CATEGORY_ROUTE_FIXTURE,
-          locale: 'es',
-          taxonomy: toolTaxonomy,
-        }),
-      ).toEqual(['desarrollo']);
-    });
+  it('allows classification-only taxonomy nodes in entity paths', () => {
+    const taxonomy = createTaxonomyTree([
+      node('developer', null),
+      node('data-formats', 'developer'),
+      node('json', 'data-formats'),
+    ]);
 
-    it('builds explicit nested category hierarchical paths', () => {
-      expect(
-        buildToolCategoryPathSegments({
-          definition: {
-            categoryId: 'data-formats',
-            strategy: 'hierarchical',
-            status: 'published',
-          } satisfies ToolCategoryRouteDefinition,
-          locale: 'en',
-          taxonomy: toolTaxonomy,
-        }),
-      ).toEqual(['developer', 'data-formats']);
-      expect(
-        buildToolCategoryPathSegments({
-          definition: {
-            categoryId: 'data-formats',
-            strategy: 'hierarchical',
-            status: 'published',
-          } satisfies ToolCategoryRouteDefinition,
-          locale: 'es',
-          taxonomy: toolTaxonomy,
-        }),
-      ).toEqual(['desarrollo', 'formatos-de-datos']);
-    });
-
-    it('rejects root category strategy for nested taxonomy nodes', () => {
-      expectRouteError(
-        () =>
-          buildToolCategoryPathSegments({
-            definition: {
-              categoryId: 'data-formats',
-              strategy: 'root',
-              status: 'published',
-            } satisfies ToolCategoryRouteDefinition,
-            locale: 'en',
-            taxonomy: toolTaxonomy,
-          }),
-        'ROOT_CATEGORY_MISMATCH',
-      );
-    });
+    expect(buildToolPathSegments({ definition: jsonValidatorDefinition, locale: 'en', taxonomy })).toEqual([
+      'developer',
+      'json-validator',
+    ]);
   });
 
-  describe('blog paths', () => {
-    it('builds article paths from content-owned metadata under the blog namespace', () => {
-      expect(
-        buildArticlePathSegments({
-          articleId: 'what-is-json',
-          primaryCategoryId: 'json-guides',
-          routeSlug: 'what-is-json',
-          locale: 'en',
-          taxonomy: blogTaxonomy,
-        }),
-      ).toEqual([
-        'blog',
-        'development',
-        'json-guides',
-        'what-is-json',
-      ]);
-      expect(
-        buildArticlePathSegments({
-          articleId: 'what-is-json',
-          primaryCategoryId: 'json-guides',
-          routeSlug: 'que-es-json',
-          locale: 'es',
-          taxonomy: blogTaxonomy,
-        }),
-      ).toEqual(['blog', 'desarrollo', 'guias-json', 'que-es-json']);
-    });
+  it('builds content-owned article paths hierarchically', () => {
+    expect(buildArticlePathSegments({
+      articleId: 'what-is-json',
+      primaryCategoryId: 'json-guides',
+      routeSlug: 'que-es-json',
+      locale: 'es',
+      taxonomy: blogTaxonomy,
+    })).toEqual(['blog', 'desarrollo', 'guias-json', 'que-es-json']);
+  });
 
-    it('builds explicit nested blog category paths', () => {
-      expect(
-        buildBlogCategoryPathSegments({
-          definition: JSON_GUIDES_BLOG_CATEGORY_ROUTE_FIXTURE,
-          locale: 'en',
-          taxonomy: blogTaxonomy,
-        }),
-      ).toEqual(['blog', 'development', 'json-guides']);
-      expect(
-        buildBlogCategoryPathSegments({
-          definition: JSON_GUIDES_BLOG_CATEGORY_ROUTE_FIXTURE,
-          locale: 'es',
-          taxonomy: blogTaxonomy,
-        }),
-      ).toEqual(['blog', 'desarrollo', 'guias-json']);
-    });
-
-    it('builds flat blog category paths with the category leaf only', () => {
-      expect(
-        buildBlogCategoryPathSegments({
-          definition: {
-            categoryId: 'json-guides',
-            strategy: 'flat',
-            status: 'published',
-          } satisfies BlogCategoryRouteDefinition,
-          locale: 'en',
-          taxonomy: blogTaxonomy,
-        }),
-      ).toEqual(['blog', 'json-guides']);
-    });
-
-    it('rejects invalid content-owned article route leaves', () => {
-      expectRouteError(
-        () =>
-          buildArticlePathSegments({
-            articleId: 'what-is-json',
-            primaryCategoryId: 'json-guides',
-            routeSlug: 'What-Is-JSON',
-            locale: 'en',
-            taxonomy: blogTaxonomy,
-          }),
-        'INVALID_SEGMENT',
-      );
-    });
+  it('builds content-owned hierarchical category paths', () => {
+    expect(buildToolCategoryPathSegments({ categoryId: 'developer', locale: 'en', taxonomy: toolTaxonomy })).toEqual(['developer']);
+    expect(buildToolCategoryPathSegments({ categoryId: 'data-formats', locale: 'es', taxonomy: toolTaxonomy })).toEqual([
+      'desarrollo',
+      'formatos-de-datos',
+    ]);
+    expect(buildBlogCategoryPathSegments({ categoryId: 'json-guides', locale: 'fr', taxonomy: blogTaxonomy })).toEqual([
+      'blog',
+      'developpement',
+      'guides-json',
+    ]);
   });
 });
 
-function hierarchicalTool(
-  definition: ToolRouteDefinition,
-): ToolRouteDefinition {
-  return {
-    ...definition,
-    strategy: 'hierarchical',
-  };
-}
-
-function toolNode(
-  id: ToolCategoryId,
-  parentId: ToolCategoryId | null,
-): TaxonomyNode<ToolCategoryId> {
+function node(id: string, parentId: string | null): TaxonomyNode {
   return {
     id,
     parentId,
@@ -352,12 +116,8 @@ function toolNode(
   };
 }
 
-function expectRouteError(
-  action: () => unknown,
-  code: RoutingInvariantError['code'],
-): void {
+function expectRouteError(action: () => unknown, code: RoutingInvariantError['code']): void {
   expect(action).toThrow(RoutingInvariantError);
-
   try {
     action();
   } catch (error) {

@@ -1,10 +1,11 @@
 import type { GetStaticPaths } from 'astro';
 
 import type { Locale } from '@/i18n/types';
-import type { MaybePromise } from '@/routing/definitions';
 import { RoutingInvariantError } from '@/routing/errors';
 import type { RouteRegistry } from '@/routing/registry';
 import { getRouteTargetKey, type RouteRecord, type RouteTarget } from '@/routing/types';
+
+type MaybePromise<T> = T | Promise<T>;
 
 export interface StaticPathFactoryInput {
   readonly locale: Locale;

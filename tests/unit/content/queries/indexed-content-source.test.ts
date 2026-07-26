@@ -10,7 +10,6 @@ vi.mock('@/content/queries/astro-content', () => ({
 
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
-import { createIndexedPublicationAvailability } from '@/content/queries/indexed-publication-availability';
 import {
   createPublishedContentIndexes,
   getContentSourceSnapshot,
@@ -20,8 +19,7 @@ import {
 } from '@/content/queries/indexed-content-source';
 import { AmbiguousContentError } from '@/content/queries/errors';
 import { createRouteRegistry } from '@/routing/registry';
-import { createToolRouteProvider } from '@/routing/providers/tool-route-provider';
-import { createToolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
+import { toolRegistry } from '@/features/tools/registry';
 
 afterEach(() => {
   resetPublishedContentIndexesForTesting();
@@ -260,17 +258,10 @@ describe('published content indexes', () => {
     });
     const indexes = await createPublishedContentIndexes(source);
     const registry = await createRouteRegistry({
-      providers: [
-        createToolRouteProvider((locale) =>
-          Promise.resolve(indexes.tools.list(locale)),
-        ),
-        createToolCategoryRouteProvider((locale) =>
-          Promise.resolve(indexes.toolCategories.list(locale)),
-        ),
-      ],
+      contentIndexes: indexes,
+      toolRegistry,
       toolTaxonomy,
       blogTaxonomy,
-      publicationAvailability: createIndexedPublicationAvailability(indexes),
     });
 
     expect(source.getCollection).toHaveBeenCalledTimes(4);

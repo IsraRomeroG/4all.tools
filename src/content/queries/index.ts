@@ -51,4 +51,3 @@ export {
   type ToolCategoryContentKey,
   type ToolContentKey,
 } from './indexed-content-source';
-export { createIndexedPublicationAvailability } from './indexed-publication-availability';

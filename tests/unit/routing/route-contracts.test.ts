@@ -11,7 +11,6 @@ import {
   ROUTE_AREAS,
   ROUTE_KINDS,
   ROUTE_STRATEGIES,
-  TOOL_CATEGORY_ROUTE_STRATEGIES,
   RoutingInvariantError,
   assertNever,
   getLocalizedPathKey,
@@ -20,11 +19,6 @@ import {
   type RouteRecord,
   type RouteTarget,
 } from '@/routing';
-import type {
-  RouteDefinitionProvider,
-} from '@/routing/definitions/providers';
-
-import { ROUTE_DEFINITION_FIXTURES } from '../../fixtures/routing/route-definitions';
 
 describe('routing route contracts', () => {
   it('declares route areas, kinds, and strategies in deterministic order', () => {
@@ -36,10 +30,6 @@ describe('routing route contracts', () => {
       'blog-category',
     ]);
     expect(ROUTE_STRATEGIES).toEqual(['flat', 'hierarchical']);
-    expect(TOOL_CATEGORY_ROUTE_STRATEGIES).toEqual([
-      'root',
-      'hierarchical',
-    ]);
   });
 
   it('represents route targets as explicit discriminated unions', () => {
@@ -180,31 +170,6 @@ describe('routing route contracts', () => {
         toolId: 'json-validator',
       }),
     ).toBe('tool json-validator');
-  });
-
-  it('keeps route definition fixtures explicit and test-owned', () => {
-    expect(ROUTE_DEFINITION_FIXTURES.map((item) => item.kind)).toEqual([
-      'tool',
-      'tool-category',
-      'article',
-      'blog-category',
-    ]);
-    expect(ROUTE_DEFINITION_FIXTURES[0]?.definition.status).toBe(
-      'published',
-    );
-  });
-
-  it('allows route definitions to come from injected providers', async () => {
-    const provider: RouteDefinitionProvider = {
-      sourceId: 'fixture:routing-contracts',
-      description: 'Route contract unit-test fixture provider',
-      getRouteDefinitions: () => ROUTE_DEFINITION_FIXTURES,
-    };
-
-    const definitions = await provider.getRouteDefinitions();
-
-    expect(provider.sourceId).toBe('fixture:routing-contracts');
-    expect(definitions).toHaveLength(4);
   });
 
   it('provides typed routing invariant errors with frozen context', () => {

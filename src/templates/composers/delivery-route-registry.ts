@@ -1,14 +1,10 @@
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import {
-  createIndexedPublicationAvailability,
   getPublishedContentIndexes,
   type PublishedContentIndexes,
 } from '@/content/queries';
-import { createToolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
-import { createToolRouteProvider } from '@/routing/providers/tool-route-provider';
-import { createArticleRouteProvider } from '@/routing/providers/article-route-provider';
-import { createBlogCategoryRouteProvider } from '@/routing/providers/blog-category-route-provider';
+import { toolRegistry } from '@/features/tools/registry';
 import {
   createRouteRegistry,
   type RouteRegistry,
@@ -60,23 +56,10 @@ async function createDeliveryRouteRegistry(
   const contentIndexes = await dependencies.getPublishedContentIndexes();
 
   return createRouteRegistry({
-    providers: [
-      createToolRouteProvider((locale) =>
-        Promise.resolve(contentIndexes.tools.list(locale)),
-      ),
-      createToolCategoryRouteProvider((locale) =>
-        Promise.resolve(contentIndexes.toolCategories.list(locale)),
-      ),
-      createArticleRouteProvider((locale) =>
-        Promise.resolve(contentIndexes.blog.list(locale)),
-      ),
-      createBlogCategoryRouteProvider((locale) =>
-        Promise.resolve(contentIndexes.blogCategories.list(locale)),
-      ),
-    ],
+    contentIndexes,
+    toolRegistry,
     toolTaxonomy,
     blogTaxonomy,
-    publicationAvailability: createIndexedPublicationAvailability(contentIndexes),
   });
 }
 

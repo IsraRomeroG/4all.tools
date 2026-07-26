@@ -1,333 +1,175 @@
-import type { BlogCategoryId, ToolCategoryId } from '@/domain/shared/ids';
+import type { PublishedContentIndexes } from '@/content/queries';
+import type {
+  BlogCategoryId,
+  ToolCategoryId,
+} from '@/domain/shared/ids';
 import type { TaxonomyTree } from '@/domain/taxonomy/shared/types';
-import { SUPPORTED_LOCALES, type Locale } from '@/i18n/types';
+import { toolRegistry as productionToolRegistry, type ToolRegistry } from '@/features/tools/registry';
+import { SUPPORTED_LOCALES } from '@/i18n/types';
 import {
   buildArticlePathSegments,
   buildBlogCategoryPathSegments,
   buildToolCategoryPathSegments,
   buildToolPathSegments,
 } from '@/routing/builders';
-import { getRequiredLocalizedLeaf } from '@/routing/builders/shared-path-builder';
-import type {
-  ArticleRouteDefinition,
-  BlogCategoryRouteDefinition,
-  RouteDefinition,
-  ToolCategoryRouteDefinition,
-  ToolRouteDefinition,
-} from '@/routing/definitions/types';
-import type { RouteDefinitionProvider } from '@/routing/definitions/providers';
-import { assertNever } from '@/routing/types';
-import type { RouteRecord, RouteTarget } from '@/routing/types';
+import { getRouteTargetKey, type RouteRecord } from '@/routing/types';
 
 import { createRouteRegistryFromRecords, type RouteRegistry } from './route-index';
 
-export interface RoutePublicationDecision {
-  readonly publishable: boolean;
-  readonly reason?: string;
-}
-
-export type RoutePublicationDecisionResult =
-  | boolean
-  | RoutePublicationDecision;
-
-export interface RoutePublicationAvailability {
-  isPublishable(
-    target: RouteTarget,
-    locale: Locale,
-  ): RoutePublicationDecisionResult | Promise<RoutePublicationDecisionResult>;
-}
-
 export interface CreateRouteRegistryInput {
-  readonly providers: readonly RouteDefinitionProvider[];
+  readonly contentIndexes: PublishedContentIndexes;
+  readonly toolRegistry?: ToolRegistry;
   readonly toolTaxonomy: TaxonomyTree<ToolCategoryId>;
   readonly blogTaxonomy: TaxonomyTree<BlogCategoryId>;
-  readonly publicationAvailability: RoutePublicationAvailability;
-}
-
-interface CollectedRouteDefinition {
-  readonly sourceId: string;
-  readonly routeDefinition: RouteDefinition;
 }
 
 export async function createRouteRegistry(
   input: CreateRouteRegistryInput,
 ): Promise<RouteRegistry> {
-  const definitions = await collectRouteDefinitions(input.providers);
+  const registry = input.toolRegistry ?? productionToolRegistry;
+  const records = [
+    ...buildToolRecords(input.contentIndexes, registry, input.toolTaxonomy),
+    ...buildToolCategoryRecords(input.contentIndexes, input.toolTaxonomy),
+    ...buildArticleRecords(input.contentIndexes, input.blogTaxonomy),
+    ...buildBlogCategoryRecords(input.contentIndexes, input.blogTaxonomy),
+  ];
+
+  return createRouteRegistryFromRecords(sortRouteRecords(records));
+}
+
+function buildToolRecords(
+  indexes: PublishedContentIndexes,
+  registry: ToolRegistry,
+  taxonomy: TaxonomyTree<ToolCategoryId>,
+): readonly RouteRecord[] {
   const records: RouteRecord[] = [];
 
-  for (const collected of definitions) {
-    if (!isPublishedDefinition(collected.routeDefinition)) {
+  for (const module of registry.getAll()) {
+    const definition = module.definition;
+
+    if (definition.status !== 'published') {
       continue;
     }
 
     for (const locale of SUPPORTED_LOCALES) {
-      if (!hasLocalizedRouteMetadata(collected.routeDefinition, locale)) {
+      const content = indexes.tools.find({ toolId: definition.id, locale });
+
+      if (content === null) {
         continue;
       }
 
-      const target = getDefinitionTarget(collected.routeDefinition);
-      const decision = await resolvePublicationDecision(
-        input.publicationAvailability,
-        target,
+      const sourceId = sourceIdFor('tool-content', content.id);
+      records.push({
+        area: 'tools',
         locale,
-      );
-
-      if (!decision.publishable) {
-        continue;
-      }
-
-      const record = buildRouteRecord({
-        collected,
-        locale,
-        target,
-        toolTaxonomy: input.toolTaxonomy,
-        blogTaxonomy: input.blogTaxonomy,
+        segments: buildToolPathSegments({
+          definition,
+          locale,
+          taxonomy,
+          sourceId,
+        }),
+        target: { kind: 'tool', toolId: definition.id },
+        sourceId,
       });
-
-      records.push(record);
     }
   }
 
-  return createRouteRegistryFromRecords(records);
+  return records;
 }
 
-async function collectRouteDefinitions(
-  providers: readonly RouteDefinitionProvider[],
-): Promise<readonly CollectedRouteDefinition[]> {
-  const providerResults = await Promise.all(
-    providers.map(async (provider) => {
-      const routeDefinitions = await provider.getRouteDefinitions();
+function buildToolCategoryRecords(
+  indexes: PublishedContentIndexes,
+  taxonomy: TaxonomyTree<ToolCategoryId>,
+): readonly RouteRecord[] {
+  const records: RouteRecord[] = [];
 
-      return routeDefinitions.map((routeDefinition) => ({
-        sourceId:
-          'sourceId' in routeDefinition.definition
-            ? routeDefinition.definition.sourceId ?? provider.sourceId
-            : provider.sourceId,
-        routeDefinition,
-      }));
-    }),
+  for (const locale of SUPPORTED_LOCALES) {
+    for (const content of indexes.toolCategories.list(locale)) {
+      const sourceId = sourceIdFor('tool-category-content', content.id);
+      records.push({
+        area: 'tools',
+        locale,
+        segments: buildToolCategoryPathSegments({
+          categoryId: content.data.categoryId,
+          locale,
+          taxonomy,
+          sourceId,
+        }),
+        target: { kind: 'tool-category', categoryId: content.data.categoryId },
+        sourceId,
+      });
+    }
+  }
+
+  return records;
+}
+
+function buildArticleRecords(
+  indexes: PublishedContentIndexes,
+  taxonomy: TaxonomyTree<BlogCategoryId>,
+): readonly RouteRecord[] {
+  const records: RouteRecord[] = [];
+
+  for (const locale of SUPPORTED_LOCALES) {
+    for (const content of indexes.blog.list(locale)) {
+      const sourceId = sourceIdFor('article-content', content.id);
+      records.push({
+        area: 'blog',
+        locale,
+        segments: buildArticlePathSegments({
+          articleId: content.data.articleId,
+          primaryCategoryId: content.data.primaryCategoryId,
+          routeSlug: content.data.routeSlug,
+          locale,
+          taxonomy,
+          sourceId,
+        }),
+        target: { kind: 'article', articleId: content.data.articleId },
+        sourceId,
+      });
+    }
+  }
+
+  return records;
+}
+
+function buildBlogCategoryRecords(
+  indexes: PublishedContentIndexes,
+  taxonomy: TaxonomyTree<BlogCategoryId>,
+): readonly RouteRecord[] {
+  const records: RouteRecord[] = [];
+
+  for (const locale of SUPPORTED_LOCALES) {
+    for (const content of indexes.blogCategories.list(locale)) {
+      const sourceId = sourceIdFor('blog-category-content', content.id);
+      records.push({
+        area: 'blog',
+        locale,
+        segments: buildBlogCategoryPathSegments({
+          categoryId: content.data.categoryId,
+          locale,
+          taxonomy,
+          sourceId,
+        }),
+        target: { kind: 'blog-category', categoryId: content.data.categoryId },
+        sourceId,
+      });
+    }
+  }
+
+  return records;
+}
+
+function sortRouteRecords(records: readonly RouteRecord[]): readonly RouteRecord[] {
+  return Object.freeze(
+    [...records].sort((first, second) =>
+      `${first.area}:${first.locale}:${first.segments.join('/')}:${getRouteTargetKey(first.target)}`.localeCompare(
+        `${second.area}:${second.locale}:${second.segments.join('/')}:${getRouteTargetKey(second.target)}`,
+      ),
+    ),
   );
-
-  return providerResults.flat();
 }
 
-function isPublishedDefinition(routeDefinition: RouteDefinition): boolean {
-  return routeDefinition.definition.status === 'published';
-}
-
-function hasLocalizedRouteMetadata(
-  routeDefinition: RouteDefinition,
-  locale: Locale,
-): boolean {
-  switch (routeDefinition.kind) {
-    case 'tool':
-    case 'article':
-      return (
-        routeDefinition.definition.locale === undefined
-          ? routeDefinition.definition.localized[locale] !== undefined
-          : routeDefinition.definition.locale === locale
-      );
-
-    case 'tool-category':
-    case 'blog-category':
-      return (
-        routeDefinition.definition.locale === undefined ||
-        routeDefinition.definition.locale === locale
-      );
-
-    default:
-      return assertNever(routeDefinition);
-  }
-}
-
-async function resolvePublicationDecision(
-  availability: RoutePublicationAvailability,
-  target: RouteTarget,
-  locale: Locale,
-): Promise<RoutePublicationDecision> {
-  const decision = await availability.isPublishable(target, locale);
-
-  if (typeof decision === 'boolean') {
-    return { publishable: decision };
-  }
-
-  return decision;
-}
-
-function buildRouteRecord(input: {
-  readonly collected: CollectedRouteDefinition;
-  readonly locale: Locale;
-  readonly target: RouteTarget;
-  readonly toolTaxonomy: TaxonomyTree<ToolCategoryId>;
-  readonly blogTaxonomy: TaxonomyTree<BlogCategoryId>;
-}): RouteRecord {
-  const { routeDefinition } = input.collected;
-
-  switch (routeDefinition.kind) {
-    case 'tool':
-      return createToolRecord({
-        definition: routeDefinition.definition,
-        locale: input.locale,
-        target: input.target,
-        sourceId: input.collected.sourceId,
-        taxonomy: input.toolTaxonomy,
-      });
-
-    case 'tool-category':
-      return createToolCategoryRecord({
-        definition: routeDefinition.definition,
-        locale: input.locale,
-        target: input.target,
-        sourceId: input.collected.sourceId,
-        taxonomy: input.toolTaxonomy,
-      });
-
-    case 'article':
-      return createArticleRecord({
-        definition: routeDefinition.definition,
-        locale: input.locale,
-        target: input.target,
-        sourceId: input.collected.sourceId,
-        taxonomy: input.blogTaxonomy,
-      });
-
-    case 'blog-category':
-      return createBlogCategoryRecord({
-        definition: routeDefinition.definition,
-        locale: input.locale,
-        target: input.target,
-        sourceId: input.collected.sourceId,
-        taxonomy: input.blogTaxonomy,
-      });
-
-    default:
-      return assertNever(routeDefinition);
-  }
-}
-
-function getDefinitionTarget(routeDefinition: RouteDefinition): RouteTarget {
-  switch (routeDefinition.kind) {
-    case 'tool':
-      return {
-        kind: 'tool',
-        toolId: routeDefinition.definition.toolId,
-      };
-
-    case 'tool-category':
-      return {
-        kind: 'tool-category',
-        categoryId: routeDefinition.definition.categoryId,
-      };
-
-    case 'article':
-      return {
-        kind: 'article',
-        articleId: routeDefinition.definition.articleId,
-      };
-
-    case 'blog-category':
-      return {
-        kind: 'blog-category',
-        categoryId: routeDefinition.definition.categoryId,
-      };
-
-    default:
-      return assertNever(routeDefinition);
-  }
-}
-
-function createToolRecord(input: {
-  readonly definition: ToolRouteDefinition;
-  readonly locale: Locale;
-  readonly target: RouteTarget;
-  readonly sourceId: string;
-  readonly taxonomy: TaxonomyTree<ToolCategoryId>;
-}): RouteRecord {
-  return {
-    area: 'tools',
-    locale: input.locale,
-    segments: buildToolPathSegments({
-      definition: input.definition,
-      locale: input.locale,
-      taxonomy: input.taxonomy,
-      sourceId: input.sourceId,
-    }),
-    target: input.target,
-    sourceId: input.sourceId,
-  };
-}
-
-function createToolCategoryRecord(input: {
-  readonly definition: ToolCategoryRouteDefinition;
-  readonly locale: Locale;
-  readonly target: RouteTarget;
-  readonly sourceId: string;
-  readonly taxonomy: TaxonomyTree<ToolCategoryId>;
-}): RouteRecord {
-  return {
-    area: 'tools',
-    locale: input.locale,
-    segments: buildToolCategoryPathSegments({
-      definition: input.definition,
-      locale: input.locale,
-      taxonomy: input.taxonomy,
-      sourceId: input.sourceId,
-    }),
-    target: input.target,
-    sourceId: input.sourceId,
-  };
-}
-
-function createArticleRecord(input: {
-  readonly definition: ArticleRouteDefinition;
-  readonly locale: Locale;
-  readonly target: RouteTarget;
-  readonly sourceId: string;
-  readonly taxonomy: TaxonomyTree<BlogCategoryId>;
-}): RouteRecord {
-  return {
-    area: 'blog',
-    locale: input.locale,
-    segments: buildArticlePathSegments({
-      articleId: input.definition.articleId,
-      primaryCategoryId: input.definition.primaryCategoryId,
-      routeSlug: getRequiredLocalizedLeaf(
-        input.definition.localized,
-        input.locale,
-        {
-          locale: input.locale,
-          routeKind: 'article',
-          articleId: input.definition.articleId,
-          primaryCategoryId: input.definition.primaryCategoryId,
-          sourceId: input.sourceId,
-        },
-      ).slug,
-      locale: input.locale,
-      taxonomy: input.taxonomy,
-      sourceId: input.sourceId,
-    }),
-    target: input.target,
-    sourceId: input.sourceId,
-  };
-}
-
-function createBlogCategoryRecord(input: {
-  readonly definition: BlogCategoryRouteDefinition;
-  readonly locale: Locale;
-  readonly target: RouteTarget;
-  readonly sourceId: string;
-  readonly taxonomy: TaxonomyTree<BlogCategoryId>;
-}): RouteRecord {
-  return {
-    area: 'blog',
-    locale: input.locale,
-    segments: buildBlogCategoryPathSegments({
-      definition: input.definition,
-      locale: input.locale,
-      taxonomy: input.taxonomy,
-      sourceId: input.sourceId,
-    }),
-    target: input.target,
-    sourceId: input.sourceId,
-  };
+function sourceIdFor(kind: string, entryId: string): string {
+  return `${kind}:${entryId}`;
 }

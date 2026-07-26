@@ -15,7 +15,8 @@ import {
 } from '@/routing';
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
-import { toolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
+import { getPublishedContentIndexes } from '@/content/queries';
+import { toolRegistry } from '@/features/tools/registry';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
 
 describe('static path factories', () => {
@@ -60,14 +61,12 @@ describe('static path factories', () => {
     });
   });
 
-  it('projects root category static paths from explicit routable category definitions only', async () => {
+  it('projects root category static paths from published category content only', async () => {
     const registry = await createRouteRegistry({
-      providers: [toolCategoryRouteProvider],
+      contentIndexes: await getPublishedContentIndexes(),
+      toolRegistry,
       toolTaxonomy,
       blogTaxonomy,
-      publicationAvailability: {
-        isPublishable: () => true,
-      },
     });
 
     expect(getRootCategoryStaticPathEntries(registry, 'en')).toEqual([

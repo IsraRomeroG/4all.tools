@@ -1,19 +1,19 @@
 import type { ToolCategoryId } from '@/domain/shared/ids';
+import type { ToolDefinition } from '@/domain/tools';
 import type { TaxonomyTree } from '@/domain/taxonomy/shared/types';
 import type { Locale } from '@/i18n/types';
 import { RoutingInvariantError } from '@/routing/errors';
-import type { ToolRouteDefinition } from '@/routing/definitions/types';
 
 import {
   freezeValidatedSegments,
   getLocalizedTaxonomySegments,
-  getRequiredLocalizedLeaf,
+    getRequiredLocalizedLeaf,
   getRequiredPathFromRoot,
   type BuildPathContext,
 } from './shared-path-builder';
 
 export interface BuildToolPathInput {
-  readonly definition: ToolRouteDefinition;
+  readonly definition: ToolDefinition;
   readonly locale: Locale;
   readonly taxonomy: TaxonomyTree<ToolCategoryId>;
   readonly sourceId?: string;
@@ -24,13 +24,13 @@ export function buildToolPathSegments(
 ): readonly string[] {
   const context = getToolContext(input);
   const leaf = getRequiredLocalizedLeaf(
-    input.definition.localized,
+    input.definition.route.localized,
     input.locale,
     context,
   );
   const taxonomyPath = getRequiredPathFromRoot(
     input.taxonomy,
-    input.definition.primaryCategoryId,
+    input.definition.taxonomy.primaryCategoryId,
     context,
   );
   const root = taxonomyPath[0];
@@ -38,7 +38,7 @@ export function buildToolPathSegments(
   if (!root || root.id !== input.definition.rootCategoryId) {
     throw new RoutingInvariantError(
       'ROOT_CATEGORY_MISMATCH',
-      `Tool ${input.definition.toolId} primary category ${input.definition.primaryCategoryId} does not descend from root category ${input.definition.rootCategoryId}.`,
+      `Tool ${input.definition.id} primary category ${input.definition.taxonomy.primaryCategoryId} does not descend from root category ${input.definition.rootCategoryId}.`,
       {
         ...context,
         actualRootCategoryId: root?.id,
@@ -47,7 +47,7 @@ export function buildToolPathSegments(
   }
 
   const taxonomySegments =
-    input.definition.strategy === 'flat'
+    input.definition.route.strategy === 'flat'
       ? [root.localized[input.locale].slug]
       : getLocalizedTaxonomySegments(taxonomyPath, input.locale);
 
@@ -58,10 +58,10 @@ function getToolContext(input: BuildToolPathInput): BuildPathContext {
   return {
     locale: input.locale,
     routeKind: 'tool',
-    toolId: input.definition.toolId,
+    toolId: input.definition.id,
     rootCategoryId: input.definition.rootCategoryId,
-    primaryCategoryId: input.definition.primaryCategoryId,
-    strategy: input.definition.strategy,
+    primaryCategoryId: input.definition.taxonomy.primaryCategoryId,
+    strategy: input.definition.route.strategy,
     ...(input.sourceId !== undefined ? { sourceId: input.sourceId } : {}),
   };
 }

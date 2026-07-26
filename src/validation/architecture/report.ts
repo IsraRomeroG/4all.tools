@@ -10,7 +10,6 @@ const EMPTY_COUNTS: ArchitectureValidationCounts = {
   contentEntries: 0,
   toolDefinitions: 0,
   toolModules: 0,
-  routeDefinitions: 0,
   routeRecords: 0,
 };
 

@@ -2,7 +2,6 @@ import type { ContentSourceSnapshot } from '@/content/queries/indexed-content-so
 import type { BlogCategoryId, ToolCategoryId } from '@/domain/shared/ids';
 import type { TaxonomyTree } from '@/domain/taxonomy/shared/types';
 import type { ToolRegistry } from '@/features/tools/registry';
-import type { RouteDefinition } from '@/routing/definitions/types';
 import type { RouteRegistry } from '@/routing/registry/route-index';
 
 export interface ArchitectureValidationContext {
@@ -10,7 +9,6 @@ export interface ArchitectureValidationContext {
   readonly toolRegistry: ToolRegistry;
   readonly toolTaxonomy: TaxonomyTree<ToolCategoryId>;
   readonly blogTaxonomy: TaxonomyTree<BlogCategoryId>;
-  readonly routeDefinitions: readonly RouteDefinition[];
   readonly routeRegistry: RouteRegistry;
 }
 
@@ -19,6 +17,5 @@ export function createArchitectureValidationContext(
 ): ArchitectureValidationContext {
   return Object.freeze({
     ...input,
-    routeDefinitions: Object.freeze([...input.routeDefinitions]),
   });
 }
