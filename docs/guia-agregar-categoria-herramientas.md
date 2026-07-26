@@ -59,24 +59,13 @@ src/content/tool-categories/{locale}/
 
 Una categoría solo puede publicarse en un idioma si tiene contenido válido y publicado para ese idioma.
 
-#### Definición explícita de ruta
+#### Publicación de la categoría
 
-Indica qué categorías tienen una página pública. Esto evita que cada nodo de la taxonomía se convierta automáticamente en una URL.
-
-Archivo principal:
-
-```text
-src/routing/providers/tool-category-route-provider.ts
-```
-
-La estrategia determina la forma de la ruta:
-
-- `root`: solo para una categoría raíz, por ejemplo `/security/`;
-- `hierarchical`: para una categoría dentro de la jerarquía, por ejemplo `/security/credentials/`.
+Una categoría obtiene una página pública cuando existe contenido localizado válido y publicado para ella. La taxonomía no publica URLs por sí sola: únicamente aporta la clasificación y la ruta jerárquica.
 
 #### Registro y generación estática
 
-El registro de entrega combina proveedores de rutas, taxonomía y disponibilidad de contenido. Después, los static paths de Astro proyectan las rutas a páginas reales.
+El registro de entrega combina los índices de contenido publicado, la taxonomía y el `ToolRegistry`. Después, los static paths de Astro proyectan los registros finales a páginas reales.
 
 Archivos relacionados:
 
@@ -111,7 +100,7 @@ Para una nueva categoría raíz y una subcategoría, los cambios mínimos son:
 |---|---|---|
 | Taxonomía | `src/domain/taxonomy/tools/registry.ts` | Agregar los nodos raíz y secundario con IDs, padres, slugs y etiquetas. |
 | Contenido | `src/content/tool-categories/{locale}/<id>.md` | Crear el contenido editorial por idioma. |
-| Routing | `src/routing/providers/tool-category-route-provider.ts` | Declarar explícitamente las rutas públicas. |
+| Routing | `src/routing/registry/create-route-registry.ts` | Derivar la ruta desde contenido publicado y taxonomía; normalmente no se modifica. |
 | Pruebas | Tests de taxonomía, contenido, routing, build y páginas | Verificar identidad, disponibilidad y HTML generado. |
 
 ### Archivos que normalmente no se modifican
@@ -312,53 +301,9 @@ El schema de `src/content/schemas/tools.ts` exige, entre otros campos:
 
 No agregues campos arbitrarios: el schema es estricto.
 
-### Paso 4: declarar las rutas públicas
+### Paso 4: publicar el contenido localizado
 
-Edita:
-
-```text
-src/routing/providers/tool-category-route-provider.ts
-```
-
-Amplía `TOOL_CATEGORY_ROUTE_DEFINITIONS`:
-
-```ts
-export const TOOL_CATEGORY_ROUTE_DEFINITIONS = Object.freeze([
-  Object.freeze({
-    categoryId: 'developer',
-    strategy: 'root',
-    status: 'published',
-  }),
-  Object.freeze({
-    categoryId: 'security',
-    strategy: 'root',
-    status: 'published',
-  }),
-  Object.freeze({
-    categoryId: 'credentials',
-    strategy: 'hierarchical',
-    status: 'published',
-  }),
-] as const satisfies readonly ToolCategoryRouteDefinition[]);
-```
-
-La diferencia entre ambas estrategias es importante:
-
-```text
-security     + root         → /security/
-credentials  + hierarchical → /security/credentials/
-```
-
-En español, usando los slugs del ejemplo:
-
-```text
-/es/seguridad/
-/es/seguridad/credenciales/
-```
-
-No uses `root` para `credentials`: el builder rechazará la definición porque `credentials` no es un nodo raíz.
-
-La ruta tampoco se generará solo porque exista la definición. El registro consulta la disponibilidad de contenido publicado para cada idioma.
+La ruta se deriva automáticamente del `categoryId`, los slugs de la taxonomía y el contenido publicado de cada idioma. No declares una ruta en otro catálogo: una traducción faltante debe dejar la ruta ausente, sin fallback.
 
 ### Paso 5: comprobar que no sea necesario tocar el registro de entrega
 
@@ -368,13 +313,12 @@ No debes añadir manualmente la categoría a:
 src/templates/composers/delivery-route-registry.ts
 ```
 
-El proveedor `toolCategoryRouteProvider` ya está incluido en el registro de entrega. Cuando el proveedor devuelve la nueva definición, el sistema la procesa automáticamente junto con la taxonomía y los índices de contenido.
+El registro de entrega ya consume los índices de contenido publicado, la taxonomía y el `ToolRegistry`. Cuando el contenido está publicado, el sistema deriva automáticamente el registro y lo procesa junto con los static paths.
 
 El flujo es:
 
 ```text
-TOOL_CATEGORY_ROUTE_DEFINITIONS
-  → toolCategoryRouteProvider
+published tool-category content + taxonomy
   → createRouteRegistry()
   → createRootCategoryStaticPaths() o getToolAreaStaticPaths()
   → CategoryTemplate.astro
@@ -446,21 +390,9 @@ Comprueba:
 - que no haya duplicados para el mismo `categoryId` y locale;
 - que una traducción faltante no provoque fallback al inglés.
 
-### Paso 9: agregar pruebas del proveedor de rutas
+### Paso 9: agregar pruebas de routing
 
-Actualiza:
-
-```text
-tests/unit/routing/tool-category-route-provider.test.ts
-```
-
-Verifica que:
-
-- las dos nuevas definiciones aparezcan;
-- `security` use `root`;
-- `credentials` use `hierarchical`;
-- los nodos de clasificación no publicados como páginas no aparezcan automáticamente;
-- las definiciones sean deterministas y estén congeladas.
+Actualiza las pruebas de contenido, builders y `RouteRegistry`. Verifica que el contenido publicado genere la ruta esperada, que una traducción faltante no haga fallback y que los nodos de clasificación sin contenido publicado no aparezcan como páginas.
 
 También conviene ampliar:
 
@@ -589,7 +521,7 @@ La categoría y la herramienta deben coincidir en identidad taxonómica. Los reg
 
 - [ ] Tests de taxonomía actualizados.
 - [ ] Tests de contenido actualizados.
-- [ ] Tests del proveedor de rutas actualizados.
+- [ ] Tests de builders y registro de rutas actualizados.
 - [ ] Tests de registro y colisiones actualizados.
 - [ ] Tests de output estático actualizados.
 - [ ] `npm run verify` ejecutado correctamente.
@@ -599,7 +531,6 @@ La categoría y la herramienta deben coincidir en identidad taxonómica. Los reg
 Para agregar una categoría y una subcategoría, el cambio normal se concentra en tres lugares productivos:
 
 1. `src/domain/taxonomy/tools/registry.ts` para declarar la jerarquía y sus slugs.
-2. `src/content/tool-categories/` para agregar el contenido localizado.
-3. `src/routing/providers/tool-category-route-provider.ts` para declarar qué nodos tendrán URLs públicas.
+2. `src/content/tool-categories/` para agregar el contenido localizado publicado.
 
 El resto del sistema —registro de entrega, static paths, páginas Astro, composers, templates, SEO y navegación— ya trabaja de forma genérica y debe reutilizarse.

@@ -4,7 +4,7 @@ Astro static site for localized web tools.
 
 ## Project Status
 
-P00-P13 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, validation/test guardrail slimming, and the single tool registry exist in source.
+P00-P15 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, validation/test guardrail slimming, the single tool registry, and content-owned route publication exist in source.
 
 ## Canonical JSON Validator Routes
 
@@ -25,13 +25,13 @@ English is intentionally unprefixed. `/en/developer/json-validator/` is forbidde
 - `src/domain/taxonomy/` owns immutable taxonomy trees and selectors.
 - `src/content.config.ts` defines Astro content collections and schemas.
 - `src/content/queries/` owns published-content lookup, exact-match semantics, ambiguity errors, and build-time indexes.
-- `src/routing/` owns route targets, localized path builders, route providers, route registry construction, static path projection, and collision validation. Localized article content owns each article's `routeSlug`, primary category, and publication state; the article provider adapts that content into the current generic route pipeline.
+- `src/routing/` owns route targets, localized path builders, direct route-record construction, the final route registry, static path projection, and collision validation. Published localized content and the `ToolRegistry` are the publication authorities; taxonomy supplies classification and path segments.
 - `src/templates/` owns page model composition and Astro templates. `src/views/` is prohibited.
 - `src/features/tools/` owns tool modules, typed tool registration, feature components, engines, and localized feature messages.
 
 ### Validation ownership
 
-`src/validation/architecture/` validates catalog and cross-entity integrity: content identities, taxonomy references, tool-module coverage, editorial relations, route-definition coverage, route-record shape/collisions, and the direct `src/views/` filesystem prohibition. It does not parse source imports or compose pages. The Astro build and generic build-output tests are authoritative for page renderability, document language, canonical URLs, and rendered SEO; browser tests remain authoritative for interactive behavior. Route-definition coverage remains a live guard until P15 removes the underlying generic RouteDefinition/provider model; article route definitions themselves are derived from published localized content.
+`src/validation/architecture/` validates catalog and cross-entity integrity: content identities, taxonomy references, tool-module coverage, editorial relations, final route-record shape/collisions, and the direct `src/views/` filesystem prohibition. It does not parse source imports or compose pages. The Astro build and generic build-output tests are authoritative for page renderability, document language, canonical URLs, and rendered SEO; browser tests remain authoritative for interactive behavior.
 
 The supported architecture-validation issue codes are:
 
@@ -50,7 +50,6 @@ UNKNOWN_RELATED_TOOL
 UNPUBLISHED_RELATED_TOOL
 UNKNOWN_RELATED_ARTICLE
 SELF_RELATED_ARTICLE
-PUBLISHED_ROUTE_DEFINITION_WITHOUT_PUBLIC_VARIANT
 FORBIDDEN_SOURCE_NAMESPACE
 INVALID_ROUTE_RECORD
 EMPTY_SEGMENTS
@@ -63,7 +62,7 @@ DUPLICATE_PUBLIC_PATH
 DUPLICATE_CANONICAL_TARGET
 ```
 
-Taxonomy nodes do not automatically receive public category URLs. Category pages require explicit route definitions plus published content availability.
+Taxonomy nodes do not automatically receive public category URLs. Category pages require published localized category content; taxonomy only supplies their classification and path.
 
 ## Adding a Tool
 
@@ -72,7 +71,7 @@ Adding a production tool requires all of the following:
 - one typed `ToolModule` registration in `src/features/tools/registry.ts` containing the definition, Astro component, and localized-message resolver;
 - localized tool messages for every supported locale;
 - tool content entries and any required category content entries;
-- explicit route definitions for every public URL;
+- published localized route metadata in the tool content and the canonical `ToolRegistry` module;
 - unit, integration, build, and browser coverage appropriate to the feature.
 
 Published content queries must not silently fall back to another locale. Missing localized content is either `null` or a `ContentNotFoundError` for required APIs; duplicate exact matches remain `AmbiguousContentError`.

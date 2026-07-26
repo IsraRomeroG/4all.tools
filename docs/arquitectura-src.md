@@ -204,16 +204,13 @@ Es la infraestructura responsable de determinar qué URLs existen y a qué entid
 ### Subcarpetas
 
 - `routing/builders/`: construye segmentos y URLs localizadas.
-- `routing/definitions/`: contratos y definiciones explícitas de rutas.
-- `routing/definitions/blog/`: definiciones explícitas de categorías públicas del blog; las rutas de artículos se derivan de contenido localizado publicado.
-- `routing/providers/`: adapta registros de herramientas y contenido a definiciones de ruta.
-- `routing/registry/`: crea el índice final de rutas y controla namespaces reservados.
+- `routing/registry/`: deriva registros finales desde contenido localizado publicado, `ToolRegistry` y taxonomía; también controla namespaces reservados.
 - `routing/static-paths/`: convierte registros en parámetros y props para `getStaticPaths()`.
 - `routing/validation/`: detecta colisiones, rutas reservadas y registros inválidos.
 
 El routing usa IDs estables para identificar destinos y slugs localizados para construir las URLs. Esto permite cambiar la presentación del slug sin cambiar la identidad de la entidad.
 
-En los artículos del blog, cada entrada localizada es la autoridad de `routeSlug`, `primaryCategoryId` y `status`. El proveedor de artículos adapta esas entradas al pipeline genérico actual; no existe un catálogo de rutas de artículos paralelo.
+En los artículos del blog, cada entrada localizada es la autoridad de `routeSlug`, `primaryCategoryId` y `status`. Las categorías publicadas también se derivan directamente del contenido localizado; no existen catálogos ni providers de rutas paralelos.
 
 ## `src/seo/`
 
@@ -236,10 +233,10 @@ La validación de arquitectura conserva únicamente invariantes duraderas del ca
 
 - identidades de contenido, referencias taxonómicas y relaciones editoriales;
 - cobertura de módulos de herramientas publicados;
-- registros de rutas válidos, colisiones y cobertura de definiciones publicadas;
+- registros finales de rutas válidos y colisiones;
 - prohibición directa del namespace `src/views/`.
 
-No mantiene un parser propio de imports ni simula la composición de todas las páginas. El build real de Astro y las pruebas genéricas sobre `dist/` comprueban la renderización, el idioma del documento, los canonicals y el SEO observable. La cobertura de inconsistencias posibles de `RouteDefinition` sigue siendo temporal y se retirará con la arquitectura correspondiente en P15.
+No mantiene un parser propio de imports ni simula la composición de todas las páginas. El build real de Astro y las pruebas genéricas sobre `dist/` comprueban la renderización, el idioma del documento, los canonicals y el SEO observable. La validación de routing inspecciona el `RouteRegistry` final, que ya contiene únicamente registros derivados de las autoridades canónicas.
 
 ## `src/server/`
 
@@ -288,7 +285,7 @@ La regla principal es que los templates no descubren rutas ni realizan consultas
 Para una página de herramienta, el proceso conceptual es:
 
 ```text
-Markdown + definición de herramienta + taxonomía
+Markdown + módulo de herramienta + taxonomía
                        ↓
              índices de contenido publicado
                        ↓
@@ -332,4 +329,4 @@ Contenido del artículo + taxonomía del blog
 - `seo/` compone metadatos; `SeoHead.astro` solo los presenta.
 - `services/` y `server/` están reservados y no contienen lógica productiva actualmente.
 
-Esta separación permite agregar una herramienta nueva incorporando su módulo tipado, mensajes, contenido, rutas explícitas, presentación y pruebas sin modificar el núcleo genérico de las páginas existentes.
+Esta separación permite agregar una herramienta nueva incorporando su módulo tipado, mensajes, contenido localizado con metadatos de ruta, presentación y pruebas sin modificar el núcleo genérico de las páginas existentes.

@@ -158,12 +158,7 @@
 | Archivo o grupo | Descripción | Estado |
 |---|---|---|
 | `src/routing/builders/` | Constructores de URLs localizadas para herramientas, categorías, artículos y blog. | Activo |
-| `src/routing/definitions/` | Contratos y definiciones explícitas de rutas; las rutas de artículos se derivan del contenido localizado. | Activo |
-| `src/routing/definitions/blog/` | Definiciones de categorías públicas del blog. | Activo |
-| `src/routing/providers/tool-route-provider.ts` | Proveedor de rutas de herramientas publicadas. | Activo |
-| `src/routing/providers/tool-category-route-provider.ts` | Proveedor explícito de categorías públicas de herramientas. | Activo |
-| `src/routing/providers/article-route-provider.ts` | Proveedor de rutas de artículos publicados. | Activo |
-| `src/routing/providers/blog-category-route-provider.ts` | Proveedor de rutas de categorías públicas del blog. | Activo |
+| `src/routing/registry/create-route-registry.ts` | Deriva registros finales desde contenido localizado publicado, `ToolRegistry` y taxonomías. | Activo |
 | `src/routing/registry/` | Registro, índice y namespaces reservados de rutas. | Activo |
 | `src/routing/static-paths/` | Proyección de registros a `getStaticPaths()` para herramientas, categorías y blog. | Activo |
 | `src/routing/validation/` | Validación de registros, colisiones y rutas reservadas. | Activo |
@@ -232,7 +227,7 @@
 ```text
 src/pages/*/[category]/[...path].astro
   → static-path factories + delivery route registry
-  → tool/category route providers
+  → content indexes + ToolRegistry + taxonomy
   → ToolTemplate.astro
   → features/tools/registry.ts (ToolModule + ToolRegistry)
   → json-validator/Tool.astro + mensajes localizados
@@ -245,7 +240,7 @@ src/pages/*/[category]/[...path].astro
 ```text
 src/pages/*/blog/[...path].astro
   → blog static-path factory + delivery route registry
-  → article content adapter / blog-category route provider
+  → published article/category content + taxonomy
   → blog route registry
   → blog page composers
   → BlogIndexTemplate, BlogCategoryTemplate o ArticleTemplate
@@ -271,7 +266,7 @@ El blog ya no está en estado “preparado”. La implementación pública actua
 
 ## Alcance actual
 
-El JSON Validator es la herramienta productiva implementada. La infraestructura de herramientas permite incorporar módulos adicionales mediante definición tipada, componente, mensajes, contenido y rutas explícitas.
+El JSON Validator es la herramienta productiva implementada. La infraestructura de herramientas permite incorporar módulos adicionales mediante módulo tipado, componente, mensajes y contenido localizado con metadatos de ruta.
 
 El blog está publicado con un artículo y dos niveles de categorías en cuatro idiomas. La categoría raíz de herramientas `developer` solo tiene contenido público en inglés; sus adaptadores localizados permanecen listos para publicar cuando se añada el contenido editorial correspondiente.
 
