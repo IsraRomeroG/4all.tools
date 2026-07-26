@@ -26,17 +26,18 @@ import { SUPPORTED_LOCALES } from '@/i18n/types';
 const PROJECT_ROOT = new URL('../../../../', import.meta.url);
 
 describe('canonical tool registry', () => {
-  it('registers each production tool as one definition/component/messages module', () => {
-    expect(TOOL_MODULES).toHaveLength(1);
-    expect(TOOL_MODULES[0]).toBe(jsonValidatorModule);
+  it('registers every production tool through the canonical module projections', () => {
     expect(toolRegistry.get('json-validator')).toBe(jsonValidatorModule);
-    expect(findToolDefinition('json-validator')).toBe(
-      jsonValidatorModule.definition,
+
+    for (const module of TOOL_MODULES) {
+      expect(toolRegistry.get(module.definition.id)).toBe(module);
+      expect(findToolDefinition(module.definition.id)).toBe(module.definition);
+      expect(getToolDefinition(module.definition.id)).toBe(module.definition);
+    }
+
+    expect(getAllToolDefinitions()).toEqual(
+      toolRegistry.getAll().map((module) => module.definition),
     );
-    expect(getToolDefinition('json-validator')).toBe(
-      jsonValidatorModule.definition,
-    );
-    expect(getAllToolDefinitions()).toEqual([jsonValidatorModule.definition]);
   });
 
   it('resolves the component and localized messages through the same module', () => {

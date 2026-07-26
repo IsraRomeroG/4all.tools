@@ -267,7 +267,7 @@ El blog ya no está en estado “preparado”. La implementación pública actua
 
 ## Alcance actual
 
-El JSON Validator es la herramienta productiva implementada. La infraestructura de herramientas permite incorporar módulos adicionales mediante módulo tipado, componente, mensajes y contenido localizado con metadatos de ruta.
+El JSON Validator es la herramienta productiva implementada. La infraestructura de herramientas permite incorporar módulos adicionales mediante módulo tipado, componente, mensajes, contenido localizado publicado y metadatos de ruta definidos en `ToolDefinition` dentro del `ToolRegistry` canónico. El contenido editorial determina la disponibilidad por idioma; no almacena la autoridad de los slugs de ruta de la herramienta.
 
 El blog está publicado con un artículo y dos niveles de categorías en cuatro idiomas. La categoría raíz de herramientas `developer` solo tiene contenido público en inglés; sus adaptadores localizados permanecen listos para publicar cuando se añada el contenido editorial correspondiente.
 

@@ -210,7 +210,7 @@ Es la infraestructura responsable de determinar qué URLs existen y a qué entid
 
 El routing usa IDs estables para identificar destinos y slugs localizados para construir las URLs. Esto permite cambiar la presentación del slug sin cambiar la identidad de la entidad.
 
-En los artículos del blog, cada entrada localizada es la autoridad de `routeSlug`, `primaryCategoryId` y `status`. Las categorías publicadas también se derivan directamente del contenido localizado; no existen catálogos ni providers de rutas paralelos.
+En los artículos del blog, cada entrada localizada es la autoridad de `routeSlug`, `primaryCategoryId` y `status`. Las categorías publicadas también se derivan directamente del contenido localizado; no existe un catálogo paralelo de rutas.
 
 La URL pública de un artículo usa la ruta jerárquica completa de su taxonomía (`blog` + categorías desde la raíz) y termina con el `routeSlug` localizado. Un nodo taxonómico sin contenido de categoría publicado sigue siendo clasificación y no crea por sí solo una landing.
 
@@ -305,16 +305,16 @@ Markdown + módulo de herramienta + taxonomía
              HTML estático + UI cliente
 ```
 
-Para un artículo del blog, el flujo cambia el proveedor y el template, pero conserva la misma estructura:
+Para una página del blog, el flujo usa las mismas autoridades canónicas y proyecta el destino al template correspondiente:
 
 ```text
-Contenido del artículo + taxonomía del blog
+Contenido publicado + taxonomía del blog
                        ↓
-          proveedor de artículo/categoría
+       construcción canónica de RouteRecords
                        ↓
-               registro de rutas
+                  RouteRegistry
                        ↓
-              composer del blog
+          static paths / composer del blog
                        ↓
    ArticleTemplate o BlogCategoryTemplate
                        ↓
@@ -332,4 +332,4 @@ Contenido del artículo + taxonomía del blog
 - `seo/` compone metadatos; `SeoHead.astro` solo los presenta.
 - `services/` y `server/` están reservados y no contienen lógica productiva actualmente.
 
-Esta separación permite agregar una herramienta nueva incorporando su módulo tipado, mensajes, contenido localizado con metadatos de ruta, presentación y pruebas sin modificar el núcleo genérico de las páginas existentes. Los composers importan directamente las autoridades estables y reciben sólo el `RouteRegistry` que varía durante la entrega.
+Esta separación permite agregar una herramienta nueva incorporando su módulo tipado, mensajes, contenido localizado publicado y pruebas sin modificar el núcleo genérico de las páginas existentes. El `ToolContent` determina la disponibilidad editorial localizada; la `ToolDefinition` dentro de `ToolModule`/`ToolRegistry` determina la estrategia de ruta, los slugs localizados y la identidad taxonómica. Los composers importan directamente las autoridades estables y reciben sólo el `RouteRegistry` que varía durante la entrega.

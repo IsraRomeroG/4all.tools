@@ -71,8 +71,14 @@ Adding a production tool requires all of the following:
 - one typed `ToolModule` registration in `src/features/tools/registry.ts` containing the definition, Astro component, and localized-message resolver;
 - localized tool messages for every supported locale;
 - tool content entries and any required category content entries;
-- published localized route metadata in the tool content and the canonical `ToolRegistry` module;
+- published localized tool content for editorial availability;
+- localized route metadata, route strategy and taxonomy identity in the canonical `ToolDefinition` inside `ToolRegistry`;
 - unit, integration, build, and browser coverage appropriate to the feature.
+
+`ToolContent` controls localized editorial publication. The `ToolDefinition` in
+the registered `ToolModule` controls route strategy, localized route leaf
+slugs, and taxonomy identity; route metadata is not stored in localized
+Markdown content.
 
 Published content queries must not silently fall back to another locale. Missing localized content is either `null` or a `ContentNotFoundError` for required APIs; duplicate exact matches remain `AmbiguousContentError`.
 
