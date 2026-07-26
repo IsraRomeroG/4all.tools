@@ -107,8 +107,8 @@ describe('route registry integration', () => {
     });
 
     expect(paths(registry)).toEqual([
-      'en:blog/what-is-json',
-      'es:blog/que-es-json',
+      'en:blog/development/json-guides/what-is-json',
+      'es:blog/desarrollo/guias-json/que-es-json',
     ]);
     expect(
       registry.getCanonical('pt', {

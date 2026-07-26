@@ -7,6 +7,7 @@ import {
   buildToolCategoryPathSegments,
   buildToolPathSegments,
 } from '@/routing/builders';
+import { getRequiredLocalizedLeaf } from '@/routing/builders/shared-path-builder';
 import type {
   ArticleRouteDefinition,
   BlogCategoryRouteDefinition,
@@ -98,7 +99,10 @@ async function collectRouteDefinitions(
       const routeDefinitions = await provider.getRouteDefinitions();
 
       return routeDefinitions.map((routeDefinition) => ({
-        sourceId: provider.sourceId,
+        sourceId:
+          routeDefinition.kind === 'article'
+            ? routeDefinition.definition.sourceId ?? provider.sourceId
+            : provider.sourceId,
         routeDefinition,
       }));
     }),
@@ -278,7 +282,19 @@ function createArticleRecord(input: {
     area: 'blog',
     locale: input.locale,
     segments: buildArticlePathSegments({
-      definition: input.definition,
+      articleId: input.definition.articleId,
+      primaryCategoryId: input.definition.primaryCategoryId,
+      routeSlug: getRequiredLocalizedLeaf(
+        input.definition.localized,
+        input.locale,
+        {
+          locale: input.locale,
+          routeKind: 'article',
+          articleId: input.definition.articleId,
+          primaryCategoryId: input.definition.primaryCategoryId,
+          sourceId: input.sourceId,
+        },
+      ).slug,
       locale: input.locale,
       taxonomy: input.taxonomy,
       sourceId: input.sourceId,

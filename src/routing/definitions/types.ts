@@ -33,6 +33,8 @@ export interface ArticleRouteDefinition {
   readonly strategy: RouteStrategy;
   readonly localized: PartialLocalized<LocalizedRouteLeaf>;
   readonly status: PublicationStatus;
+  /** Temporary content-derived adapter metadata until P15 removes providers. */
+  readonly sourceId?: string;
 }
 
 export interface BlogCategoryRouteDefinition {

@@ -7,7 +7,6 @@ import type { TaxonomyNode } from '@/domain/taxonomy/shared/types';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { RoutingInvariantError } from '@/routing';
 import type {
-  ArticleRouteDefinition,
   BlogCategoryRouteDefinition,
   ToolCategoryRouteDefinition,
   ToolRouteDefinition,
@@ -26,7 +25,6 @@ import {
   DEVELOPER_CATEGORY_ROUTE_FIXTURE,
   JSON_GUIDES_BLOG_CATEGORY_ROUTE_FIXTURE,
   JSON_VALIDATOR_ROUTE_FIXTURE,
-  WHAT_IS_JSON_ARTICLE_ROUTE_FIXTURE,
 } from '../../fixtures/routing/route-definitions';
 
 describe('localized route path builders', () => {
@@ -257,27 +255,12 @@ describe('localized route path builders', () => {
   });
 
   describe('blog paths', () => {
-    it('builds flat article paths under the blog namespace', () => {
+    it('builds article paths from content-owned metadata under the blog namespace', () => {
       expect(
         buildArticlePathSegments({
-          definition: WHAT_IS_JSON_ARTICLE_ROUTE_FIXTURE,
-          locale: 'en',
-          taxonomy: blogTaxonomy,
-        }),
-      ).toEqual(['blog', 'what-is-json']);
-      expect(
-        buildArticlePathSegments({
-          definition: WHAT_IS_JSON_ARTICLE_ROUTE_FIXTURE,
-          locale: 'es',
-          taxonomy: blogTaxonomy,
-        }),
-      ).toEqual(['blog', 'que-es-json']);
-    });
-
-    it('builds hierarchical article paths under the blog namespace', () => {
-      expect(
-        buildArticlePathSegments({
-          definition: hierarchicalArticle(WHAT_IS_JSON_ARTICLE_ROUTE_FIXTURE),
+          articleId: 'what-is-json',
+          primaryCategoryId: 'json-guides',
+          routeSlug: 'what-is-json',
           locale: 'en',
           taxonomy: blogTaxonomy,
         }),
@@ -289,7 +272,9 @@ describe('localized route path builders', () => {
       ]);
       expect(
         buildArticlePathSegments({
-          definition: hierarchicalArticle(WHAT_IS_JSON_ARTICLE_ROUTE_FIXTURE),
+          articleId: 'what-is-json',
+          primaryCategoryId: 'json-guides',
+          routeSlug: 'que-es-json',
           locale: 'es',
           taxonomy: blogTaxonomy,
         }),
@@ -327,20 +312,17 @@ describe('localized route path builders', () => {
       ).toEqual(['blog', 'json-guides']);
     });
 
-    it('rejects missing localized article leaf metadata without fallback', () => {
+    it('rejects invalid content-owned article route leaves', () => {
       expectRouteError(
         () =>
           buildArticlePathSegments({
-            definition: {
-              ...WHAT_IS_JSON_ARTICLE_ROUTE_FIXTURE,
-              localized: {
-                en: { slug: 'what-is-json' },
-              },
-            } satisfies ArticleRouteDefinition,
-            locale: 'es',
+            articleId: 'what-is-json',
+            primaryCategoryId: 'json-guides',
+            routeSlug: 'What-Is-JSON',
+            locale: 'en',
             taxonomy: blogTaxonomy,
           }),
-        'MISSING_LOCALIZED_ROUTE',
+        'INVALID_SEGMENT',
       );
     });
   });
@@ -349,15 +331,6 @@ describe('localized route path builders', () => {
 function hierarchicalTool(
   definition: ToolRouteDefinition,
 ): ToolRouteDefinition {
-  return {
-    ...definition,
-    strategy: 'hierarchical',
-  };
-}
-
-function hierarchicalArticle(
-  definition: ArticleRouteDefinition,
-): ArticleRouteDefinition {
   return {
     ...definition,
     strategy: 'hierarchical',
