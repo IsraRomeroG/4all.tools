@@ -18,6 +18,7 @@ export {
 } from './blog-content-queries';
 export {
   getPublishedBlogCategoryContent,
+  listPublishedBlogCategoryContent,
   requirePublishedBlogCategoryContent,
   type BlogCategoryContentEntry,
 } from './blog-categories';
@@ -28,6 +29,7 @@ export {
 } from './tools';
 export {
   getPublishedToolCategoryContent,
+  listPublishedToolCategoryContent,
   requirePublishedToolCategoryContent,
   type ToolCategoryContentEntry,
 } from './tool-categories';

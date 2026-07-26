@@ -64,7 +64,7 @@ export interface LocaleListContentIndex<TKey, TEntry>
 
 export interface PublishedContentIndexes {
   readonly tools: ContentIndex<ToolContentKey, ToolContentEntry>;
-  readonly toolCategories: ContentIndex<
+  readonly toolCategories: LocaleListContentIndex<
     ToolCategoryContentKey,
     ToolCategoryContentEntry
   >;
@@ -72,7 +72,7 @@ export interface PublishedContentIndexes {
     ArticleContentKey,
     ArticleContentEntry
   >;
-  readonly blogCategories: ContentIndex<
+  readonly blogCategories: LocaleListContentIndex<
     BlogCategoryContentKey,
     BlogCategoryContentEntry
   >;
@@ -177,6 +177,7 @@ function createPublishedContentIndexesFromEntries(entries: {
       }),
       getKeyEntityId: (key) => key.categoryId,
       getKeyLocale: (key) => key.locale,
+      includeLocaleList: true,
     }),
     blog: createPublishedIndex<ArticleContentKey, ArticleContentEntry>({
       entries: entries.blog,
@@ -216,6 +217,7 @@ function createPublishedContentIndexesFromEntries(entries: {
       }),
       getKeyEntityId: (key) => key.categoryId,
       getKeyLocale: (key) => key.locale,
+      includeLocaleList: true,
     }),
   });
 }

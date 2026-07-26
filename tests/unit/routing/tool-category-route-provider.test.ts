@@ -1,74 +1,58 @@
 import { describe, expect, it } from 'vitest';
 
-import { createTaxonomyTree } from '@/domain/taxonomy/shared/tree';
-import { TOOL_CATEGORY_NODES } from '@/domain/taxonomy/tools/registry';
-import {
-  TOOL_CATEGORY_ROUTE_DEFINITIONS,
-  toolCategoryRouteProvider,
-} from '@/routing/providers/tool-category-route-provider';
+import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
+import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
+import { toolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
+import type { RoutePublicationAvailability } from '@/routing/registry';
+import { createRouteRegistry } from '@/routing/registry';
+import type { RouteTarget } from '@/routing/types';
 
 describe('tool category route provider', () => {
-  it('adapts explicit production category routes only', async () => {
-    const routeDefinitions =
-      await toolCategoryRouteProvider.getRouteDefinitions();
+  it('derives category landings from published localized content', async () => {
+    const definitions = await toolCategoryRouteProvider.getRouteDefinitions();
 
-    expect(routeDefinitions).toEqual([
-      {
-        kind: 'tool-category',
-        definition: {
-          categoryId: 'developer',
-          strategy: 'root',
-          status: 'published',
-        },
+    expect(definitions).toHaveLength(1);
+    expect(definitions[0]).toMatchObject({
+      kind: 'tool-category',
+      definition: {
+        categoryId: 'developer',
+        strategy: 'hierarchical',
+        status: 'published',
+        sourceId: 'en/developer',
       },
-    ]);
-    expect(categoryIds(routeDefinitions)).not.toContain('data-formats');
-    expect(categoryIds(routeDefinitions)).not.toContain('json');
+    });
+    expect(Object.isFrozen(definitions)).toBe(true);
+    expect(Object.isFrozen(definitions[0]!.definition)).toBe(true);
   });
 
-  it('does not change output when taxonomy gains classification nodes', async () => {
-    const before = await toolCategoryRouteProvider.getRouteDefinitions();
-    const taxonomy = createTaxonomyTree([
-      ...TOOL_CATEGORY_NODES,
-      {
-        id: 'string-tools',
-        parentId: 'developer',
-        localized: {
-          en: { slug: 'string-tools', label: 'String Tools' },
-          es: { slug: 'herramientas-de-texto', label: 'Herramientas de texto' },
-          pt: { slug: 'ferramentas-de-texto', label: 'Ferramentas de texto' },
-          fr: { slug: 'outils-de-texte', label: 'Outils de texte' },
-        },
-        sortOrder: 200,
-      },
-    ]);
-    const after = await toolCategoryRouteProvider.getRouteDefinitions();
+  it('does not create a landing without localized category content', async () => {
+    const provider = {
+      ...toolCategoryRouteProvider,
+      getRouteDefinitions: async () => [],
+    };
+    const registry = await createRouteRegistry({
+      providers: [provider],
+      toolTaxonomy,
+      blogTaxonomy,
+      publicationAvailability: publishEverything,
+    });
 
-    expect(taxonomy.hasNode('string-tools')).toBe(true);
-    expect(after).toEqual(before);
+    expect(registry.getByTarget({ kind: 'tool-category', categoryId: 'developer' })).toEqual([]);
   });
 
-  it('returns deterministic frozen production definitions', async () => {
-    const first = await toolCategoryRouteProvider.getRouteDefinitions();
-    const second = await toolCategoryRouteProvider.getRouteDefinitions();
+  it('keeps classification-only taxonomy nodes out of category landings', async () => {
+    const registry = await createRouteRegistry({
+      providers: [toolCategoryRouteProvider],
+      toolTaxonomy,
+      blogTaxonomy,
+      publicationAvailability: publishEverything,
+    });
 
-    expect(second).toEqual(first);
-    expect(Object.isFrozen(TOOL_CATEGORY_ROUTE_DEFINITIONS)).toBe(true);
-    expect(Object.isFrozen(TOOL_CATEGORY_ROUTE_DEFINITIONS[0])).toBe(true);
-    expect(Object.isFrozen(first)).toBe(true);
-    expect(Object.isFrozen(first[0])).toBe(true);
-    expect(Object.isFrozen(first[0]?.definition)).toBe(true);
+    expect(registry.getByTarget({ kind: 'tool-category', categoryId: 'data-formats' })).toEqual([]);
+    expect(registry.getByTarget({ kind: 'tool-category', categoryId: 'json' })).toEqual([]);
   });
 });
 
-function categoryIds(
-  routeDefinitions: Awaited<
-    ReturnType<typeof toolCategoryRouteProvider.getRouteDefinitions>
-  >,
-): string[] {
-  return routeDefinitions.flatMap((routeDefinition) =>
-    routeDefinition.kind === 'tool-category'
-      ? [routeDefinition.definition.categoryId]
-      : [],
-  );
-}
+const publishEverything: RoutePublicationAvailability = {
+  isPublishable: (_target: RouteTarget) => true,
+};

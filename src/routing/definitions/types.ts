@@ -5,7 +5,7 @@ import type {
   ToolId,
 } from '@/domain/shared/ids';
 import type { PublicationStatus } from '@/domain/shared/publication';
-import type { PartialLocalized } from '@/i18n/types';
+import type { Locale, PartialLocalized } from '@/i18n/types';
 import type { RouteStrategy, ToolCategoryRouteStrategy } from '@/routing/types';
 
 export interface LocalizedRouteLeaf {
@@ -25,6 +25,10 @@ export interface ToolCategoryRouteDefinition {
   readonly categoryId: ToolCategoryId;
   readonly strategy: ToolCategoryRouteStrategy;
   readonly status: PublicationStatus;
+  /** Temporary locale scope for one content-owned adapter entry until T04. */
+  readonly locale?: Locale;
+  /** Temporary content-derived adapter metadata until T04 removes definitions. */
+  readonly sourceId?: string;
 }
 
 export interface ArticleRouteDefinition {
@@ -41,6 +45,10 @@ export interface BlogCategoryRouteDefinition {
   readonly categoryId: BlogCategoryId;
   readonly strategy: RouteStrategy;
   readonly status: PublicationStatus;
+  /** Temporary locale scope for one content-owned adapter entry until T04. */
+  readonly locale?: Locale;
+  /** Temporary content-derived adapter metadata until T04 removes definitions. */
+  readonly sourceId?: string;
 }
 
 export type RouteDefinition =

@@ -100,7 +100,7 @@ async function collectRouteDefinitions(
 
       return routeDefinitions.map((routeDefinition) => ({
         sourceId:
-          routeDefinition.kind === 'article'
+          'sourceId' in routeDefinition.definition
             ? routeDefinition.definition.sourceId ?? provider.sourceId
             : provider.sourceId,
         routeDefinition,
@@ -126,7 +126,10 @@ function hasLocalizedRouteMetadata(
 
     case 'tool-category':
     case 'blog-category':
-      return true;
+      return (
+        routeDefinition.definition.locale === undefined ||
+        routeDefinition.definition.locale === locale
+      );
 
     default:
       return assertNever(routeDefinition);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { ToolCategoryId } from '@/domain/shared/ids';
+import type { ToolCategoryContentEntry } from '@/content/queries';
 import { AmbiguousContentError } from '@/content/queries/errors';
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { createTaxonomyTree } from '@/domain/taxonomy/shared/tree';
@@ -302,31 +303,17 @@ describe('route registry integration', () => {
     ).toEqual([]);
   });
 
-  it('rejects explicit tool category routes for unknown category IDs', async () => {
+  it('rejects content-owned tool category routes for unknown category IDs', async () => {
     await expectRouteRegistryError(
       () =>
         fixtureRegistry({
           providers: [
-            createToolCategoryRouteProvider(() => [
-              categoryRouteDefinition('missing-category', 'root'),
+            createToolCategoryRouteProvider(async () => [
+              categoryContentEntry('en', 'missing-category'),
             ]),
           ],
         }),
       'UNKNOWN_TAXONOMY_NODE',
-    );
-  });
-
-  it('rejects root strategy for non-root explicit tool category routes', async () => {
-    await expectRouteRegistryError(
-      () =>
-        fixtureRegistry({
-          providers: [
-            createToolCategoryRouteProvider(() => [
-              categoryRouteDefinition('data-formats', 'root'),
-            ]),
-          ],
-        }),
-      'ROOT_CATEGORY_MISMATCH',
     );
   });
 
@@ -431,15 +418,22 @@ function toolCategoryTargets(registry: RouteRegistry): string[] {
   ].sort();
 }
 
-function categoryRouteDefinition(
-  categoryId: ToolCategoryId,
-  strategy: 'root' | 'hierarchical',
-): Extract<RouteDefinition, { readonly kind: 'tool-category' }>['definition'] {
+function categoryContentEntry(
+  locale: 'en' | 'es' | 'pt' | 'fr',
+  categoryId: string,
+): ToolCategoryContentEntry {
   return {
-    categoryId,
-    strategy,
-    status: 'published',
-  };
+    id: `tool-categories/${locale}/${categoryId}`,
+    collection: 'toolCategories',
+    data: {
+      categoryId,
+      locale,
+      status: 'published',
+      title: categoryId,
+      description: categoryId,
+      seo: { title: categoryId, description: categoryId, noindex: false },
+    },
+  } as unknown as ToolCategoryContentEntry;
 }
 
 function toolNode(params: {

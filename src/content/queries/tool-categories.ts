@@ -43,3 +43,11 @@ export async function requirePublishedToolCategoryContent(
 
   return entry;
 }
+
+export async function listPublishedToolCategoryContent(
+  locale: Locale,
+): Promise<readonly ToolCategoryContentEntry[]> {
+  const indexes = await getPublishedContentIndexes();
+
+  return indexes.toolCategories.list(locale);
+}

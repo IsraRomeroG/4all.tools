@@ -1,4 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '@/i18n/types';
 
 import { createBlogContentQueries } from './blog-content-queries';
 import { getPublishedContentIndexes } from './indexed-content-source';
@@ -14,3 +15,11 @@ export const getPublishedBlogCategoryContent =
 
 export const requirePublishedBlogCategoryContent =
   productionBlogContentQueries.requirePublishedBlogCategoryContent;
+
+export async function listPublishedBlogCategoryContent(
+  locale: Locale,
+): Promise<readonly BlogCategoryContentEntry[]> {
+  const indexes = await getPublishedContentIndexes();
+
+  return indexes.blogCategories.list(locale);
+}

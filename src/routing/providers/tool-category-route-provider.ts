@@ -1,34 +1,50 @@
+import {
+  listPublishedToolCategoryContent,
+  type ToolCategoryContentEntry,
+} from '@/content/queries';
+import { SUPPORTED_LOCALES, type Locale } from '@/i18n/types';
 import type {
   RouteDefinition,
-  RouteDefinitionProvider,
   ToolCategoryRouteDefinition,
 } from '@/routing/definitions';
-
-export const TOOL_CATEGORY_ROUTE_DEFINITIONS = Object.freeze([
-  Object.freeze({
-    categoryId: 'developer',
-    strategy: 'root',
-    status: 'published',
-  }),
-] satisfies readonly ToolCategoryRouteDefinition[]);
+import type { RouteDefinitionProvider } from '@/routing/definitions/providers';
 
 export function createToolCategoryRouteProvider(
-  getDefinitions: () => readonly ToolCategoryRouteDefinition[] = () =>
-    TOOL_CATEGORY_ROUTE_DEFINITIONS,
+  listCategories: (locale: Locale) =>
+    Promise<readonly ToolCategoryContentEntry[]> =
+    listPublishedToolCategoryContent,
 ): RouteDefinitionProvider {
   return {
-    sourceId: 'tool-category-route-registry',
-    description: 'Explicit production tool-category routes.',
-    getRouteDefinitions: () =>
+    sourceId: 'tool-category-content',
+    description: 'Published localized tool-category content route adapter.',
+    getRouteDefinitions: async () =>
       Object.freeze(
-        getDefinitions().map((definition) =>
-          Object.freeze({
-            kind: 'tool-category',
-            definition,
-          } satisfies Extract<RouteDefinition, { readonly kind: 'tool-category' }>),
-        ),
+        (
+          await Promise.all(
+            SUPPORTED_LOCALES.map((locale) => listCategories(locale)),
+          )
+        )
+          .flat()
+          .map(toToolCategoryRouteDefinition),
       ),
   };
 }
 
 export const toolCategoryRouteProvider = createToolCategoryRouteProvider();
+
+function toToolCategoryRouteDefinition(
+  entry: ToolCategoryContentEntry,
+): Extract<RouteDefinition, { readonly kind: 'tool-category' }> {
+  const definition: ToolCategoryRouteDefinition = {
+    categoryId: entry.data.categoryId,
+    strategy: 'hierarchical',
+    status: entry.data.status,
+    locale: entry.data.locale,
+    sourceId: entry.id,
+  };
+
+  return Object.freeze({
+    kind: 'tool-category',
+    definition: Object.freeze(definition),
+  });
+}

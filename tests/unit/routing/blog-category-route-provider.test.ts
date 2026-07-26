@@ -1,54 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
-import { createTaxonomyTree } from '@/domain/taxonomy/shared/tree';
-import type { TaxonomyNode } from '@/domain/taxonomy/shared/types';
-import { createBlogCategoryRouteProvider, blogCategoryRouteProvider } from '@/routing/providers/blog-category-route-provider';
+import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
+import type { BlogCategoryContentEntry } from '@/content/queries';
+import type { Locale } from '@/i18n/types';
+import { blogCategoryRouteProvider, createBlogCategoryRouteProvider } from '@/routing/providers/blog-category-route-provider';
 import type { RoutePublicationAvailability } from '@/routing/registry';
 import { createRouteRegistry } from '@/routing/registry';
 import type { RouteTarget } from '@/routing/types';
-import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 
 describe('blog category route provider', () => {
-  it('contains only the explicit production categories', async () => {
-    const definitions = await blogCategoryRouteProvider.getRouteDefinitions();
-
-    expect(definitions.map((route) =>
-      route.kind === 'blog-category' ? route.definition.categoryId : null,
-    )).toEqual([
-      'development',
-      'json-guides',
-    ]);
-  });
-
-  it('does not change when a classification-only taxonomy node is added', async () => {
-    const provider = createBlogCategoryRouteProvider();
-    const withExtraNode = createTaxonomyTree([
-      ...blogTaxonomy.getRoots(),
-      ...blogTaxonomy.getDescendants('development'),
-      blogNode('release-notes', 'development'),
-    ]);
-
-    const before = await createRouteRegistry({
-      providers: [provider],
-      toolTaxonomy,
-      blogTaxonomy,
-      publicationAvailability: publishEverything,
-    });
-    const after = await createRouteRegistry({
-      providers: [provider],
-      toolTaxonomy,
-      blogTaxonomy: withExtraNode,
-      publicationAvailability: publishEverything,
-    });
-
-    expect(after.getAll()).toEqual(before.getAll());
-    expect(
-      after.getByTarget({ kind: 'blog-category', categoryId: 'release-notes' }),
-    ).toEqual([]);
-  });
-
-  it('builds both localized hierarchical category paths', async () => {
+  it('derives all current hierarchical landings from localized content', async () => {
     const registry = await createRouteRegistry({
       providers: [blogCategoryRouteProvider],
       toolTaxonomy,
@@ -68,15 +30,27 @@ describe('blog category route provider', () => {
       'fr:blog/developpement',
       'fr:blog/developpement/guides-json',
     ]);
+    expect(registry.getAll().every((record) => record.sourceId !== 'blog-category-content')).toBe(true);
   });
 
-  it('rejects an unknown explicit category definition', async () => {
-    const provider = createBlogCategoryRouteProvider(() => [
-      {
-        categoryId: 'missing-category',
-        strategy: 'hierarchical',
-        status: 'published',
-      },
+  it('does not create a landing for missing localized category content', async () => {
+    const provider = createBlogCategoryRouteProvider(async (locale) =>
+      locale === 'es' ? [] : [categoryEntry(locale)],
+    );
+    const registry = await createRouteRegistry({
+      providers: [provider],
+      toolTaxonomy,
+      blogTaxonomy,
+      publicationAvailability: publishEverything,
+    });
+
+    expect(registry.getCanonical('es', { kind: 'blog-category', categoryId: 'development' })).toBeNull();
+    expect(registry.getCanonical('en', { kind: 'blog-category', categoryId: 'development' })).not.toBeNull();
+  });
+
+  it('rejects content that references an unknown taxonomy category', async () => {
+    const provider = createBlogCategoryRouteProvider(async () => [
+      categoryEntry('en', 'missing-category'),
     ]);
 
     await expect(
@@ -94,19 +68,20 @@ const publishEverything: RoutePublicationAvailability = {
   isPublishable: (_target: RouteTarget) => true,
 };
 
-function blogNode(
-  id: string,
-  parentId: string | null,
-): TaxonomyNode<string> {
+function categoryEntry(
+  locale: Locale,
+  categoryId = 'development',
+): BlogCategoryContentEntry {
   return {
-    id,
-    parentId,
-    localized: {
-      en: { slug: id, label: id },
-      es: { slug: id, label: id },
-      pt: { slug: id, label: id },
-      fr: { slug: id, label: id },
+    id: `blog-categories/${locale}/${categoryId}`,
+    collection: 'blogCategories',
+    data: {
+      categoryId,
+      locale,
+      status: 'published',
+      title: categoryId,
+      description: categoryId,
+      seo: { title: categoryId, description: categoryId, noindex: false },
     },
-    sortOrder: 200,
-  };
+  } as unknown as BlogCategoryContentEntry;
 }

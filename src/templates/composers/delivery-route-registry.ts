@@ -5,10 +5,10 @@ import {
   getPublishedContentIndexes,
   type PublishedContentIndexes,
 } from '@/content/queries';
-import { toolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
+import { createToolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
 import { toolRouteProvider } from '@/routing/providers/tool-route-provider';
 import { createArticleRouteProvider } from '@/routing/providers/article-route-provider';
-import { blogCategoryRouteProvider } from '@/routing/providers/blog-category-route-provider';
+import { createBlogCategoryRouteProvider } from '@/routing/providers/blog-category-route-provider';
 import {
   createRouteRegistry,
   type RouteRegistry,
@@ -62,11 +62,15 @@ async function createDeliveryRouteRegistry(
   return createRouteRegistry({
     providers: [
       toolRouteProvider,
-      toolCategoryRouteProvider,
+      createToolCategoryRouteProvider((locale) =>
+        Promise.resolve(contentIndexes.toolCategories.list(locale)),
+      ),
       createArticleRouteProvider((locale) =>
         Promise.resolve(contentIndexes.blog.list(locale)),
       ),
-      blogCategoryRouteProvider,
+      createBlogCategoryRouteProvider((locale) =>
+        Promise.resolve(contentIndexes.blogCategories.list(locale)),
+      ),
     ],
     toolTaxonomy,
     blogTaxonomy,
