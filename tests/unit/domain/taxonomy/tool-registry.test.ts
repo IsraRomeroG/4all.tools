@@ -28,7 +28,7 @@ describe('tool taxonomy registry', () => {
     expect(toolTaxonomy.getRoot('json').id).toBe('developer');
   });
 
-  it('exposes the required nodes as published taxonomy data', () => {
+  it('exposes the required classification-only taxonomy data', () => {
     expect(TOOL_CATEGORY_NODES.map((node) => node.id)).toEqual([
       'developer',
       'data-formats',
@@ -36,7 +36,6 @@ describe('tool taxonomy registry', () => {
     ]);
 
     for (const node of TOOL_CATEGORY_NODES) {
-      expect(node.status).toBe('published');
       expect(Object.keys(node.localized)).toEqual(['en', 'es', 'pt', 'fr']);
       expect(node).not.toHaveProperty('url');
       expect(node).not.toHaveProperty('canonicalUrl');

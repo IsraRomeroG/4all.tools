@@ -69,27 +69,6 @@ export function getRequiredPathFromRoot<TId extends string>(
   return taxonomy.getPathFromRoot(id);
 }
 
-export function assertPublishedTaxonomyPath<TId extends string>(
-  path: readonly TaxonomyNode<TId>[],
-  context: BuildPathContext,
-): void {
-  const unpublishedNode = path.find((node) => node.status !== 'published');
-
-  if (!unpublishedNode) {
-    return;
-  }
-
-  throw new RoutingInvariantError(
-    'UNPUBLISHABLE_ROUTE',
-    `Taxonomy node ${unpublishedNode.id} is ${unpublishedNode.status} and cannot be used for a canonical route.`,
-    {
-      ...context,
-      taxonomyNodeId: unpublishedNode.id,
-      status: unpublishedNode.status,
-    },
-  );
-}
-
 export function getLocalizedTaxonomySegments<TId extends string>(
   path: readonly TaxonomyNode<TId>[],
   locale: Locale,

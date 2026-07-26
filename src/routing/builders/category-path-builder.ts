@@ -5,7 +5,6 @@ import { RoutingInvariantError } from '@/routing/errors';
 import type { ToolCategoryRouteDefinition } from '@/routing/definitions/types';
 
 import {
-  assertPublishedTaxonomyPath,
   freezeValidatedSegments,
   getLocalizedTaxonomySegments,
   getRequiredPathFromRoot,
@@ -53,8 +52,6 @@ export function buildToolCategoryPathSegments(
   }
 
   const path = input.definition.strategy === 'root' ? [root] : taxonomyPath;
-
-  assertPublishedTaxonomyPath(path, context);
 
   return freezeValidatedSegments(
     getLocalizedTaxonomySegments(path, input.locale),

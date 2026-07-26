@@ -39,7 +39,6 @@ describe('tool category route provider', () => {
           pt: { slug: 'ferramentas-de-texto', label: 'Ferramentas de texto' },
           fr: { slug: 'outils-de-texte', label: 'Outils de texte' },
         },
-        status: 'published',
         sortOrder: 200,
       },
     ]);

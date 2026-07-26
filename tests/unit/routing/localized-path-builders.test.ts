@@ -177,20 +177,18 @@ describe('localized route path builders', () => {
       );
     });
 
-    it('rejects unpublished taxonomy chains used for classification', () => {
-      expectRouteError(
-        () =>
-          buildToolPathSegments({
-            definition: JSON_VALIDATOR_ROUTE_FIXTURE,
-            locale: 'en',
-            taxonomy: createTaxonomyTree<ToolCategoryId>([
-              toolNode('developer', null, 'published'),
-              toolNode('data-formats', 'developer', 'draft'),
-              toolNode('json', 'data-formats', 'published'),
-            ]),
-          }),
-        'UNPUBLISHABLE_ROUTE',
-      );
+    it('allows classification-only taxonomy chains in public tool paths', () => {
+      expect(
+        buildToolPathSegments({
+          definition: JSON_VALIDATOR_ROUTE_FIXTURE,
+          locale: 'en',
+          taxonomy: createTaxonomyTree<ToolCategoryId>([
+            toolNode('developer', null),
+            toolNode('data-formats', 'developer'),
+            toolNode('json', 'data-formats'),
+          ]),
+        }),
+      ).toEqual(['developer', 'json-validator']);
     });
   });
 
@@ -340,7 +338,6 @@ function hierarchicalTool(
 function toolNode(
   id: ToolCategoryId,
   parentId: ToolCategoryId | null,
-  status: TaxonomyNode<ToolCategoryId>['status'],
 ): TaxonomyNode<ToolCategoryId> {
   return {
     id,
@@ -351,7 +348,6 @@ function toolNode(
       pt: { slug: id, label: id },
       fr: { slug: id, label: id },
     },
-    status,
     sortOrder: 100,
   };
 }

@@ -1,5 +1,4 @@
 import type { ToolCategoryId, BlogCategoryId } from '@/domain/shared/ids';
-import type { PublicationStatus } from '@/domain/shared/publication';
 import type { Locale, Localized } from '@/i18n/types';
 
 export const TAXONOMY_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -14,7 +13,6 @@ export interface TaxonomyNode<TId extends string = string> {
   id: TId;
   parentId: TId | null;
   localized: Localized<TaxonomyLocaleData>;
-  status: PublicationStatus;
   sortOrder: number;
 }
 

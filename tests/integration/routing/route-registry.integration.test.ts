@@ -287,8 +287,6 @@ describe('route registry integration', () => {
       providers: [toolCategoryRouteProvider],
     });
 
-    expect(toolTaxonomy.getNode('data-formats').status).toBe('published');
-    expect(toolTaxonomy.getNode('json').status).toBe('published');
     expect(toolCategoryTargets(registry)).toEqual(['developer']);
     expect(
       registry.getByTarget({
@@ -457,7 +455,6 @@ function toolNode(params: {
       pt: { slug: params.localizedSlug, label: params.localizedSlug },
       fr: { slug: params.localizedSlug, label: params.localizedSlug },
     },
-    status: 'published',
     sortOrder: 100,
   };
 }

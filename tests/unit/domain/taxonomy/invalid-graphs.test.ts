@@ -190,7 +190,6 @@ function node(params: {
     id: params.id,
     parentId: params.parentId ?? null,
     localized: params.localized ?? localized(params.id),
-    status: 'published',
     sortOrder: params.sortOrder ?? 100,
   };
 }

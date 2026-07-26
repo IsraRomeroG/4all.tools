@@ -167,7 +167,6 @@ function snapshotNode<TId extends string>(
     id: node.id,
     parentId: node.parentId,
     localized: snapshotLocalized(node.localized),
-    status: node.status,
     sortOrder: node.sortOrder,
   }) as FrozenTaxonomyNode<TId>;
 }

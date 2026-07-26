@@ -29,14 +29,13 @@ describe('blog taxonomy registry', () => {
     expect(blogTaxonomy.getRoot('json-guides').id).toBe('development');
   });
 
-  it('exposes the required blog nodes as published taxonomy data', () => {
+  it('exposes the required classification-only taxonomy data', () => {
     expect(BLOG_CATEGORY_NODES.map((node) => node.id)).toEqual([
       'development',
       'json-guides',
     ]);
 
     for (const node of BLOG_CATEGORY_NODES) {
-      expect(node.status).toBe('published');
       expect(Object.keys(node.localized)).toEqual(['en', 'es', 'pt', 'fr']);
       expect(node).not.toHaveProperty('url');
       expect(node).not.toHaveProperty('canonicalUrl');

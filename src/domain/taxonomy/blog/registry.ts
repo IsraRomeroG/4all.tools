@@ -24,7 +24,6 @@ export const BLOG_CATEGORY_NODES = [
         label: 'Développement',
       },
     },
-    status: 'published',
     sortOrder: 100,
   },
   {
@@ -48,7 +47,6 @@ export const BLOG_CATEGORY_NODES = [
         label: 'Guides JSON',
       },
     },
-    status: 'published',
     sortOrder: 100,
   },
 ] as const satisfies readonly TaxonomyNode<BlogCategoryId>[];

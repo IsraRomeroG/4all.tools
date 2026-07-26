@@ -24,7 +24,6 @@ export const TOOL_CATEGORY_NODES = [
         label: 'Outils pour développeurs',
       },
     },
-    status: 'published',
     sortOrder: 100,
   },
   {
@@ -48,7 +47,6 @@ export const TOOL_CATEGORY_NODES = [
         label: 'Formats de données',
       },
     },
-    status: 'published',
     sortOrder: 100,
   },
   {
@@ -72,7 +70,6 @@ export const TOOL_CATEGORY_NODES = [
         label: 'JSON',
       },
     },
-    status: 'published',
     sortOrder: 100,
   },
 ] as const satisfies readonly TaxonomyNode<ToolCategoryId>[];

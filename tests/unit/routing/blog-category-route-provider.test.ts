@@ -107,7 +107,6 @@ function blogNode(
       pt: { slug: id, label: id },
       fr: { slug: id, label: id },
     },
-    status: 'published',
     sortOrder: 200,
   };
 }

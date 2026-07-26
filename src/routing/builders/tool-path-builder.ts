@@ -5,7 +5,6 @@ import { RoutingInvariantError } from '@/routing/errors';
 import type { ToolRouteDefinition } from '@/routing/definitions/types';
 
 import {
-  assertPublishedTaxonomyPath,
   freezeValidatedSegments,
   getLocalizedTaxonomySegments,
   getRequiredLocalizedLeaf,
@@ -46,8 +45,6 @@ export function buildToolPathSegments(
       },
     );
   }
-
-  assertPublishedTaxonomyPath(taxonomyPath, context);
 
   const taxonomySegments =
     input.definition.strategy === 'flat'

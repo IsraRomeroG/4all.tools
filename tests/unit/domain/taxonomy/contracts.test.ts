@@ -48,7 +48,6 @@ describe('taxonomy contracts', () => {
         pt: { slug: 'desenvolvimento', label: 'Ferramentas para desenvolvedores' },
         fr: { slug: 'developpement', label: 'Outils pour développeurs' },
       },
-      status: 'published',
       sortOrder: 100,
     };
 
@@ -61,7 +60,6 @@ describe('taxonomy contracts', () => {
         pt: { slug: 'guias-json', label: 'Guias de JSON' },
         fr: { slug: 'guides-json', label: 'Guides JSON' },
       },
-      status: 'draft',
       sortOrder: 200,
     };
 
@@ -145,7 +143,6 @@ function rootNode(id: string, sortOrder: number): TaxonomyNode {
       pt: { slug: id, label: id },
       fr: { slug: id, label: id },
     },
-    status: 'published',
     sortOrder,
   };
 }

@@ -5,7 +5,6 @@ import { RoutingInvariantError } from '@/routing/errors';
 import type { BlogCategoryRouteDefinition } from '@/routing/definitions/types';
 
 import {
-  assertPublishedTaxonomyPath,
   freezeValidatedSegments,
   getLocalizedTaxonomySegments,
   getRequiredPathFromRoot,
@@ -44,8 +43,6 @@ export function buildArticlePathSegments(
     input.locale,
   );
 
-  assertPublishedTaxonomyPath(taxonomyPath, context);
-
   return freezeValidatedSegments(
     [BLOG_ROUTE_ROOT_SEGMENT, ...taxonomySegments, input.routeSlug],
     context,
@@ -75,8 +72,6 @@ export function buildBlogCategoryPathSegments(
     input.definition.strategy === 'flat'
       ? [categoryNode.localized[input.locale].slug]
       : getLocalizedTaxonomySegments(taxonomyPath, input.locale);
-
-  assertPublishedTaxonomyPath(taxonomyPath, context);
 
   return freezeValidatedSegments(
     [BLOG_ROUTE_ROOT_SEGMENT, ...taxonomySegments],

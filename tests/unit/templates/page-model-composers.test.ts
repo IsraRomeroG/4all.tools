@@ -423,7 +423,6 @@ function fixtureToolTaxonomy() {
           label: 'Outils pour développeurs',
         },
       },
-      status: 'published',
       sortOrder: 100,
     },
   ] satisfies readonly TaxonomyNode<ToolCategoryId>[]);
