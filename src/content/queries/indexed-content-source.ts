@@ -63,7 +63,7 @@ export interface LocaleListContentIndex<TKey, TEntry>
 }
 
 export interface PublishedContentIndexes {
-  readonly tools: ContentIndex<ToolContentKey, ToolContentEntry>;
+  readonly tools: LocaleListContentIndex<ToolContentKey, ToolContentEntry>;
   readonly toolCategories: LocaleListContentIndex<
     ToolCategoryContentKey,
     ToolCategoryContentEntry
@@ -157,6 +157,7 @@ function createPublishedContentIndexesFromEntries(entries: {
       }),
       getKeyEntityId: (key) => key.toolId,
       getKeyLocale: (key) => key.locale,
+      includeLocaleList: true,
     }),
     toolCategories: createPublishedIndex<
       ToolCategoryContentKey,

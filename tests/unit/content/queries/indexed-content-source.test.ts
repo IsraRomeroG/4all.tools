@@ -20,8 +20,8 @@ import {
 } from '@/content/queries/indexed-content-source';
 import { AmbiguousContentError } from '@/content/queries/errors';
 import { createRouteRegistry } from '@/routing/registry';
-import { toolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
-import { toolRouteProvider } from '@/routing/providers/tool-route-provider';
+import { createToolRouteProvider } from '@/routing/providers/tool-route-provider';
+import { createToolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
 
 afterEach(() => {
   resetPublishedContentIndexesForTesting();
@@ -260,7 +260,14 @@ describe('published content indexes', () => {
     });
     const indexes = await createPublishedContentIndexes(source);
     const registry = await createRouteRegistry({
-      providers: [toolRouteProvider, toolCategoryRouteProvider],
+      providers: [
+        createToolRouteProvider((locale) =>
+          Promise.resolve(indexes.tools.list(locale)),
+        ),
+        createToolCategoryRouteProvider((locale) =>
+          Promise.resolve(indexes.toolCategories.list(locale)),
+        ),
+      ],
       toolTaxonomy,
       blogTaxonomy,
       publicationAvailability: createIndexedPublicationAvailability(indexes),

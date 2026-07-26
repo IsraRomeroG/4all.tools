@@ -6,7 +6,7 @@ import {
   type PublishedContentIndexes,
 } from '@/content/queries';
 import { createToolCategoryRouteProvider } from '@/routing/providers/tool-category-route-provider';
-import { toolRouteProvider } from '@/routing/providers/tool-route-provider';
+import { createToolRouteProvider } from '@/routing/providers/tool-route-provider';
 import { createArticleRouteProvider } from '@/routing/providers/article-route-provider';
 import { createBlogCategoryRouteProvider } from '@/routing/providers/blog-category-route-provider';
 import {
@@ -61,7 +61,9 @@ async function createDeliveryRouteRegistry(
 
   return createRouteRegistry({
     providers: [
-      toolRouteProvider,
+      createToolRouteProvider((locale) =>
+        Promise.resolve(contentIndexes.tools.list(locale)),
+      ),
       createToolCategoryRouteProvider((locale) =>
         Promise.resolve(contentIndexes.toolCategories.list(locale)),
       ),

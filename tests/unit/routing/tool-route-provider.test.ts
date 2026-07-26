@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
+import type { ToolContentEntry } from '@/content/queries';
 import type { ToolDefinition } from '@/domain/tools';
 import { jsonValidatorDefinition } from '@/features/tools/developer/json-validator/tool.config';
+import type { Locale } from '@/i18n/types';
 import {
   createToolRouteProvider,
   toToolRouteDefinition,
@@ -9,26 +11,26 @@ import {
 } from '@/routing/providers/tool-route-provider';
 
 describe('tool route provider', () => {
-  it('adapts the production tool registry into P04 route definitions', async () => {
+  it('derives localized routes from ToolRegistry and published tool content', async () => {
     const routeDefinitions = await toolRouteProvider.getRouteDefinitions();
 
-    expect(routeDefinitions).toEqual([
-      {
-        kind: 'tool',
-        definition: {
-          toolId: 'json-validator',
-          rootCategoryId: 'developer',
-          primaryCategoryId: 'json',
-          strategy: 'flat',
-          localized: {
-            en: { slug: 'json-validator' },
-            es: { slug: 'validador-json' },
-            pt: { slug: 'validador-json' },
-            fr: { slug: 'validateur-json' },
-          },
-          status: 'published',
-        },
-      },
+    expect(routeDefinitions).toHaveLength(4);
+    expect(
+      routeDefinitions.map((route) =>
+        route.kind === 'tool'
+          ? {
+              toolId: route.definition.toolId,
+              locale: route.definition.locale,
+              sourceId: route.definition.sourceId,
+              strategy: route.definition.strategy,
+            }
+          : route,
+      ),
+    ).toEqual([
+      { toolId: 'json-validator', locale: 'en', sourceId: 'en/developer/json-validator', strategy: 'flat' },
+      { toolId: 'json-validator', locale: 'es', sourceId: 'es/developer/json-validator', strategy: 'flat' },
+      { toolId: 'json-validator', locale: 'pt', sourceId: 'pt/developer/json-validator', strategy: 'flat' },
+      { toolId: 'json-validator', locale: 'fr', sourceId: 'fr/developer/json-validator', strategy: 'flat' },
     ]);
   });
 
@@ -46,24 +48,27 @@ describe('tool route provider', () => {
     );
   });
 
-  it('does not emit draft tool definitions', async () => {
-    const provider = createToolRouteProvider(() => [
-      jsonValidatorDefinition,
-      {
-        ...jsonValidatorDefinition,
-        id: 'draft-tool',
-        status: 'draft',
-      },
+  it('does not emit content for tools absent from ToolRegistry', async () => {
+    const provider = createToolRouteProvider(async () => [
+      toolEntry('en', 'unknown-tool'),
     ]);
 
-    const routeDefinitions = await provider.getRouteDefinitions();
-
-    expect(routeDefinitions).toHaveLength(1);
-    expect(routeDefinitions[0]).toMatchObject({
-      kind: 'tool',
-      definition: {
-        toolId: 'json-validator',
-      },
-    });
+    await expect(provider.getRouteDefinitions()).resolves.toEqual([]);
   });
 });
+
+function toolEntry(locale: Locale, toolId: string): ToolContentEntry {
+  return {
+    id: `${locale}/developer/${toolId}`,
+    collection: 'tools',
+    data: {
+      toolId,
+      locale,
+      status: 'published',
+      title: toolId,
+      description: toolId,
+      seo: { title: toolId, description: toolId, noindex: false },
+      relatedToolIds: [],
+    },
+  } as unknown as ToolContentEntry;
+}

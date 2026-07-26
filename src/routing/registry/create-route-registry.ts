@@ -122,7 +122,11 @@ function hasLocalizedRouteMetadata(
   switch (routeDefinition.kind) {
     case 'tool':
     case 'article':
-      return routeDefinition.definition.localized[locale] !== undefined;
+      return (
+        routeDefinition.definition.locale === undefined
+          ? routeDefinition.definition.localized[locale] !== undefined
+          : routeDefinition.definition.locale === locale
+      );
 
     case 'tool-category':
     case 'blog-category':

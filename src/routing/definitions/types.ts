@@ -19,6 +19,9 @@ export interface ToolRouteDefinition {
   readonly strategy: RouteStrategy;
   readonly localized: PartialLocalized<LocalizedRouteLeaf>;
   readonly status: PublicationStatus;
+  /** Temporary content scope/provenance until T04 removes definitions. */
+  readonly locale?: Locale;
+  readonly sourceId?: string;
 }
 
 export interface ToolCategoryRouteDefinition {
@@ -38,6 +41,7 @@ export interface ArticleRouteDefinition {
   readonly localized: PartialLocalized<LocalizedRouteLeaf>;
   readonly status: PublicationStatus;
   /** Temporary content-derived adapter metadata until P15 removes providers. */
+  readonly locale?: Locale;
   readonly sourceId?: string;
 }
 

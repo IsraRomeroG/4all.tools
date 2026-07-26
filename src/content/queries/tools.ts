@@ -40,3 +40,11 @@ export async function requirePublishedToolContent(
 
   return entry;
 }
+
+export async function listPublishedToolContent(
+  locale: Locale,
+): Promise<readonly ToolContentEntry[]> {
+  const indexes = await getPublishedContentIndexes();
+
+  return indexes.tools.list(locale);
+}
