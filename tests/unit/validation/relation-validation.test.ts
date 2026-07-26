@@ -114,7 +114,6 @@ function toolRegistry(definitions: readonly ToolDefinition[]): ToolRegistry {
   const byId = new Map(modules.map((module) => [module.definition.id, module]));
 
   return {
-    modules: Object.fromEntries(modules.map((module) => [module.definition.id, module])),
     find: (toolId) => byId.get(toolId) ?? null,
     get: (toolId) => byId.get(toolId)!,
     getAll: () => modules,

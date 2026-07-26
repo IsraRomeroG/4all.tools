@@ -38,7 +38,6 @@ export interface ToolModule<
 }
 
 export interface ToolRegistry<TModule extends ToolModule = ToolModule> {
-  readonly modules: Readonly<Record<ToolId, TModule>>;
   find(toolId: ToolId): TModule | null;
   get(toolId: ToolId): TModule;
   getAll(): readonly TModule[];
@@ -184,14 +183,8 @@ export function createToolRegistry<TModules extends readonly ToolModule[]>(
   const orderedModules = Object.freeze(
     [...modulesById.values()].sort(compareToolModules),
   );
-  const moduleRecord = Object.freeze(
-    Object.fromEntries(
-      orderedModules.map((module) => [module.definition.id, module]),
-    ) as Record<ToolId, TModules[number]>,
-  );
 
   return Object.freeze({
-    modules: moduleRecord,
     find: (toolId: ToolId) => modulesById.get(toolId) ?? null,
     get: (toolId: ToolId) => {
       const module = modulesById.get(toolId);
