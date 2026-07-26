@@ -22,6 +22,7 @@ src/
 ├── server/       Reserva para lógica de servidor futura
 ├── services/     Reserva para servicios e integraciones futuras
 ├── styles/       Estilos globales
+├── validation/   Validación de integridad del catálogo y del routing
 └── templates/    Modelos y templates de presentación
 ```
 
@@ -39,6 +40,7 @@ Las carpetas están organizadas por responsabilidad:
 - `pages` conecta Astro con el sistema de routing y los templates.
 - `components`, `layouts` y `styles` resuelven la presentación compartida.
 - `i18n`, `navigation` y `seo` proporcionan capacidades transversales.
+- `validation` comprueba invariantes entre entidades y la integridad de los registros de rutas.
 
 La dirección conceptual del flujo es:
 
@@ -221,6 +223,17 @@ Sus responsabilidades incluyen:
 - validar que los alternates sean recíprocos y no estén duplicados.
 
 `components/seo/SeoHead.astro` solo renderiza el modelo ya compuesto; la lógica de decisión pertenece a esta carpeta.
+
+## `src/validation/`
+
+La validación de arquitectura conserva únicamente invariantes duraderas del catálogo y del routing:
+
+- identidades de contenido, referencias taxonómicas y relaciones editoriales;
+- cobertura de módulos de herramientas publicados;
+- registros de rutas válidos, colisiones y cobertura de definiciones publicadas;
+- prohibición directa del namespace `src/views/`.
+
+No mantiene un parser propio de imports ni simula la composición de todas las páginas. El build real de Astro y las pruebas genéricas sobre `dist/` comprueban la renderización, el idioma del documento, los canonicals y el SEO observable. La cobertura de inconsistencias posibles de `RouteDefinition` sigue siendo temporal y se retirará con la arquitectura correspondiente en P15.
 
 ## `src/server/`
 

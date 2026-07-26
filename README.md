@@ -33,6 +33,43 @@ English is intentionally unprefixed. `/en/developer/json-validator/` is forbidde
 - `src/templates/` owns page model composition and Astro templates. `src/views/` is prohibited.
 - `src/features/tools/` owns tool modules, typed tool registration, feature components, engines, and localized feature messages.
 
+### Validation ownership
+
+`src/validation/architecture/` validates catalog and cross-entity integrity: content identities, taxonomy references, tool-module coverage, editorial relations, route-definition coverage, route-record shape/collisions, and the direct `src/views/` filesystem prohibition. It does not parse source imports or compose pages. The Astro build and generic build-output tests are authoritative for page renderability, document language, canonical URLs, and rendered SEO; browser tests remain authoritative for interactive behavior. Route-definition coverage remains a live guard until P15 removes the underlying RouteDefinition/provider model.
+
+The supported architecture-validation issue codes are:
+
+```text
+DUPLICATE_CONTENT_IDENTITY
+UNKNOWN_TOOL_CONTENT_ID
+UNKNOWN_TOOL_CATEGORY_CONTENT_ID
+UNKNOWN_BLOG_CATEGORY_CONTENT_ID
+UNKNOWN_ARTICLE_PRIMARY_CATEGORY
+UNKNOWN_ARTICLE_SECONDARY_CATEGORY
+ARTICLE_TRANSLATION_PRIMARY_CATEGORY_MISMATCH
+MISSING_PUBLISHED_TOOL_MODULE
+ORPHAN_TOOL_MODULE
+TOOL_MODULE_IDENTITY_MISMATCH
+MISSING_TOOL_MODULE_COMPONENT
+MISSING_TOOL_MODULE_MESSAGES
+TOOL_FEATURE_PATH_MISMATCH
+UNKNOWN_RELATED_TOOL
+UNPUBLISHED_RELATED_TOOL
+UNKNOWN_RELATED_ARTICLE
+SELF_RELATED_ARTICLE
+PUBLISHED_ROUTE_DEFINITION_WITHOUT_PUBLIC_VARIANT
+FORBIDDEN_SOURCE_NAMESPACE
+INVALID_ROUTE_RECORD
+EMPTY_SEGMENTS
+INVALID_SEGMENT
+INVALID_AREA_TARGET
+INVALID_BLOG_NAMESPACE
+RESERVED_ROOT_SEGMENT
+DUPLICATE_ROUTE_RECORD
+DUPLICATE_PUBLIC_PATH
+DUPLICATE_CANONICAL_TARGET
+```
+
 Taxonomy nodes do not automatically receive public category URLs. Category pages require explicit route definitions plus published content availability.
 
 ## Adding a Tool
