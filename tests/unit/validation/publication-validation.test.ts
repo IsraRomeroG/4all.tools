@@ -262,7 +262,6 @@ describe('architecture publication and SEO validation', () => {
             pageForRoute(route, true, routeRegistry.getByTarget(route.target)),
         }),
       },
-      sourceGraph: { files: [], edges: [] },
     });
 
     expect(report.issues).toEqual([]);

@@ -31,8 +31,6 @@ import {
 } from './validators/identity';
 import { validatePublicationAndSeo } from './validators/publication';
 import { validateSourceBoundaries } from './validators/source-boundaries';
-import { scanSourceGraph } from './source-graph/scan-source-files';
-import type { SourceGraph } from './source-graph/types';
 import { assertArchitectureValid, createArchitectureValidationReport } from './report';
 import type {
   ArchitectureValidationContext,
@@ -74,10 +72,8 @@ export async function createProductionArchitectureContext(): Promise<Architectur
 
 export async function validateArchitecture(input: {
   readonly context?: ArchitectureValidationContext;
-  readonly sourceGraph?: SourceGraph;
 } = {}): Promise<ArchitectureValidationReport> {
   const context = input.context ?? (await createProductionArchitectureContext());
-  const sourceGraph = input.sourceGraph ?? (await scanSourceGraph());
   const contentEntries = Object.values(context.content.all).reduce(
     (total, entries) => total + entries.length,
     0,
@@ -88,7 +84,7 @@ export async function validateArchitecture(input: {
     ...validateToolRegistryIntegrity(context),
     ...validateContentRelations(context),
     ...(await validatePublicationAndSeo(context)),
-    ...validateSourceBoundaries(sourceGraph),
+    ...validateSourceBoundaries(),
   ];
 
   return createArchitectureValidationReport(issues, {
@@ -98,7 +94,6 @@ export async function validateArchitecture(input: {
     routeDefinitions: context.routeDefinitions.length,
     routeRecords: context.routeRegistry.getAll().length,
     pageModels: context.routeRegistry.getAll().length + 8,
-    sourceFiles: sourceGraph.files.length,
   });
 }
 

@@ -34,22 +34,6 @@ export {
   validateProductionArchitecture,
   TOOL_MODULE_SOURCE_DIRECTORIES,
 } from './production';
-export { extractSourceImports } from './source-graph/extract-imports';
-export { createSourceGraph, scanSourceGraph } from './source-graph/scan-source-files';
-export { resolveProjectImport } from './source-graph/resolve-project-import';
-export {
-  SOURCE_DEPENDENCY_RULES,
-  matchesPolicyPattern,
-} from './source-graph/policy';
-export type {
-  SourceDependencyException,
-  SourceDependencyRule,
-} from './source-graph/policy';
-export type {
-  SourceFileSnapshot,
-  SourceGraph,
-  SourceImportEdge,
-} from './source-graph/types';
 export type {
   ArchitectureValidationCounts,
   ArchitectureValidationIssue,

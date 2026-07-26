@@ -71,9 +71,9 @@ describe('architecture validation contracts', () => {
 
     const invalid = createArchitectureValidationReport([
       createArchitectureValidationIssue({
-        code: 'FORBIDDEN_SOURCE_DEPENDENCY',
+        code: 'FORBIDDEN_SOURCE_NAMESPACE',
         scope: 'source-boundary',
-        message: 'Forbidden dependency.',
+        message: 'Forbidden namespace.',
       }),
     ]);
 

@@ -35,7 +35,6 @@ export type ArchitectureValidationIssueCode =
   | 'NON_RECIPROCAL_SEO_CLUSTER'
   | 'SEO_CLUSTER_TARGET_MISMATCH'
   | 'FORBIDDEN_SOURCE_NAMESPACE'
-  | 'FORBIDDEN_SOURCE_DEPENDENCY'
   | 'NOINDEX_SEO_ALTERNATE_CONFLICT'
   | 'INVALID_ROUTE_RECORD'
   | 'EMPTY_SEGMENTS'
@@ -64,7 +63,6 @@ export interface ArchitectureValidationCounts {
   readonly routeDefinitions: number;
   readonly routeRecords: number;
   readonly pageModels: number;
-  readonly sourceFiles: number;
 }
 
 export interface ArchitectureValidationReport {
