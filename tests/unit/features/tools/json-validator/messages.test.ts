@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { getToolMessages } from '@/features/tools/message-registry';
 import { getJsonValidatorMessages } from '@/features/tools/developer/json-validator/messages/registry';
+import { jsonValidatorModule } from '@/features/tools/module-registry';
 
 describe('json validator messages', () => {
   it('returns exact feature dictionaries for all supported locales without fallback', () => {
@@ -11,11 +11,10 @@ describe('json validator messages', () => {
     expect(getJsonValidatorMessages('fr').actions.validate).toBe('Valider le JSON');
   });
 
-  it('registers json-validator messages through the feature message registry', () => {
-    expect(getToolMessages('json-validator', 'es')).toBe(
+  it('registers json-validator messages through the canonical tool module', () => {
+    expect(jsonValidatorModule.getMessages('es')).toBe(
       getJsonValidatorMessages('es'),
     );
-    expect(getToolMessages('missing-tool', 'es')).toBeNull();
   });
 
   it('keeps all locale dictionaries on the same structural contract', () => {

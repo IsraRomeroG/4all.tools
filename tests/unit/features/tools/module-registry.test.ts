@@ -139,24 +139,8 @@ describe('tool module registry', () => {
     }
   });
 
-  it('keeps framework imports out of domain and keeps compatibility helpers delegated', async () => {
+  it('keeps framework imports out of domain', async () => {
     const domainSources = await readSourcesUnder('src/domain');
-    const componentRegistry = await readProjectFile(
-      'src/features/tools/component-registry.ts',
-    );
-    const messageRegistry = await readProjectFile(
-      'src/features/tools/message-registry.ts',
-    );
-    const moduleRegistry = await readProjectFile(
-      'src/features/tools/module-registry.ts',
-    );
-
-    expect(moduleRegistry).toContain('jsonValidatorModule');
-    expect(componentRegistry).toContain('getToolModule');
-    expect(componentRegistry).not.toContain('JsonValidatorTool');
-    expect(componentRegistry).not.toContain('astro/runtime/server');
-    expect(messageRegistry).toContain('findToolModule');
-    expect(messageRegistry).not.toContain('getJsonValidatorMessages');
 
     for (const source of domainSources) {
       expect(source).not.toContain('.astro');
@@ -164,10 +148,6 @@ describe('tool module registry', () => {
     }
   });
 });
-
-async function readProjectFile(path: string): Promise<string> {
-  return readFile(new URL(path, PROJECT_ROOT), 'utf8');
-}
 
 async function readSourcesUnder(path: string): Promise<readonly string[]> {
   const files = await collectFiles(new URL(`${path}/`, PROJECT_ROOT));

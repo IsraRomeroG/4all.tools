@@ -21,9 +21,8 @@ import {
 } from '@/templates/composers';
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
-import { getToolComponent } from '@/features/tools/component-registry';
 import { getToolDefinition } from '@/features/tools/registry';
-import { getToolMessages } from '@/features/tools/message-registry';
+import { getToolModule } from '@/features/tools/module-registry';
 import type { RouteDefinitionProvider } from '@/routing/definitions';
 import { createRouteRegistry } from '@/routing/registry';
 import { RouteValidationError } from '@/routing/validation';
@@ -216,8 +215,9 @@ describe('json-validator end-to-end route integration', () => {
       executionType: 'client',
     });
     expect(getToolDefinition(page.toolId).id).toBe('json-validator');
-    expect(getToolComponent(page.toolId)).toBeTypeOf('function');
-    expect(getToolMessages(page.toolId, page.locale)).toMatchObject({
+    const module = getToolModule(page.toolId);
+    expect(module.component).toBeTypeOf('function');
+    expect(module.getMessages(page.locale)).toMatchObject({
       actions: {
         validate: 'Validar JSON',
       },

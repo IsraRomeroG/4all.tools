@@ -4,8 +4,8 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
 import JsonValidatorTool from '@/features/tools/developer/json-validator/Tool.astro';
-import { getToolComponent } from '@/features/tools/component-registry';
 import { getJsonValidatorMessages } from '@/features/tools/developer/json-validator/messages/registry';
+import { jsonValidatorModule } from '@/features/tools/module-registry';
 
 const PROJECT_ROOT = new URL('../../../../../', import.meta.url);
 
@@ -50,8 +50,8 @@ describe('json validator tool UI', () => {
     expect(combined).not.toContain('id="json-input"');
   });
 
-  it('is resolved by stable tool ID through the component registry', () => {
-    expect(getToolComponent('json-validator')).toBe(JsonValidatorTool);
+  it('is resolved by stable tool ID through the canonical tool module', () => {
+    expect(jsonValidatorModule.component).toBe(JsonValidatorTool);
   });
 
   it('does not derive locale from URL or import routing/content boundaries', async () => {
@@ -81,11 +81,11 @@ async function renderTool(
   const container = await AstroContainer.create();
 
   return container.renderToString(JsonValidatorTool, {
-    partial: true,
-    props: {
-      locale,
-      messages: getJsonValidatorMessages(locale),
-      instanceId,
-    },
+      partial: true,
+      props: {
+        locale,
+        messages: jsonValidatorModule.getMessages(locale),
+        instanceId,
+      },
   });
 }

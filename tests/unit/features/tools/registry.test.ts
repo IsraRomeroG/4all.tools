@@ -7,12 +7,6 @@ import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { jsonValidatorDefinition } from '@/features/tools/developer/json-validator/tool.config';
 import { JSON_VALIDATOR_TOOL_ID } from '@/features/tools/developer/json-validator/types';
 import {
-  MissingToolComponentError,
-  getToolComponent,
-  hasToolComponent,
-} from '@/features/tools/component-registry';
-import { getToolMessages } from '@/features/tools/message-registry';
-import {
   DuplicateToolDefinitionError,
   TOOL_DEFINITIONS,
   ToolTaxonomyMismatchError,
@@ -22,7 +16,10 @@ import {
   getAllToolDefinitions,
   getToolDefinition,
 } from '@/features/tools/registry';
-import { getToolModule } from '@/features/tools/module-registry';
+import {
+  MissingToolModuleError,
+  getToolModule,
+} from '@/features/tools/module-registry';
 
 const PROJECT_ROOT = new URL('../../../../', import.meta.url);
 
@@ -113,14 +110,12 @@ describe('tool feature registry', () => {
     ).toThrow(ToolTaxonomyMismatchError);
   });
 
-  it('exposes explicit component and message registry boundaries', () => {
-    expect(hasToolComponent('json-validator')).toBe(true);
-    expect(getToolComponent('json-validator')).toBeTypeOf('function');
-    expect(hasToolComponent('missing-tool')).toBe(false);
-    expect(() => getToolComponent('missing-tool')).toThrow(
-      MissingToolComponentError,
-    );
-    expect(getToolMessages('json-validator', 'en')).toMatchObject({
+  it('resolves components and messages through the canonical tool module', () => {
+    const module = getToolModule('json-validator');
+
+    expect(module.component).toBeTypeOf('function');
+    expect(() => getToolModule('missing-tool')).toThrow(MissingToolModuleError);
+    expect(module.getMessages('en')).toMatchObject({
       input: {
         label: 'Input JSON',
       },
