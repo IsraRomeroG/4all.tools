@@ -4,11 +4,7 @@ Astro static site for localized web tools.
 
 ## Project Status
 
-P00-P06 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, and the first JSON Validator vertical slice exist in source.
-
-P06R remediation has implemented the local verification workflow, static build-output checks, browser E2E coverage, explicit category route ownership, tool presentation invariants, typed tool module registration, localized accessibility fixes, indexed content queries, repository hygiene updates, and P06R-F content-index lifecycle closure. P06R-F is verified on commit `60bf9eb812adc19f4f3965fc6b01f4f436dda935`; the GitHub Actions `Verify` workflow completed successfully for that pushed commit.
-
-P07 may build on the corrected contracts and must not reintroduce implicit category routing, generic untyped tool wiring, stale content-derived route registries, duplicate published-content snapshots, or silent locale fallback.
+P00-P12 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, and P12 validation and test guardrail slimming exist in source.
 
 ## Canonical JSON Validator Routes
 
@@ -111,7 +107,7 @@ Run commands from the project root:
 | `npm run test` | Run unit and integration tests |
 | `npm run test:build` | Build the site and run static output tests against `./dist/` |
 | `npm run test:e2e` | Run Playwright browser tests against the production build |
-| `npm run verify` | Run `check`, `test`, `test:build`, and `test:e2e` |
+| `npm run verify` | Run `check`, `validate:architecture`, `test`, `test:build`, and `test:e2e` |
 | `npm run build` | Build the static site to `./dist/` |
 | `npm run preview` | Preview the production build |
 | `npm run astro -- --help` | Show Astro CLI help |
