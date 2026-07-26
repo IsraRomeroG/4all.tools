@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import type { ContentSourceSnapshot } from '@/content/queries';
 import type { ToolDefinition } from '@/domain/tools';
-import type { ArchitectureValidationContext } from '@/validation/architecture';
+import { jsonValidatorModule } from '@/features/tools/registry';
+import type { ToolModule, ToolRegistry } from '@/features/tools/registry';
 import { validateContentRelations } from '@/validation/architecture';
 
 describe('architecture relation validation', () => {
@@ -16,7 +17,7 @@ describe('architecture relation validation', () => {
     ]);
     const issues = validateContentRelations({
       content: snapshot,
-      toolDefinitions: toolDefinitions([
+      toolRegistry: toolRegistry([
         definition('published-tool', 'published'),
       ]),
     });
@@ -34,7 +35,7 @@ describe('architecture relation validation', () => {
     ]);
     const issues = validateContentRelations({
       content: snapshot,
-      toolDefinitions: toolDefinitions([
+      toolRegistry: toolRegistry([
         definition('draft-tool', 'draft'),
       ]),
     });
@@ -62,7 +63,7 @@ describe('architecture relation validation', () => {
           relatedArticleIds: ['missing'],
         }),
       ]),
-      toolDefinitions: toolDefinitions([]),
+      toolRegistry: toolRegistry([]),
     });
 
     expect(issues).toHaveLength(2);
@@ -105,17 +106,19 @@ function article(
   };
 }
 
-function toolDefinitions(definitions: readonly ToolDefinition[]) {
-  const byId = new Map(definitions.map((definition) => [definition.id, definition]));
+function toolRegistry(definitions: readonly ToolDefinition[]): ToolRegistry {
+  const modules = definitions.map((definition) => ({
+    ...jsonValidatorModule,
+    definition,
+  })) as readonly ToolModule[];
+  const byId = new Map(modules.map((module) => [module.definition.id, module]));
 
   return {
-    definitions: Object.fromEntries(
-      definitions.map((definition) => [definition.id, definition]),
-    ),
-    findToolDefinition: (toolId: string) => byId.get(toolId) ?? null,
-    getToolDefinition: (toolId: string) => byId.get(toolId)!,
-    getAllToolDefinitions: () => definitions,
-  } as ArchitectureValidationContext['toolDefinitions'];
+    modules: Object.fromEntries(modules.map((module) => [module.definition.id, module])),
+    find: (toolId) => byId.get(toolId) ?? null,
+    get: (toolId) => byId.get(toolId)!,
+    getAll: () => modules,
+  };
 }
 
 function definition(id: string, status: string): ToolDefinition {

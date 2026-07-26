@@ -9,10 +9,8 @@ import type { ToolContentEntry } from '@/content/queries/tools';
 import type { Locale } from '@/i18n/types';
 import {
   MissingCanonicalRouteError,
-  MissingToolPresentationError,
   MissingTaxonomyNodeError,
   PageModelCompositionError,
-  ToolPresentationMismatchError,
   UnsupportedLocaleError,
   composeCategoryPageModel,
   composeHomePageModel,
@@ -37,13 +35,6 @@ describe('page model composers', () => {
           description: 'Valida JSON.',
         }),
       renderContent: fixtureRenderContent,
-      toolPresentationProvider: {
-        getToolPresentation: (toolId) => ({
-          toolId,
-          primaryCategoryId: 'json',
-          executionType: 'client',
-        }),
-      },
     });
 
     expect(model.kind).toBe('tool');
@@ -105,7 +96,6 @@ describe('page model composers', () => {
           throw missing;
         },
         renderContent: fixtureRenderContent,
-        toolPresentationProvider: fixtureToolPresentationProvider,
       }),
       PageModelCompositionError,
       missing,
@@ -129,7 +119,6 @@ describe('page model composers', () => {
           throw ambiguous;
         },
         renderContent: fixtureRenderContent,
-        toolPresentationProvider: fixtureToolPresentationProvider,
       }),
       PageModelCompositionError,
       ambiguous,
@@ -148,69 +137,8 @@ describe('page model composers', () => {
             description: 'Missing.',
         }),
         renderContent: fixtureRenderContent,
-        toolPresentationProvider: fixtureToolPresentationProvider,
       }),
     ).rejects.toBeInstanceOf(MissingCanonicalRouteError);
-  });
-
-  it('fails explicitly when tool presentation metadata is missing', async () => {
-    await expect(
-      composeToolPageModel('es', 'json-validator', {
-        routeRegistry: fixtureRouteRegistry(),
-        requirePublishedToolContent: async (toolId, locale) =>
-          toolContentEntry({
-            toolId,
-            locale,
-            title: 'Validador JSON',
-            description: 'Valida JSON.',
-          }),
-        renderContent: fixtureRenderContent,
-        toolPresentationProvider: {
-          getToolPresentation: () => null,
-        },
-      }),
-    ).rejects.toBeInstanceOf(MissingToolPresentationError);
-  });
-
-  it('fails explicitly when tool presentation metadata belongs to another tool', async () => {
-    let caughtError: unknown;
-
-    try {
-      await composeToolPageModel('es', 'json-validator', {
-        routeRegistry: fixtureRouteRegistry(),
-        requirePublishedToolContent: async (toolId, locale) =>
-          toolContentEntry({
-            toolId,
-            locale,
-            title: 'Validador JSON',
-            description: 'Valida JSON.',
-          }),
-        renderContent: fixtureRenderContent,
-        toolPresentationProvider: {
-          getToolPresentation: () => ({
-            toolId: 'other-tool',
-            primaryCategoryId: 'json',
-            executionType: 'client',
-          }),
-        },
-      });
-    } catch (error) {
-      caughtError = error;
-    }
-
-    expect(caughtError).toBeInstanceOf(ToolPresentationMismatchError);
-    expect(caughtError).not.toBeInstanceOf(MissingToolPresentationError);
-    expect((caughtError as ToolPresentationMismatchError)).toMatchObject({
-      code: 'TOOL_PRESENTATION_MISMATCH',
-      requestedToolId: 'json-validator',
-      presentationToolId: 'other-tool',
-      locale: 'es',
-      context: {
-        locale: 'es',
-        targetKind: 'tool',
-        entityId: 'json-validator',
-      },
-    });
   });
 
   it('does not fall back to English when localized tool content is missing', async () => {
@@ -231,7 +159,6 @@ describe('page model composers', () => {
           throw missing;
         },
         renderContent: fixtureRenderContent,
-        toolPresentationProvider: fixtureToolPresentationProvider,
       }),
       PageModelCompositionError,
       missing,
@@ -385,7 +312,6 @@ describe('page model composers', () => {
               description: `${contentLocale} description`,
             }),
           renderContent: fixtureRenderContent,
-          toolPresentationProvider: fixtureToolPresentationProvider,
         }),
       ),
     );
@@ -416,14 +342,6 @@ const fixtureRenderContent: RenderContent = async () => ({
   Content: FixtureContent,
   headings: [],
 });
-
-const fixtureToolPresentationProvider = {
-  getToolPresentation: (toolId: ToolId) => ({
-    toolId,
-    primaryCategoryId: 'json',
-    executionType: 'client' as const,
-  }),
-};
 
 const fixtureAllIndexableSeoResolver = {
   isIndexable: () => true,

@@ -30,7 +30,6 @@ export {
   createProductionArchitectureContext,
   validateArchitecture,
   validateProductionArchitecture,
-  TOOL_MODULE_SOURCE_DIRECTORIES,
 } from './production';
 export type {
   ArchitectureValidationCounts,

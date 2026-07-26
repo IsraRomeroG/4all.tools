@@ -5,7 +5,6 @@ import type {
   ToolContentEntry,
 } from '@/content/queries';
 import type { ToolDefinition } from '@/domain/tools';
-import type { ToolModule } from '@/features/tools/module-registry';
 import type { Locale } from '@/i18n/types';
 
 import {
@@ -14,7 +13,6 @@ import {
 } from '../report';
 import type {
   ArchitectureValidationContext,
-  ArchitectureToolModuleRegistration,
 } from '../context';
 import type { ArchitectureValidationIssue } from '../types';
 
@@ -85,13 +83,13 @@ export function validateContentIdentities(
 export function validateTaxonomyReferences(
   context: Pick<
     ArchitectureValidationContext,
-    'content' | 'toolDefinitions' | 'toolTaxonomy' | 'blogTaxonomy'
+    'content' | 'toolRegistry' | 'toolTaxonomy' | 'blogTaxonomy'
   >,
 ): readonly ArchitectureValidationIssue[] {
   const issues: ArchitectureValidationIssue[] = [];
 
   for (const entry of context.content.all.tools) {
-    if (context.toolDefinitions.findToolDefinition(entry.data.toolId)) {
+    if (context.toolRegistry.find(entry.data.toolId)) {
       continue;
     }
 
@@ -220,58 +218,19 @@ export function validateTaxonomyReferences(
 export function validateToolRegistryIntegrity(
   context: Pick<
     ArchitectureValidationContext,
-    | 'toolDefinitions'
-    | 'toolModules'
-    | 'toolModuleRegistrations'
-    | 'toolModuleSourceDirectories'
-    | 'toolTaxonomy'
+    'toolRegistry' | 'toolTaxonomy'
   >,
 ): readonly ArchitectureValidationIssue[] {
   const issues: ArchitectureValidationIssue[] = [];
-  const definitions = context.toolDefinitions.getAllToolDefinitions();
-  const modules = getModuleRegistrations(context);
-  const modulesById = new Map<string, ArchitectureToolModuleRegistration>();
+  const modules = context.toolRegistry.getAll();
 
-  for (const registration of modules) {
-    const moduleId = registration.toolId;
-    const definition = context.toolDefinitions.findToolDefinition(moduleId);
-
-    if (definition === null) {
-      issues.push(
-        createArchitectureValidationIssue({
-          code: 'ORPHAN_TOOL_MODULE',
-          scope: 'tool-module',
-          message: `Tool module ${moduleId} has no registered tool definition.`,
-          entityKey: moduleId,
-        }),
-      );
-      continue;
-    }
-
-    modulesById.set(moduleId, registration);
-    validateModuleIdentity(issues, definition, registration.module);
-  }
-
-  for (const definition of definitions) {
+  for (const module of modules) {
+    const definition = module.definition;
     if (definition.status !== 'published') {
       continue;
     }
 
-    const registration = modulesById.get(definition.id);
-
-    if (!registration) {
-      issues.push(
-        createArchitectureValidationIssue({
-          code: 'MISSING_PUBLISHED_TOOL_MODULE',
-          scope: 'tool-module',
-          message: `Published tool ${definition.id} has no registered module.`,
-          entityKey: definition.id,
-        }),
-      );
-      continue;
-    }
-
-    if (registration.module.component === null || registration.module.component === undefined) {
+    if (module.component === null || module.component === undefined) {
       issues.push(
         createArchitectureValidationIssue({
           code: 'MISSING_TOOL_MODULE_COMPONENT',
@@ -282,7 +241,7 @@ export function validateToolRegistryIntegrity(
       );
     }
 
-    if (typeof registration.module.getMessages !== 'function') {
+    if (typeof module.getMessages !== 'function') {
       issues.push(
         createArchitectureValidationIssue({
           code: 'MISSING_TOOL_MODULE_MESSAGES',
@@ -293,58 +252,23 @@ export function validateToolRegistryIntegrity(
       );
     }
 
-    validateSourceDirectory(issues, definition, context.toolModuleSourceDirectories?.[definition.id]);
+    validateSourceDirectory(issues, definition);
   }
 
   return sortIssues(issues);
 }
 
-function validateModuleIdentity(
-  issues: ArchitectureValidationIssue[],
-  definition: ToolDefinition,
-  module: ToolModule,
-): void {
-  const moduleDefinition = module.definition;
-
-  if (
-    moduleDefinition.id === definition.id &&
-    moduleDefinition.taxonomy.primaryCategoryId === definition.taxonomy.primaryCategoryId &&
-    moduleDefinition.execution.type === definition.execution.type
-  ) {
-    return;
-  }
-
-  issues.push(
-    createArchitectureValidationIssue({
-      code: 'TOOL_MODULE_IDENTITY_MISMATCH',
-      scope: 'tool-module',
-      message: `Tool module metadata does not match definition ${definition.id}.`,
-      entityKey: definition.id,
-      details: {
-        definition: {
-          toolId: definition.id,
-          primaryCategoryId: definition.taxonomy.primaryCategoryId,
-          executionType: definition.execution.type,
-        },
-        module: {
-          toolId: moduleDefinition.id,
-          primaryCategoryId: moduleDefinition.taxonomy.primaryCategoryId,
-          executionType: moduleDefinition.execution.type,
-        },
-      },
-    }),
-  );
-}
-
 function validateSourceDirectory(
   issues: ArchitectureValidationIssue[],
   definition: ToolDefinition,
-  actual: string | undefined,
 ): void {
   const expected = expectedFeaturePath(definition);
-  const normalized = actual === undefined ? undefined : normalizeFeaturePath(actual);
+  const sourceDirectory = new URL(
+    `../../../features/tools/${expected}/`,
+    import.meta.url,
+  );
 
-  if (normalized === expected) {
+  if (exists(sourceDirectory)) {
     return;
   }
 
@@ -352,9 +276,9 @@ function validateSourceDirectory(
     createArchitectureValidationIssue({
       code: 'TOOL_FEATURE_PATH_MISMATCH',
       scope: 'tool-module',
-      message: `Tool module source directory for ${definition.id} must be ${expected}.`,
+      message: `Tool feature directory for ${definition.id} must exist at ${expected}.`,
       entityKey: definition.id,
-      details: { expected, actual: normalized ?? null },
+      details: { expected },
     }),
   );
 }
@@ -367,17 +291,13 @@ function expectedFeaturePath(definition: ToolDefinition): string {
   return [...categorySegments, definition.route.localized.en?.slug ?? ''].join('/');
 }
 
-function normalizeFeaturePath(path: string): string {
-  return path.replaceAll('\\', '/').replace(/^\/+|\/+$/g, '');
-}
-
-function getModuleRegistrations(
-  context: Pick<ArchitectureValidationContext, 'toolModules' | 'toolModuleRegistrations'>,
-): readonly ArchitectureToolModuleRegistration[] {
-  return context.toolModuleRegistrations ?? context.toolModules.getAllToolModules().map((module) => ({
-    toolId: module.definition.id,
-    module,
-  }));
+function exists(directory: URL): boolean {
+  try {
+    accessSync(directory);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function contentCollections(
@@ -418,3 +338,4 @@ function sortIssues(
 ): readonly ArchitectureValidationIssue[] {
   return Object.freeze([...issues].sort(compareArchitectureValidationIssues));
 }
+import { accessSync } from 'node:fs';

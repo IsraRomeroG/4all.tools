@@ -1,5 +1,3 @@
-import type { ToolId } from '@/domain/shared/ids';
-
 import {
   compareArchitectureValidationIssues,
   createArchitectureValidationIssue,
@@ -8,7 +6,7 @@ import type { ArchitectureValidationContext } from '../context';
 import type { ArchitectureValidationIssue } from '../types';
 
 export function validateContentRelations(
-  context: Pick<ArchitectureValidationContext, 'content' | 'toolDefinitions'>,
+  context: Pick<ArchitectureValidationContext, 'content' | 'toolRegistry'>,
 ): readonly ArchitectureValidationIssue[] {
   const issues: ArchitectureValidationIssue[] = [];
   const publishedArticleIds = new Set(
@@ -26,7 +24,7 @@ export function validateContentRelations(
 
   for (const entry of publishedArticles) {
     for (const relatedToolId of [...(entry.data.relatedToolIds ?? [])].sort(compareText)) {
-      const definition = context.toolDefinitions.findToolDefinition(relatedToolId as ToolId);
+      const definition = context.toolRegistry.find(relatedToolId);
 
       if (definition === null) {
         issues.push(
@@ -38,7 +36,7 @@ export function validateContentRelations(
             referencedId: relatedToolId,
           }),
         );
-      } else if (definition.status !== 'published') {
+      } else if (definition.definition.status !== 'published') {
         issues.push(
           relationIssue({
             code: 'UNPUBLISHED_RELATED_TOOL',

@@ -1,7 +1,7 @@
-import type { ToolId } from '@/domain/shared/ids';
+import type { ToolCategoryId, ToolId } from '@/domain/shared/ids';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import type { TaxonomyTree } from '@/domain/taxonomy/shared/types';
-import type { ToolCategoryId } from '@/domain/shared/ids';
+import { toolRegistry, type ToolRegistry } from '@/features/tools/registry';
 import {
   requirePublishedToolContent,
   type ToolContentEntry,
@@ -20,8 +20,6 @@ import type {
 
 import {
   MissingCanonicalRouteError,
-  MissingToolPresentationError,
-  ToolPresentationMismatchError,
   wrapCompositionCause,
 } from './errors';
 import {
@@ -29,12 +27,6 @@ import {
   type RenderContent,
 } from './rendered-content';
 import { composeRouteSeoPageModel } from './seo';
-
-export interface ToolPresentationProvider {
-  getToolPresentation(
-    toolId: ToolId,
-  ): ToolPresentationDefinition | null | Promise<ToolPresentationDefinition | null>;
-}
 
 export interface ToolPageComposerDependencies {
   readonly routeRegistry: Pick<RouteRegistry, 'getCanonical' | 'getByTarget'>;
@@ -48,7 +40,7 @@ export interface ToolPageComposerDependencies {
     locale: Locale,
   ) => Promise<ToolContentEntry>;
   readonly renderContent?: RenderContent;
-  readonly toolPresentationProvider: ToolPresentationProvider;
+  readonly toolRegistry?: Pick<ToolRegistry, 'get'>;
   readonly getGlobalMessages?: (locale: Locale) => GlobalMessages;
 }
 
@@ -86,19 +78,13 @@ export async function composeToolPageModel(
     () => renderContent(contentEntry),
     'Failed to render tool editorial content.',
   );
-  const presentation = await dependencies.toolPresentationProvider.getToolPresentation(toolId);
-
-  if (presentation === null) {
-    throw new MissingToolPresentationError(context);
-  }
-
-  if (presentation.toolId !== toolId) {
-    throw new ToolPresentationMismatchError({
-      requestedToolId: toolId,
-      presentationToolId: presentation.toolId,
-      locale,
-    });
-  }
+  const definition = (dependencies.toolRegistry ?? toolRegistry).get(toolId)
+    .definition;
+  const presentation = normalizePresentation({
+    toolId: definition.id,
+    primaryCategoryId: definition.taxonomy.primaryCategoryId,
+    executionType: definition.execution.type,
+  });
 
   const seoComposition = await composeRouteSeoPageModel(
     {
@@ -143,7 +129,7 @@ export async function composeToolPageModel(
       description: contentEntry.data.description,
       editorial,
     },
-    presentation: normalizePresentation(presentation),
+    presentation,
   });
 }
 

@@ -1,7 +1,5 @@
 import type { ToolDefinition, ToolRouteMode } from '@/domain/tools';
-import {
-  getAllToolDefinitions,
-} from '@/features/tools/registry';
+import { toolRegistry } from '@/features/tools/registry';
 import type {
   RouteDefinitionProvider,
   ToolRouteDefinition,
@@ -10,7 +8,8 @@ import type { RouteStrategy } from '@/routing/types';
 import { assertNever } from '@/routing/types';
 
 export function createToolRouteProvider(
-  getDefinitions: () => readonly ToolDefinition[] = getAllToolDefinitions,
+  getDefinitions: () => readonly ToolDefinition[] = () =>
+    toolRegistry.getAll().map((module) => module.definition),
 ): RouteDefinitionProvider {
   return {
     sourceId: 'tool-registry',

@@ -1,7 +1,7 @@
 import type { Locale } from '@/i18n/types';
 import type { RouteRegistry } from '@/routing/registry';
 import { assertNever, type RouteTarget } from '@/routing/types';
-import { toolPresentationProvider } from '@/templates/page-models/providers/tool-presentation-provider';
+import type { ToolRegistry } from '@/features/tools/registry';
 import type {
   ToolCategoryPageModel,
   ToolPageModel,
@@ -15,12 +15,11 @@ import {
 import {
   composeToolPageModel,
   type ToolPageComposerDependencies,
-  type ToolPresentationProvider,
 } from './tool';
 
 export interface RouteAdapterComposerDependencies {
   readonly routeRegistry: RouteRegistry;
-  readonly toolPresentationProvider?: ToolPresentationProvider;
+  readonly toolRegistry?: Pick<ToolRegistry, 'get'>;
   readonly composeCategoryPageModel?: (
     locale: Locale,
     categoryId: string,
@@ -66,9 +65,9 @@ export async function composeToolAreaAdapterPage(
         routeTarget.toolId,
         {
           routeRegistry: dependencies.routeRegistry,
-          toolPresentationProvider:
-            dependencies.toolPresentationProvider ??
-            toolPresentationProvider,
+          ...(dependencies.toolRegistry === undefined
+            ? {}
+            : { toolRegistry: dependencies.toolRegistry }),
         },
       );
 

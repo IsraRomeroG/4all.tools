@@ -1,13 +1,6 @@
 import {
-  getAllToolDefinitions,
-  getToolDefinition,
-  findToolDefinition,
-  TOOL_DEFINITIONS,
+  toolRegistry,
 } from '@/features/tools/registry';
-import {
-  getAllToolModules,
-  type ToolModule,
-} from '@/features/tools/module-registry';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { getDeliveryRouteRegistry } from '@/templates/composers';
@@ -18,7 +11,6 @@ import {
   toolRouteProvider,
 } from '@/routing/providers';
 import type { RouteDefinition } from '@/routing/definitions';
-import type { ToolId } from '@/domain/shared/ids';
 
 import {
   getContentSourceSnapshot,
@@ -37,32 +29,13 @@ import type {
 } from './context';
 import type { ArchitectureValidationReport } from './types';
 
-export const TOOL_MODULE_SOURCE_DIRECTORIES: Readonly<Record<ToolId, string>> = Object.freeze({
-  'json-validator': 'developer/json-validator',
-});
-
 export async function createProductionArchitectureContext(): Promise<ArchitectureValidationContext> {
   const content = await getContentSourceSnapshot();
   const routeDefinitions = await collectProductionRouteDefinitions();
-  const modules = getAllToolModules();
-  const toolModuleRegistrations = Object.freeze(
-    modules.map((module) => ({
-      toolId: module.definition.id,
-      module,
-    })),
-  );
 
   return Object.freeze({
     content,
-    toolDefinitions: {
-      definitions: TOOL_DEFINITIONS,
-      findToolDefinition,
-      getToolDefinition,
-      getAllToolDefinitions,
-    },
-    toolModules: createToolModulePort(modules),
-    toolModuleRegistrations,
-    toolModuleSourceDirectories: TOOL_MODULE_SOURCE_DIRECTORIES,
+    toolRegistry,
     toolTaxonomy,
     blogTaxonomy,
     routeDefinitions,
@@ -89,8 +62,8 @@ export async function validateArchitecture(input: {
 
   return createArchitectureValidationReport(issues, {
     contentEntries,
-    toolDefinitions: context.toolDefinitions.getAllToolDefinitions().length,
-    toolModules: context.toolModules.getAllToolModules().length,
+    toolDefinitions: context.toolRegistry.getAll().length,
+    toolModules: context.toolRegistry.getAll().length,
     routeDefinitions: context.routeDefinitions.length,
     routeRecords: context.routeRegistry.getAll().length,
   });
@@ -126,19 +99,6 @@ async function collectProductionRouteDefinitions(): Promise<readonly RouteDefini
       ),
     ),
   );
-}
-
-function createToolModulePort(modules: readonly ToolModule[]) {
-  const modulesById = new Map(modules.map((module) => [module.definition.id, module]));
-
-  return Object.freeze({
-    modules: Object.freeze(
-      Object.fromEntries(modules.map((module) => [module.definition.id, module])),
-    ),
-    findToolModule: (toolId: ToolId) => modulesById.get(toolId) ?? null,
-    getToolModule: (toolId: ToolId) => modulesById.get(toolId)!,
-    getAllToolModules: () => modules,
-  });
 }
 
 function routeDefinitionId(definition: RouteDefinition): string {
