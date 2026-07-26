@@ -41,6 +41,7 @@ function toArticleRouteDefinitionRoute(
       strategy: 'hierarchical',
       localized: Object.freeze(localized),
       status: entry.data.status,
+      locale: entry.data.locale,
       sourceId: entry.id,
     }),
   });
