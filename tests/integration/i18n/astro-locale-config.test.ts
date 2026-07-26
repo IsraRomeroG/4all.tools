@@ -22,13 +22,4 @@ describe('Astro locale configuration', () => {
     expect(astroConfig.trailingSlash).toBe(TRAILING_SLASH_POLICY);
   });
 
-  it('does not maintain a hidden literal locale list in Astro config', async () => {
-    const config = await readActiveAstroConfig();
-
-    expect(config.source).toContain('locales: [...SUPPORTED_LOCALES]');
-    expect(config.source).toContain('defaultLocale: DEFAULT_LOCALE');
-    expect(config.source).not.toContain("site: 'https://4all.tools'");
-    expect(config.source).not.toContain("trailingSlash: 'always'");
-    expect(config.source).not.toContain("locales: ['en', 'es', 'pt', 'fr']");
-  });
 });

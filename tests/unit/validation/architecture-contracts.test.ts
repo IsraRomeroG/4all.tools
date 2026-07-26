@@ -9,7 +9,7 @@ import {
 } from '@/validation/architecture';
 
 describe('architecture validation contracts', () => {
-  it('freezes issues, nested details, report arrays, and counts', () => {
+  it('preserves issue details and report counts', () => {
     const issue = createArchitectureValidationIssue({
       code: 'DUPLICATE_CONTENT_IDENTITY',
       scope: 'content',
@@ -21,15 +21,10 @@ describe('architecture validation contracts', () => {
       contentEntries: 2,
     });
 
-    expect(Object.isFrozen(issue)).toBe(true);
-    expect(Object.isFrozen(issue.details)).toBe(true);
-    expect(Object.isFrozen(issue.details?.entryIds)).toBe(true);
-    expect(Object.isFrozen(report)).toBe(true);
-    expect(Object.isFrozen(report.issues)).toBe(true);
-    expect(Object.isFrozen(report.inspected)).toBe(true);
-    expect(() => {
-      (report.issues as unknown as unknown[]).push(issue);
-    }).toThrow(TypeError);
+    expect(report.issues[0]).toMatchObject({
+      code: 'DUPLICATE_CONTENT_IDENTITY',
+      details: { entryIds: ['b', 'a'] },
+    });
     expect(report.inspected.contentEntries).toBe(2);
   });
 

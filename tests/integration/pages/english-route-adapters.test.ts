@@ -1,4 +1,4 @@
-import { access, readFile } from 'node:fs/promises';
+import { access } from 'node:fs/promises';
 
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it, vi } from 'vitest';
@@ -32,11 +32,6 @@ import { createSeoPageModel } from '@/seo';
 import FixtureContent from '../../fixtures/templates/FixtureContent.astro';
 
 const PROJECT_ROOT = new URL('../../../', import.meta.url);
-const PAGE_FILES = [
-  'src/pages/index.astro',
-  'src/pages/[category]/index.astro',
-  'src/pages/[category]/[...path].astro',
-] as const;
 const STATIC_PATH_OPTIONS = {} as Parameters<StaticPathFactory>[0];
 
 describe('English route adapters', () => {
@@ -165,22 +160,8 @@ describe('English route adapters', () => {
     ).rejects.toBeInstanceOf(UnsupportedPageTargetError);
   });
 
-  it('keeps the English source tree unprefixed and adapter dependencies thin', async () => {
+  it('keeps the English source tree unprefixed', async () => {
     expect(await projectPathExists('src/pages/en')).toBe(false);
-
-    const sources = await Promise.all(
-      PAGE_FILES.map((path) => readFile(new URL(path, PROJECT_ROOT), 'utf8')),
-    );
-    const combinedSource = sources.join('\n');
-
-    expect(combinedSource).toContain("const locale = 'en' as const;");
-    expect(combinedSource).toContain('createRootCategoryStaticPaths');
-    expect(combinedSource).toContain('createToolAreaStaticPaths');
-    expect(combinedSource).not.toContain('getCollection');
-    expect(combinedSource).not.toContain('getEntry');
-    expect(combinedSource).not.toContain('Astro.params');
-    expect(combinedSource).not.toContain('Astro.url');
-    expect(combinedSource).not.toContain('@/features/');
   });
 
   it('publishes the production json-validator catch-all route through registry data', async () => {

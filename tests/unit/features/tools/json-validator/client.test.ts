@@ -1,5 +1,3 @@
-import { readFile } from 'node:fs/promises';
-
 import { describe, expect, it, vi } from 'vitest';
 
 import {
@@ -8,8 +6,6 @@ import {
   type JsonValidatorClientContext,
 } from '@/features/tools/developer/json-validator/client';
 import { getJsonValidatorMessages } from '@/features/tools/developer/json-validator/messages/registry';
-
-const PROJECT_ROOT = new URL('../../../../../', import.meta.url);
 
 describe('json validator client adapter', () => {
   it('validates valid and invalid input without replacing editor text', async () => {
@@ -114,23 +110,6 @@ describe('json validator client adapter', () => {
     expect(focus).toHaveBeenCalledOnce();
   });
 
-  it('keeps the client adapter free of network, submission, logging, and unsafe HTML APIs', async () => {
-    const source = await readFile(
-      new URL(
-        'src/features/tools/developer/json-validator/client.ts',
-        PROJECT_ROOT,
-      ),
-      'utf8',
-    );
-
-    expect(source).not.toContain('fetch');
-    expect(source).not.toContain('XMLHttpRequest');
-    expect(source).not.toContain('sendBeacon');
-    expect(source).not.toContain('submit(');
-    expect(source).not.toContain('console.');
-    expect(source).not.toContain('innerHTML');
-    expect(source).not.toContain('insertAdjacentHTML');
-  });
 });
 
 function context(

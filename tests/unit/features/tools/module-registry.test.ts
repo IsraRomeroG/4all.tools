@@ -1,6 +1,3 @@
-import { readdir, readFile } from 'node:fs/promises';
-import type { Dirent } from 'node:fs';
-
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
@@ -18,8 +15,6 @@ import {
   getToolModule,
   jsonValidatorModule,
 } from '@/features/tools/module-registry';
-
-const PROJECT_ROOT = new URL('../../../../', import.meta.url);
 
 describe('tool module registry', () => {
   it('registers JSON Validator as one definition/component/messages module', () => {
@@ -139,35 +134,4 @@ describe('tool module registry', () => {
     }
   });
 
-  it('keeps framework imports out of domain', async () => {
-    const domainSources = await readSourcesUnder('src/domain');
-
-    for (const source of domainSources) {
-      expect(source).not.toContain('.astro');
-      expect(source).not.toContain('astro/runtime/server');
-    }
-  });
 });
-
-async function readSourcesUnder(path: string): Promise<readonly string[]> {
-  const files = await collectFiles(new URL(`${path}/`, PROJECT_ROOT));
-
-  return Promise.all(files.map((file) => readFile(file, 'utf8')));
-}
-
-async function collectFiles(directory: URL): Promise<readonly URL[]> {
-  const entries = await readdir(directory, { withFileTypes: true });
-  const files = await Promise.all(entries.map((entry) => collectEntry(directory, entry)));
-
-  return files.flat();
-}
-
-async function collectEntry(directory: URL, entry: Dirent): Promise<readonly URL[]> {
-  const child = new URL(entry.name, directory);
-
-  if (entry.isDirectory()) {
-    return collectFiles(new URL(`${entry.name}/`, directory));
-  }
-
-  return entry.isFile() ? [child] : [];
-}

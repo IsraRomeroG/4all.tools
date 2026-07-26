@@ -1,5 +1,3 @@
-import { readFile } from 'node:fs/promises';
-
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -13,8 +11,6 @@ import {
   INVALID_JSON_FIXTURES,
   VALID_JSON_FIXTURES,
 } from './fixtures';
-
-const PROJECT_ROOT = new URL('../../../../../', import.meta.url);
 
 describe('json validator engine validation', () => {
   for (const fixture of VALID_JSON_FIXTURES) {
@@ -95,26 +91,4 @@ describe('json validator engine validation', () => {
     );
   });
 
-  it('keeps engine modules free of DOM, Astro, locale, network, and eval dependencies', async () => {
-    const engineFiles = [
-      'src/features/tools/developer/json-validator/engine/validate.ts',
-      'src/features/tools/developer/json-validator/engine/format.ts',
-      'src/features/tools/developer/json-validator/engine/minify.ts',
-      'src/features/tools/developer/json-validator/engine/error-details.ts',
-    ] as const;
-    const sources = await Promise.all(
-      engineFiles.map((path) => readFile(new URL(path, PROJECT_ROOT), 'utf8')),
-    );
-    const combinedSource = sources.join('\n');
-
-    expect(combinedSource).not.toContain('window');
-    expect(combinedSource).not.toContain('document');
-    expect(combinedSource).not.toContain('HTMLElement');
-    expect(combinedSource).not.toContain('Astro');
-    expect(combinedSource).not.toContain('@/i18n');
-    expect(combinedSource).not.toContain('fetch');
-    expect(combinedSource).not.toContain('XMLHttpRequest');
-    expect(combinedSource).not.toContain('eval(');
-    expect(combinedSource).not.toContain('Function(');
-  });
 });

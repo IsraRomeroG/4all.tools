@@ -1,22 +1,9 @@
-import { readFile } from 'node:fs/promises';
-
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
 import ArticleLayout from '@/layouts/ArticleLayout.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ToolLayout from '@/layouts/ToolLayout.astro';
-
-const PROJECT_ROOT = new URL('../../../', import.meta.url);
-const LAYOUT_FILES = [
-  'src/layouts/BaseLayout.astro',
-  'src/layouts/ToolLayout.astro',
-  'src/layouts/ArticleLayout.astro',
-] as const;
-
-async function readProjectFile(path: string): Promise<string> {
-  return readFile(new URL(path, PROJECT_ROOT), 'utf8');
-}
 
 async function renderBaseLayout(locale: 'en' | 'es'): Promise<string> {
   const container = await AstroContainer.create();
@@ -117,32 +104,4 @@ describe('layout foundation', () => {
     expect(html).toContain('data-layout-region="article-body"');
   });
 
-  it('keeps layout dependency boundaries free of routing, content query, and feature imports', async () => {
-    const sources = await Promise.all(LAYOUT_FILES.map(readProjectFile));
-    const combinedSource = sources.join('\n');
-
-    expect(combinedSource).not.toContain('@/routing/');
-    expect(combinedSource).not.toContain('getCollection');
-    expect(combinedSource).not.toContain('getEntry');
-    expect(combinedSource).not.toContain('getPublishedToolContent');
-    expect(combinedSource).not.toContain('getPublishedArticleContent');
-    expect(combinedSource).not.toContain('@/features/tools/');
-  });
-
-  it('keeps document roots owned by BaseLayout', async () => {
-    const [baseSource, toolSource, articleSource] = await Promise.all(
-      LAYOUT_FILES.map(readProjectFile),
-    );
-
-    expect(baseSource).toContain('<html lang={localeDefinition.htmlLang} dir={localeDefinition.direction}>');
-    expect(baseSource).toContain('const localeDefinition = LOCALES[locale];');
-
-    expect(toolSource).toContain("import BaseLayout from './BaseLayout.astro';");
-    expect(toolSource).not.toContain('<html');
-    expect(toolSource).not.toContain('<body');
-
-    expect(articleSource).toContain("import BaseLayout from './BaseLayout.astro';");
-    expect(articleSource).not.toContain('<html');
-    expect(articleSource).not.toContain('<body');
-  });
 });

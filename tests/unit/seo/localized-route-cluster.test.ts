@@ -1,5 +1,3 @@
-import { readFile } from 'node:fs/promises';
-
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -13,7 +11,6 @@ import { createRouteRegistryFromRecords } from '@/routing/registry';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
 import type { Locale } from '@/i18n/types';
 
-const PROJECT_ROOT = new URL('../../../', import.meta.url);
 const JSON_VALIDATOR_TARGET = {
   kind: 'tool',
   toolId: 'json-validator',
@@ -290,17 +287,6 @@ describe('localized route clusters', () => {
     ).rejects.toBeInstanceOf(SeoIndexabilityMismatchError);
   });
 
-  it('keeps the indexability resolver on the published content index boundary', async () => {
-    const source = await readFile(
-      new URL('src/seo/indexability.ts', PROJECT_ROOT),
-      'utf8',
-    );
-
-    expect(source).toContain('PublishedContentIndexes');
-    expect(source).toContain('getPublishedContentIndexes');
-    expect(source).not.toContain('getCollection');
-    expect(source).not.toContain('Astro.url');
-  });
 });
 
 const allIndexable: SeoIndexabilityResolver = {

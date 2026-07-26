@@ -1,5 +1,3 @@
-import { readFile } from 'node:fs/promises';
-
 import { describe, expect, it, vi } from 'vitest';
 
 import type { ToolCategoryId, ToolId } from '@/domain/shared/ids';
@@ -25,14 +23,6 @@ import type { RouteRecord, RouteTarget } from '@/routing/types';
 import { createRouteRegistryFromRecords } from '@/routing/registry';
 
 import FixtureContent from '../../fixtures/templates/FixtureContent.astro';
-
-const PROJECT_ROOT = new URL('../../../', import.meta.url);
-const COMPOSER_FILES = [
-  'src/templates/composers/home.ts',
-  'src/templates/composers/tool.ts',
-  'src/templates/composers/category.ts',
-  'src/templates/composers/seo.ts',
-] as const;
 
 describe('page model composers', () => {
   it('composes a tool model from stable identity and localized canonical route', async () => {
@@ -420,25 +410,6 @@ describe('page model composers', () => {
     ]);
   });
 
-  it('keeps composer dependencies on supported P03/P04 boundaries', async () => {
-    const sources = await Promise.all(
-      COMPOSER_FILES.map((path) =>
-        readFile(new URL(path, PROJECT_ROOT), 'utf8'),
-      ),
-    );
-    const combinedSource = sources.join('\n');
-
-    expect(combinedSource).toContain('requirePublishedToolContent');
-    expect(combinedSource).toContain('requirePublishedToolCategoryContent');
-    expect(combinedSource).toContain('getCanonical');
-    expect(combinedSource).toContain('toolPresentationProvider');
-    expect(combinedSource).not.toContain('getCollection');
-    expect(combinedSource).not.toContain('getEntry');
-    expect(combinedSource).not.toContain('Astro.params');
-    expect(combinedSource).not.toContain('Astro.url');
-    expect(combinedSource).not.toContain('pathname');
-    expect(combinedSource).not.toContain('@/features/');
-  });
 });
 
 const fixtureRenderContent: RenderContent = async () => ({

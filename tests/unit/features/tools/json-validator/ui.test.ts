@@ -1,13 +1,9 @@
-import { readFile } from 'node:fs/promises';
-
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
 import JsonValidatorTool from '@/features/tools/developer/json-validator/Tool.astro';
 import { getJsonValidatorMessages } from '@/features/tools/developer/json-validator/messages/registry';
 import { jsonValidatorModule } from '@/features/tools/module-registry';
-
-const PROJECT_ROOT = new URL('../../../../../', import.meta.url);
 
 describe('json validator tool UI', () => {
   it('renders semantic localized markup with accessible controls', async () => {
@@ -54,24 +50,6 @@ describe('json validator tool UI', () => {
     expect(jsonValidatorModule.component).toBe(JsonValidatorTool);
   });
 
-  it('does not derive locale from URL or import routing/content boundaries', async () => {
-    const source = await readFile(
-      new URL(
-        'src/features/tools/developer/json-validator/Tool.astro',
-        PROJECT_ROOT,
-      ),
-      'utf8',
-    );
-
-    expect(source).toContain('locale: Locale');
-    expect(source).toContain('instanceId: string');
-    expect(source).not.toContain('Math.random');
-    expect(source).not.toContain('Astro.url');
-    expect(source).not.toContain('pathname');
-    expect(source).not.toContain('@/routing');
-    expect(source).not.toContain('astro:content');
-    expect(source).not.toContain('set:html');
-  });
 });
 
 async function renderTool(

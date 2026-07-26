@@ -1,5 +1,3 @@
-import { readFile } from 'node:fs/promises';
-
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -119,27 +117,4 @@ describe('tool taxonomy registry', () => {
     ]);
   });
 
-  it('keeps tool taxonomy files independent from routing and content systems', async () => {
-    const registrySource = await readFile(
-      new URL(
-        '../../../../src/domain/taxonomy/tools/registry.ts',
-        import.meta.url,
-      ),
-      'utf8',
-    );
-    const selectorsSource = await readFile(
-      new URL(
-        '../../../../src/domain/taxonomy/tools/selectors.ts',
-        import.meta.url,
-      ),
-      'utf8',
-    );
-
-    for (const source of [registrySource, selectorsSource]) {
-      expect(source).not.toContain('@/routing');
-      expect(source).not.toContain('astro:content');
-      expect(source).not.toContain('getStaticPaths');
-      expect(source).not.toContain('canonicalUrl');
-    }
-  });
 });

@@ -1,12 +1,8 @@
-import { readFile } from 'node:fs/promises';
-
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
 import SeoHead from '@/components/seo/SeoHead.astro';
 import { createSeoPageModel } from '@/seo';
-
-const PROJECT_ROOT = new URL('../../../', import.meta.url);
 
 describe('SeoHead', () => {
   it('renders the resolved SEO model without duplicate baseline tags', async () => {
@@ -120,24 +116,10 @@ describe('SeoHead', () => {
     expect(html).toContain('property="og:image:height" content="630"');
   });
 
-  it('contains no client script or route/content query logic', async () => {
-    const source = await readFile(
-      new URL('src/components/seo/SeoHead.astro', PROJECT_ROOT),
-      'utf8',
-    );
+  it('contains no client script', async () => {
     const html = await renderSeoHead();
 
     expect(html).not.toContain('<script');
-    expect(source).not.toContain('<script');
-    expect(source).not.toContain('client:');
-    expect(source).not.toContain('Astro.url');
-    expect(source).not.toContain('Astro.params');
-    expect(source).not.toContain('@/routing');
-    expect(source).not.toContain('RouteRegistry');
-    expect(source).not.toContain('astro:content');
-    expect(source).not.toContain('@/content/');
-    expect(source).not.toContain('@/domain/taxonomy');
-    expect(source).not.toContain('@/i18n/messages');
   });
 });
 

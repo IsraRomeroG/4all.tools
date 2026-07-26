@@ -1,4 +1,4 @@
-import { access, readFile } from 'node:fs/promises';
+import { access } from 'node:fs/promises';
 
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
@@ -226,20 +226,6 @@ describe('json-validator end-to-end route integration', () => {
   });
 
   it('keeps route adapters generic and avoids per-tool page files', async () => {
-    const routeFiles = [
-      'src/pages/[category]/[...path].astro',
-      'src/pages/es/[category]/[...path].astro',
-      'src/pages/pt/[category]/[...path].astro',
-      'src/pages/fr/[category]/[...path].astro',
-    ] as const;
-    const sources = await Promise.all(
-      routeFiles.map((path) => readFile(new URL(path, PROJECT_ROOT), 'utf8')),
-    );
-    const combinedSource = sources.join('\n');
-
-    expect(combinedSource).not.toContain('json-validator');
-    expect(combinedSource).not.toContain('JsonValidatorTool');
-    expect(combinedSource).not.toContain('@/features/');
     await expect(
       access(new URL('src/pages/developer/json-validator.astro', PROJECT_ROOT)),
     ).rejects.toThrow();

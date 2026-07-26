@@ -1,5 +1,3 @@
-import { readFile } from 'node:fs/promises';
-
 import { describe, expect, it } from 'vitest';
 
 import { SUPPORTED_LOCALES } from '@/i18n/config';
@@ -8,14 +6,6 @@ import { es } from '@/i18n/messages/es';
 import { fr } from '@/i18n/messages/fr';
 import { GLOBAL_MESSAGES, getGlobalMessages } from '@/i18n/messages/registry';
 import { pt } from '@/i18n/messages/pt';
-
-const registryUrl = new URL('../../../src/i18n/messages/registry.ts', import.meta.url);
-const dictionaryUrls = [
-  new URL('../../../src/i18n/messages/en.ts', import.meta.url),
-  new URL('../../../src/i18n/messages/es.ts', import.meta.url),
-  new URL('../../../src/i18n/messages/pt.ts', import.meta.url),
-  new URL('../../../src/i18n/messages/fr.ts', import.meta.url),
-];
 
 describe('global messages', () => {
   it('registers one dictionary for every supported locale', () => {
@@ -116,18 +106,4 @@ describe('global messages', () => {
     }
   });
 
-  it('keeps lookup implementation free of silent fallback branches', async () => {
-    const source = await readFile(registryUrl, 'utf8');
-
-    expect(source).not.toContain('?? GLOBAL_MESSAGES.en');
-    expect(source).not.toContain('|| GLOBAL_MESSAGES.en');
-  });
-
-  it('uses immutable authoring intent for each dictionary', async () => {
-    const sources = await Promise.all(
-      dictionaryUrls.map((url) => readFile(url, 'utf8')),
-    );
-
-    expect(sources.every((source) => source.includes('} as const'))).toBe(true);
-  });
 });

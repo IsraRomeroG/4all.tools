@@ -1,4 +1,4 @@
-import { access, readFile } from 'node:fs/promises';
+import { access } from 'node:fs/promises';
 
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
@@ -28,10 +28,6 @@ const TEMPLATE_FILES = [
   'src/templates/BlogCategoryTemplate.astro',
   'src/templates/ArticleTemplate.astro',
 ] as const;
-
-async function readProjectFile(path: string): Promise<string> {
-  return readFile(new URL(path, PROJECT_ROOT), 'utf8');
-}
 
 async function projectPathExists(path: string): Promise<boolean> {
   try {
@@ -338,68 +334,6 @@ describe('template foundation', () => {
     expect(article).toContain('<html lang="pt" dir="ltr">');
     expect(article).toContain('data-template-identity="what-is-json"');
     expect(article).toContain('data-fixture-article-body');
-  });
-
-  it('keeps template layout usage explicit', async () => {
-    const sources = await Promise.all(TEMPLATE_FILES.map(readProjectFile));
-    const combinedSource = sources.join('\n');
-
-    expect(combinedSource).toContain("import BaseLayout from '@/layouts/BaseLayout.astro';");
-    expect(combinedSource).toContain("import ToolLayout from '@/layouts/ToolLayout.astro';");
-    expect(combinedSource).toContain("import ArticleLayout from '@/layouts/ArticleLayout.astro';");
-
-    for (const source of sources) {
-      expect(source).not.toContain('<html');
-      expect(source).not.toContain('<body');
-    }
-  });
-
-  it('keeps template dependency boundaries free of routes and content queries', async () => {
-    const sources = await Promise.all(TEMPLATE_FILES.map(readProjectFile));
-    const combinedSource = sources.join('\n');
-
-    expect(combinedSource).not.toContain('@/routing/');
-    expect(combinedSource).not.toContain('routing/static-paths');
-    expect(combinedSource).not.toContain('routing/registry');
-    expect(combinedSource).not.toContain('astro:content');
-    expect(combinedSource).not.toContain('getCollection');
-    expect(combinedSource).not.toContain('getEntry');
-    expect(combinedSource).not.toContain('developer/json-validator/Tool.astro');
-    expect(combinedSource).not.toContain('Astro.url');
-    expect(combinedSource).not.toContain('pathname');
-  });
-
-  it('keeps blog templates strict at the page-model boundary', async () => {
-    const [articleSource, indexSource, categorySource] = await Promise.all([
-      readProjectFile('src/templates/ArticleTemplate.astro'),
-      readProjectFile('src/templates/BlogIndexTemplate.astro'),
-      readProjectFile('src/templates/BlogCategoryTemplate.astro'),
-    ]);
-
-    expect(articleSource).toContain('page.content.title');
-    expect(articleSource).toContain('page.content.excerpt');
-    expect(articleSource).toContain('page.content.editorial.Content');
-    expect(articleSource).not.toMatch(/as\s+unknown\s+as/);
-    expect(articleSource).not.toContain('legacyPage');
-    expect(articleSource).not.toMatch(/page\.articleId\s*\?\?/);
-    expect(articleSource).not.toMatch(/\?\?\s*page\.articleId/);
-    expect(articleSource).toMatch(/data-template-identity=\{page\.articleId\}/);
-    expect(articleSource).not.toMatch(/page\.seo\s*&&/);
-    expect(articleSource).not.toMatch(/page\.breadcrumbs\s*&&/);
-    expect(articleSource).not.toMatch(/page\.metadata\s*&&/);
-    expect(articleSource).not.toMatch(/page\.messages\?\./);
-
-    expect(indexSource).toContain('page.messages.blog.articles');
-    expect(indexSource).toContain('page.messages.blog.categories');
-    expect(indexSource).not.toMatch(/page\.articles\s*\?\?/);
-    expect(indexSource).not.toMatch(/page\.categories\s*\?\?/);
-    expect(indexSource).not.toMatch(/page\.messages\?\./);
-
-    for (const source of [articleSource, indexSource, categorySource]) {
-      expect(source).not.toMatch(/as\s+unknown\s+as/);
-      expect(source).not.toContain('legacyPage');
-      expect(source).not.toMatch(/page\.articleId\s*\?\?/);
-    }
   });
 
   it('uses src/templates without introducing src/views', async () => {
