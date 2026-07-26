@@ -1,12 +1,9 @@
 import type { Locale } from '@/i18n/types';
-import type { ToolId } from '@/domain/shared/ids';
 
 export type PageModelCompositionErrorCode =
   | 'PAGE_MODEL_COMPOSITION_FAILED'
   | 'MISSING_CANONICAL_ROUTE'
-  | 'MISSING_TOOL_PRESENTATION'
   | 'MISSING_TAXONOMY_NODE'
-  | 'TOOL_PRESENTATION_MISMATCH'
   | 'ARTICLE_ROUTE_CONTENT_MISMATCH'
   | 'UNKNOWN_BLOG_CATEGORY_REFERENCE'
   | 'UNSUPPORTED_LOCALE'
@@ -54,43 +51,6 @@ export class MissingTaxonomyNodeError extends PageModelCompositionError {
       context,
     );
     this.name = 'MissingTaxonomyNodeError';
-  }
-}
-
-export class MissingToolPresentationError extends PageModelCompositionError {
-  constructor(context: Required<PageModelCompositionContext>) {
-    super(
-      'MISSING_TOOL_PRESENTATION',
-      `No tool presentation metadata found for ${context.entityId}:${context.locale}.`,
-      context,
-    );
-    this.name = 'MissingToolPresentationError';
-  }
-}
-
-export class ToolPresentationMismatchError extends PageModelCompositionError {
-  readonly requestedToolId: ToolId;
-  readonly presentationToolId: ToolId;
-  readonly locale: Locale;
-
-  constructor(params: {
-    readonly requestedToolId: ToolId;
-    readonly presentationToolId: ToolId;
-    readonly locale: Locale;
-  }) {
-    super(
-      'TOOL_PRESENTATION_MISMATCH',
-      `Tool presentation metadata for ${params.requestedToolId}:${params.locale} returned tool ID ${params.presentationToolId}.`,
-      {
-        locale: params.locale,
-        targetKind: 'tool',
-        entityId: params.requestedToolId,
-      },
-    );
-    this.name = 'ToolPresentationMismatchError';
-    this.requestedToolId = params.requestedToolId;
-    this.presentationToolId = params.presentationToolId;
-    this.locale = params.locale;
   }
 }
 

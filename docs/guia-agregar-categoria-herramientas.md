@@ -529,9 +529,15 @@ Se deben tocar, según corresponda:
 src/features/tools/<area>/<tool>/tool.config.ts
 src/features/tools/<area>/<tool>/Tool.astro
 src/features/tools/<area>/<tool>/messages/
-src/features/tools/module-registry.ts
+src/features/tools/registry.ts
 src/content/tools/{locale}/security/credentials/<tool>.md
 ```
+
+La herramienta se registra una sola vez en `registry.ts`, como un
+`ToolModule` que reúne `definition`, `component` y `getMessages`. El
+`ToolRegistry` deriva de esos módulos las búsquedas de definición y el resto
+de consumidores; no se agrega una entrada paralela para presentación,
+componentes, mensajes ni directorios de origen.
 
 La definición de la herramienta debe referenciar la taxonomía:
 

@@ -4,7 +4,7 @@ Astro static site for localized web tools.
 
 ## Project Status
 
-P00-P12 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, and P12 validation and test guardrail slimming exist in source.
+P00-P13 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, validation/test guardrail slimming, and the single tool registry exist in source.
 
 ## Canonical JSON Validator Routes
 
@@ -43,9 +43,6 @@ UNKNOWN_BLOG_CATEGORY_CONTENT_ID
 UNKNOWN_ARTICLE_PRIMARY_CATEGORY
 UNKNOWN_ARTICLE_SECONDARY_CATEGORY
 ARTICLE_TRANSLATION_PRIMARY_CATEGORY_MISMATCH
-MISSING_PUBLISHED_TOOL_MODULE
-ORPHAN_TOOL_MODULE
-TOOL_MODULE_IDENTITY_MISMATCH
 MISSING_TOOL_MODULE_COMPONENT
 MISSING_TOOL_MODULE_MESSAGES
 TOOL_FEATURE_PATH_MISMATCH
@@ -72,11 +69,10 @@ Taxonomy nodes do not automatically receive public category URLs. Category pages
 
 Adding a production tool requires all of the following:
 
-- a typed tool module in `src/features/tools/`;
+- one typed `ToolModule` registration in `src/features/tools/registry.ts` containing the definition, Astro component, and localized-message resolver;
 - localized tool messages for every supported locale;
 - tool content entries and any required category content entries;
 - explicit route definitions for every public URL;
-- registry coverage for module, component, messages, and presentation identity;
 - unit, integration, build, and browser coverage appropriate to the feature.
 
 Published content queries must not silently fall back to another locale. Missing localized content is either `null` or a `ContentNotFoundError` for required APIs; duplicate exact matches remain `AmbiguousContentError`.

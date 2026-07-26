@@ -120,13 +120,17 @@ Agrupa funcionalidades concretas del producto. Actualmente la implementación pr
 
 ### `src/features/tools/`
 
-Contiene los registros que conectan una herramienta completa:
+Contiene cada herramienta como un único `ToolModule` y el `ToolRegistry`
+canónico que lo indexa:
 
 - definición de dominio;
 - componente visual;
-- mensajes localizados;
-- configuración de presentación;
-- validaciones de identidad y consistencia.
+- resolver de mensajes localizados;
+- validaciones de identidad y consistencia derivadas del mismo registro.
+
+Para agregar una herramienta se añade un módulo a
+`src/features/tools/registry.ts`; no se sincronizan registros independientes
+de definición, presentación o directorio de origen.
 
 ### `src/features/tools/developer/json-validator/`
 

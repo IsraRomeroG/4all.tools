@@ -113,9 +113,7 @@
 
 | Archivo o grupo | Descripción | Estado |
 |---|---|---|
-| `src/features/tools/definition-registry.ts` | Valida definiciones, IDs, taxonomía y duplicados. | Activo |
-| `src/features/tools/module-registry.ts` | Enlaza definición, componente y mensajes de cada herramienta. | Activo |
-| `src/features/tools/registry.ts` | Fachada pública del registro de herramientas. | Activo |
+| `src/features/tools/registry.ts` | Registro canónico único de `ToolModule`, con definición, componente, mensajes, validación e índice. | Activo |
 | `src/features/tools/developer/json-validator/tool.config.ts` | Configuración canónica, rutas, taxonomía, ejecución cliente y publicación. | Activo |
 | `src/features/tools/developer/json-validator/Tool.astro` | UI ejecutable, editor, acciones, resultado y accesibilidad. | Activo |
 | `src/features/tools/developer/json-validator/client.ts` | Controlador de validación, formato, minificación, copia y limpieza. | Activo |
@@ -236,7 +234,7 @@ src/pages/*/[category]/[...path].astro
   → static-path factories + delivery route registry
   → tool/category route providers
   → ToolTemplate.astro
-  → module-registry.ts
+  → features/tools/registry.ts (ToolModule + ToolRegistry)
   → json-validator/Tool.astro + mensajes localizados
   → client.ts
   → engine/{validate,format,minify,error-details}.ts

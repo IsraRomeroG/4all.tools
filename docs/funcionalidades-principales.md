@@ -48,18 +48,15 @@ El sistema no sustituye silenciosamente una traducción ausente por la versión 
 
 ## 4. Sistema de herramientas
 
-Cada herramienta se registra mediante:
+Cada herramienta se registra una sola vez como un `ToolModule` en
+`src/features/tools/registry.ts`. El módulo contiene el identificador y la
+definición de dominio, el componente visual y el resolver de mensajes
+localizados. `ToolRegistry` deriva de esos módulos el índice y las proyecciones
+de definición; no existen registros separados para presentación, componente,
+mensajes o ruta de origen.
 
-- un identificador estable;
-- una definición de dominio;
-- una categoría raíz y una clasificación taxonómica;
-- slugs localizados;
-- una estrategia de routing;
-- un componente visual;
-- mensajes específicos por idioma;
-- un estado de publicación.
-
-El registro tipado valida que la definición, el componente y los mensajes pertenezcan a la misma herramienta.
+La construcción del registro valida la identidad estable, la taxonomía, el
+componente, el resolver y los mensajes de todos los idiomas soportados.
 
 Código principal: `src/features/tools/` y `src/domain/tools/`.
 

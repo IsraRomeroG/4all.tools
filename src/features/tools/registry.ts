@@ -164,12 +164,6 @@ export function getAllToolDefinitions(): readonly ToolDefinition[] {
   return toolRegistry.getAll().map((module) => module.definition);
 }
 
-export const TOOL_DEFINITIONS = Object.freeze(
-  Object.fromEntries(
-    toolRegistry.getAll().map((module) => [module.definition.id, module.definition]),
-  ) as Record<ToolId, ToolDefinition>,
-);
-
 export function createToolRegistry<TModules extends readonly ToolModule[]>(
   modules: TModules,
   options: CreateToolRegistryOptions = {},

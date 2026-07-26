@@ -1,10 +1,14 @@
+import { access } from 'node:fs/promises';
+
+import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
 import type { ToolDefinition } from '@/domain/tools';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import {
   DuplicateToolError,
-  TOOL_DEFINITIONS,
+  MissingToolComponentError,
+  MissingToolMessagesError,
   TOOL_MODULES,
   ToolTaxonomyMismatchError,
   UnknownToolError,
@@ -17,15 +21,15 @@ import {
   jsonValidatorModule,
   toolRegistry,
 } from '@/features/tools/registry';
+import { SUPPORTED_LOCALES } from '@/i18n/types';
+
+const PROJECT_ROOT = new URL('../../../../', import.meta.url);
 
 describe('canonical tool registry', () => {
   it('registers each production tool as one definition/component/messages module', () => {
     expect(TOOL_MODULES).toHaveLength(1);
     expect(TOOL_MODULES[0]).toBe(jsonValidatorModule);
     expect(toolRegistry.get('json-validator')).toBe(jsonValidatorModule);
-    expect(TOOL_DEFINITIONS).toEqual({
-      'json-validator': jsonValidatorModule.definition,
-    });
     expect(findToolDefinition('json-validator')).toBe(
       jsonValidatorModule.definition,
     );
@@ -44,6 +48,47 @@ describe('canonical tool registry', () => {
       actions: { validate: 'Validate JSON' },
     });
     expect(getToolModule('json-validator')).toBe(module);
+  });
+
+  it('validates every registered locale and renders every registered component', async () => {
+    const container = await AstroContainer.create();
+
+    for (const module of toolRegistry.getAll()) {
+      expect(module.definition.id).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+      expect(module.component).toBeTypeOf('function');
+
+      for (const locale of SUPPORTED_LOCALES) {
+        const messages = module.getMessages(locale);
+        expect(messages).toBeTypeOf('object');
+
+        const html = await container.renderToString(module.component, {
+          partial: true,
+          props: {
+            locale,
+            messages,
+            instanceId: `${module.definition.id}-${locale}-registry-test`,
+          },
+        });
+
+        expect(html).toContain(`data-locale="${locale}"`);
+      }
+    }
+  });
+
+  it('derives the English route-to-feature directory convention generically', async () => {
+    for (const module of toolRegistry.getAll()) {
+      const definition = module.definition;
+      const categorySegments = definition.route.strategy === 'flat'
+        ? [definition.rootCategoryId]
+        : [definition.rootCategoryId, definition.taxonomy.primaryCategoryId];
+      const featurePath = [
+        'src/features/tools',
+        ...categorySegments,
+        definition.route.localized.en?.slug ?? '',
+      ].join('/');
+
+      await expect(access(new URL(`${featurePath}/`, PROJECT_ROOT))).resolves.toBeUndefined();
+    }
   });
 
   it('sorts modules by stable ID and rejects duplicates', () => {
@@ -87,5 +132,16 @@ describe('canonical tool registry', () => {
         }),
       ], { taxonomy: toolTaxonomy }),
     ).toThrow(ToolTaxonomyMismatchError);
+  });
+
+  it('rejects modules without a component or complete message resolver', () => {
+    expect(() => createToolRegistry([{
+      ...jsonValidatorModule,
+      component: undefined as never,
+    }])).toThrow(MissingToolComponentError);
+    expect(() => createToolRegistry([{
+      ...jsonValidatorModule,
+      getMessages: () => null as never,
+    }])).toThrow(MissingToolMessagesError);
   });
 });
