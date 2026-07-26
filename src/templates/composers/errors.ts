@@ -4,7 +4,6 @@ export type PageModelCompositionErrorCode =
   | 'PAGE_MODEL_COMPOSITION_FAILED'
   | 'MISSING_CANONICAL_ROUTE'
   | 'MISSING_TAXONOMY_NODE'
-  | 'ARTICLE_ROUTE_CONTENT_MISMATCH'
   | 'UNKNOWN_BLOG_CATEGORY_REFERENCE'
   | 'UNSUPPORTED_LOCALE'
   | 'UNSUPPORTED_PAGE_TARGET';
@@ -62,33 +61,6 @@ export class UnsupportedPageTargetError extends PageModelCompositionError {
       context,
     );
     this.name = 'UnsupportedPageTargetError';
-  }
-}
-
-export class ArticleRouteContentMismatchError extends PageModelCompositionError {
-  readonly articleId: string;
-  readonly routeCategoryId: string;
-  readonly contentCategoryId: string;
-
-  constructor(input: {
-    readonly articleId: string;
-    readonly routeCategoryId: string;
-    readonly contentCategoryId: string;
-    readonly locale: Locale;
-  }) {
-    super(
-      'ARTICLE_ROUTE_CONTENT_MISMATCH',
-      `Article ${input.articleId}:${input.locale} route category ${input.routeCategoryId} does not match content category ${input.contentCategoryId}.`,
-      {
-        locale: input.locale,
-        targetKind: 'article',
-        entityId: input.articleId,
-      },
-    );
-    this.name = 'ArticleRouteContentMismatchError';
-    this.articleId = input.articleId;
-    this.routeCategoryId = input.routeCategoryId;
-    this.contentCategoryId = input.contentCategoryId;
   }
 }
 

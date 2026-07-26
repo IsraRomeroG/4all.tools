@@ -3,7 +3,6 @@ import {
   type ArticleContentEntry,
 } from '@/content/queries';
 import { SUPPORTED_LOCALES, type Locale } from '@/i18n/types';
-import { getArticleRouteDefinition } from '@/routing/definitions/blog';
 import type { ArticleRouteDefinition, RouteDefinition } from '@/routing/definitions';
 import type { RouteDefinitionProvider } from '@/routing/definitions/providers';
 
@@ -26,9 +25,6 @@ export function createArticleRouteProvider(
 }
 
 export const articleRouteProvider = createArticleRouteProvider();
-
-// Temporary composer compatibility until T03 removes the explicit definition lookup.
-export { getArticleRouteDefinition };
 
 function toArticleRouteDefinitionRoute(
   entry: ArticleContentEntry,

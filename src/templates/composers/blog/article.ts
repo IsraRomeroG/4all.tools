@@ -14,10 +14,8 @@ import type { RouteRegistry } from '@/routing/registry';
 import { buildLocalizedPath } from '@/routing/builders';
 import { composeSeoPageModel, type SeoIndexabilityResolver } from '@/seo';
 import type { ArticlePageModel } from '@/templates/models/blog';
-import { getArticleRouteDefinition } from '@/routing/providers/article-route-provider';
 
 import {
-  ArticleRouteContentMismatchError,
   MissingCanonicalRouteError,
   MissingTaxonomyNodeError,
   UnknownBlogCategoryReferenceError,
@@ -36,7 +34,6 @@ export interface ArticlePageComposerDependencies {
     articleId: ArticleId,
     locale: Locale,
   ) => Promise<ArticleContentEntry>;
-  readonly getArticleRouteDefinition?: typeof getArticleRouteDefinition;
   readonly renderContent?: RenderContent;
   readonly getGlobalMessages?: (locale: Locale) => GlobalMessages;
   readonly seoIndexabilityResolver?: SeoIndexabilityResolver;
@@ -63,23 +60,6 @@ export async function composeArticlePageModel(
     dependencies.requirePublishedArticleContent ?? requirePublishedArticleContent,
     context,
   );
-  const definition = (dependencies.getArticleRouteDefinition ?? getArticleRouteDefinition)(
-    articleId,
-  );
-
-  if (definition === null) {
-    throw new MissingCanonicalRouteError(context);
-  }
-
-  if (definition.primaryCategoryId !== contentEntry.data.primaryCategoryId) {
-    throw new ArticleRouteContentMismatchError({
-      articleId,
-      locale,
-      routeCategoryId: definition.primaryCategoryId,
-      contentCategoryId: contentEntry.data.primaryCategoryId,
-    });
-  }
-
   const taxonomy = dependencies.blogTaxonomy ?? blogTaxonomy;
   const primaryCategory = taxonomy.findNode(contentEntry.data.primaryCategoryId);
 

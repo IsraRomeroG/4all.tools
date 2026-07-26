@@ -5,7 +5,6 @@ import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { createRouteRegistryFromRecords } from '@/routing/registry';
 import type { RouteRecord } from '@/routing/types';
 import {
-  ArticleRouteContentMismatchError,
   composeArticlePageModel,
   composeBlogCategoryPageModel,
   composeBlogIndexPageModel,
@@ -144,18 +143,6 @@ describe('blog page-model composers', () => {
     });
   });
 
-  it('rejects route/content primary-category mismatches', async () => {
-    await expect(
-      composeArticlePageModel('en', 'what-is-json', {
-        routeRegistry: routeRegistry(),
-        requirePublishedArticleContent: async () =>
-          articleEntry('development'),
-        renderContent,
-        seoIndexabilityResolver: { isIndexable: () => true },
-      }),
-    ).rejects.toBeInstanceOf(ArticleRouteContentMismatchError);
-  });
-
   it('rejects unknown secondary categories during article composition', async () => {
     await expect(
       composeArticlePageModel('en', 'what-is-json', {
@@ -260,6 +247,7 @@ function articleEntry(
     data: {
       articleId: 'what-is-json',
       locale: 'en',
+      routeSlug: 'what-is-json',
       primaryCategoryId,
       secondaryCategoryIds: options.secondaryCategoryIds ?? [],
       status: 'published',
