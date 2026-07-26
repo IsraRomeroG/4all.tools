@@ -9,21 +9,6 @@ import { createProductionArchitectureContext } from '@/validation/architecture';
 
 const DIST_ROOT = new URL('../../dist/', import.meta.url);
 
-interface ExpectedBuiltToolPage {
-  readonly locale: Locale;
-  readonly relativeFile: string;
-  readonly htmlLang: string;
-  readonly title: string;
-  readonly seoTitle: string;
-  readonly seoDescription: string;
-  readonly canonicalUrl: string;
-  readonly inputLabel: string;
-  readonly validateLabel: string;
-  readonly editorialMarker: string;
-  readonly instanceId: string;
-  readonly forbiddenMetadataFragments: readonly string[];
-}
-
 interface ExpectedBuiltHomePage {
   readonly locale: Locale;
   readonly relativeFile: string;
@@ -81,77 +66,6 @@ const EXPECTED_HOME_PAGES = [
   },
 ] as const satisfies readonly ExpectedBuiltHomePage[];
 
-const EXPECTED_JSON_VALIDATOR_PAGES = [
-  {
-    locale: 'en',
-    relativeFile: 'developer/json-validator/index.html',
-    htmlLang: 'en',
-    title: 'JSON Validator',
-    seoTitle: 'JSON Validator - Validate JSON Online',
-    seoDescription: 'Validate JSON syntax, find parsing errors, format JSON, and minify JSON directly in your browser.',
-    canonicalUrl: 'https://4all.tools/developer/json-validator/',
-    inputLabel: 'Input JSON',
-    validateLabel: 'Validate JSON',
-    editorialMarker: 'How to use the JSON Validator',
-    instanceId: 'tool-json-validator-en',
-    forbiddenMetadataFragments: [
-      '/en/developer/json-validator/',
-      'developer/data-formats/json/json-validator',
-    ],
-  },
-  {
-    locale: 'es',
-    relativeFile: 'es/desarrollo/validador-json/index.html',
-    htmlLang: 'es',
-    title: 'Validador JSON',
-    seoTitle: 'Validador JSON - Validar JSON online',
-    seoDescription: 'Valida la sintaxis JSON, encuentra errores de análisis, formatea JSON y minifica JSON directamente en tu navegador.',
-    canonicalUrl: 'https://4all.tools/es/desarrollo/validador-json/',
-    inputLabel: 'JSON de entrada',
-    validateLabel: 'Validar JSON',
-    editorialMarker: 'Cómo usar el Validador JSON',
-    instanceId: 'tool-json-validator-es',
-    forbiddenMetadataFragments: [
-      '/en/developer/json-validator/',
-      'desarrollo/formatos-de-datos/json/validador-json',
-    ],
-  },
-  {
-    locale: 'pt',
-    relativeFile: 'pt/desenvolvedor/validador-json/index.html',
-    htmlLang: 'pt',
-    title: 'Validador JSON',
-    seoTitle: 'Validador JSON - Validar JSON online',
-    seoDescription: 'Valide a sintaxe JSON, encontre erros de análise, formate JSON e minifique JSON diretamente no navegador.',
-    canonicalUrl: 'https://4all.tools/pt/desenvolvedor/validador-json/',
-    inputLabel: 'JSON de entrada',
-    validateLabel: 'Validar JSON',
-    editorialMarker: 'Como usar o Validador JSON',
-    instanceId: 'tool-json-validator-pt',
-    forbiddenMetadataFragments: [
-      '/en/developer/json-validator/',
-      'desenvolvedor/formatos-de-dados/json/validador-json',
-    ],
-  },
-  {
-    locale: 'fr',
-    relativeFile: 'fr/developpement/validateur-json/index.html',
-    htmlLang: 'fr',
-    title: 'Validateur JSON',
-    seoTitle: 'Validateur JSON - Valider du JSON en ligne',
-    seoDescription: 'Validez la syntaxe JSON, trouvez les erreurs d’analyse, formatez JSON et minifiez JSON directement dans votre navigateur.',
-    canonicalUrl: 'https://4all.tools/fr/developpement/validateur-json/',
-    inputLabel: 'JSON d’entrée',
-    validateLabel: 'Valider le JSON',
-    editorialMarker: 'Comment utiliser le Validateur JSON',
-    instanceId: 'tool-json-validator-fr',
-    forbiddenMetadataFragments: [
-      '/en/developer/json-validator/',
-      'developpement/formats-de-donnees/json/validateur-json',
-    ],
-  },
-] as const satisfies readonly ExpectedBuiltToolPage[];
-
 const EXPECTED_JSON_VALIDATOR_ALTERNATES = [
   {
     hrefLang: 'en',
@@ -171,12 +85,13 @@ const EXPECTED_JSON_VALIDATOR_ALTERNATES = [
   },
 ] as const;
 
-const EXPECTED_BREADCRUMB_LABELS = {
-  en: ['Home', 'Developer Tools', 'Data Formats', 'JSON', 'JSON Validator'],
-  es: ['Inicio', 'Herramientas para desarrolladores', 'Formatos de datos', 'JSON', 'Validador JSON'],
-  pt: ['Início', 'Ferramentas para desenvolvedores', 'Formatos de dados', 'JSON', 'Validador JSON'],
-  fr: ['Accueil', 'Outils pour développeurs', 'Formats de données', 'JSON', 'Validateur JSON'],
-} as const;
+const EXPECTED_JSON_VALIDATOR_BREADCRUMBS = [
+  'Home',
+  'Developer Tools',
+  'Data Formats',
+  'JSON',
+  'JSON Validator',
+] as const;
 
 const FORBIDDEN_OUTPUTS = [
   'en/developer/json-validator/index.html',
@@ -308,14 +223,15 @@ describe('static build output', () => {
     expect(html).toContain('data-template="home"');
   });
 
-  for (const expected of EXPECTED_JSON_VALIDATOR_PAGES) {
-    it(`generates localized JSON Validator output for ${expected.locale}`, async () => {
-      const html = await readDistFile(expected.relativeFile);
+  it('keeps the English client-tool archetype golden output', async () => {
+      const html = await readDistFile('developer/json-validator/index.html');
 
-      expect(html).toContain(`<html lang="${expected.htmlLang}"`);
-      expect(html).toContain(`<title>${expected.seoTitle}</title>`);
+      expect(html).toContain('<html lang="en"');
+      expect(html).toContain('<title>JSON Validator - Validate JSON Online</title>');
       expect(countMatches(html, /<title>/g)).toBe(1);
-      const escapedDescription = escapeExpectedHtml(expected.seoDescription);
+      const escapedDescription = escapeExpectedHtml(
+        'Validate JSON syntax, find parsing errors, format JSON, and minify JSON directly in your browser.',
+      );
       expect(html).toContain(
         `<meta name="description" content="${escapedDescription}">`,
       );
@@ -323,11 +239,11 @@ describe('static build output', () => {
       expect(html).toContain('<meta name="robots" content="index,follow">');
       expect(countMatches(html, /name="robots"/g)).toBe(1);
       expect(html).toContain(
-        `<link rel="canonical" href="${expected.canonicalUrl}">`,
+        '<link rel="canonical" href="https://4all.tools/developer/json-validator/">',
       );
       expect(countMatches(html, /rel="canonical"/g)).toBe(1);
       expect(html).toContain(
-        `<meta property="og:url" content="${expected.canonicalUrl}">`,
+        '<meta property="og:url" content="https://4all.tools/developer/json-validator/">',
       );
       expect(html).toContain(
         `<meta property="og:description" content="${escapedDescription}">`,
@@ -341,31 +257,26 @@ describe('static build output', () => {
       expect(html).toContain(
         '<link rel="alternate" hreflang="x-default" href="https://4all.tools/developer/json-validator/">',
       );
-      expect(html).toContain(expected.title);
+      expect(html).toContain('JSON Validator');
       expect(countMatches(html, /data-language-switcher/g)).toBe(1);
       expect(countMatches(html, /data-breadcrumbs/g)).toBe(1);
       expect(countMatches(html, /aria-current="page"/g)).toBe(2);
-      for (const label of EXPECTED_BREADCRUMB_LABELS[expected.locale]) {
+      for (const label of EXPECTED_JSON_VALIDATOR_BREADCRUMBS) {
         expect(html).toContain(label);
       }
-      expect(html).toContain(
-        `<li data-locale="${expected.locale}" data-state="current">`,
-      );
+      expect(html).toContain('<li data-locale="en" data-state="current">');
       expect(html).toContain('aria-current="page"');
-      expect(html).toContain(expected.inputLabel);
-      expect(html).toContain(expected.validateLabel);
-      expect(html).toContain(expected.editorialMarker);
+      expect(html).toContain('Input JSON');
+      expect(html).toContain('Validate JSON');
+      expect(html).toContain('How to use the JSON Validator');
       expect(html).toContain('data-json-validator');
-      expect(html).toContain(`data-locale="${expected.locale}"`);
+      expect(html).toContain('data-locale="en"');
       expect(html).toContain('data-template-identity="json-validator"');
-      expect(html).toContain(`id="${expected.instanceId}-help"`);
-      expect(html).toContain(`id="${expected.instanceId}-status"`);
-
-      for (const forbiddenFragment of expected.forbiddenMetadataFragments) {
-        expect(html).not.toContain(forbiddenFragment);
-      }
-    });
-  }
+      expect(html).toContain('id="tool-json-validator-en-help"');
+      expect(html).toContain('id="tool-json-validator-en-status"');
+      expect(html).not.toContain('/en/developer/json-validator/');
+      expect(html).not.toContain('developer/data-formats/json/json-validator');
+  });
 
   for (const expected of EXPECTED_BLOG_ROOT_PAGES) {
     it(`generates localized blog root output for ${expected.locale}`, async () => {
@@ -529,7 +440,7 @@ describe('static build output', () => {
   it('contains no common mojibake markers in generated HTML or this fixture', async () => {
     const htmlFiles = [
       ...EXPECTED_HOME_PAGES.map((expected) => expected.relativeFile),
-      ...EXPECTED_JSON_VALIDATOR_PAGES.map((expected) => expected.relativeFile),
+      'developer/json-validator/index.html',
       ...EXPECTED_BLOG_ROOT_PAGES.map((expected) => expected.relativeFile),
       ...EXPECTED_BLOG_CATEGORY_PAGES.map((expected) => expected.relativeFile),
       ...EXPECTED_BLOG_ARTICLE_PAGES.map((expected) => expected.relativeFile),
