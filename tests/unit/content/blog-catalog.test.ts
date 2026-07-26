@@ -120,6 +120,8 @@ function article(
     data: {
       articleId,
       locale,
+      routeSlug: articleId,
+      primaryCategoryId: 'json-guides',
       status,
       publishedAt: new Date(publishedAt),
     },
