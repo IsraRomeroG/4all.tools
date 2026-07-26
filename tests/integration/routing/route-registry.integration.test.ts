@@ -9,10 +9,11 @@ import {
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { createRouteRegistry } from '@/routing/registry';
+import type { RouteRecord } from '@/routing/types';
 import { toolRegistry } from '@/features/tools/registry';
 
 describe('route registry integration', () => {
-  it('builds the current public route inventory from canonical sources', async () => {
+  it('preserves the normalized pre-P15 public route snapshot', async () => {
     const registry = await createRouteRegistry({
       contentIndexes: await getPublishedContentIndexes(),
       toolRegistry,
@@ -20,25 +21,7 @@ describe('route registry integration', () => {
       blogTaxonomy,
     });
 
-    expect(registry.getAll().map(path)).toEqual([
-      'en:developer',
-      'en:developer/json-validator',
-      'en:blog/development',
-      'en:blog/development/json-guides',
-      'en:blog/development/json-guides/what-is-json',
-      'es:desarrollo/validador-json',
-      'es:blog/desarrollo',
-      'es:blog/desarrollo/guias-json',
-      'es:blog/desarrollo/guias-json/que-es-json',
-      'pt:desenvolvedor/validador-json',
-      'pt:blog/desenvolvimento',
-      'pt:blog/desenvolvimento/guias-json',
-      'pt:blog/desenvolvimento/guias-json/o-que-e-json',
-      'fr:developpement/validateur-json',
-      'fr:blog/developpement',
-      'fr:blog/developpement/guides-json',
-      'fr:blog/developpement/guides-json/qu-est-ce-que-json',
-    ]);
+    expect(registry.getAll().map(normalize)).toEqual(PRE_P15_ROUTE_SNAPSHOT);
   });
 
   it('keeps a missing localized article content route absent without fallback', async () => {
@@ -83,9 +66,34 @@ describe('route registry integration', () => {
   });
 });
 
-function path(record: { readonly locale: string; readonly segments: readonly string[] }): string {
-  return `${record.locale}:${record.segments.join('/')}`;
+function normalize(record: RouteRecord): Omit<RouteRecord, 'sourceId'> {
+  return {
+    area: record.area,
+    locale: record.locale,
+    segments: [...record.segments],
+    target: { ...record.target },
+  };
 }
+
+const PRE_P15_ROUTE_SNAPSHOT = [
+  { area: 'tools', locale: 'en', segments: ['developer'], target: { kind: 'tool-category', categoryId: 'developer' } },
+  { area: 'tools', locale: 'en', segments: ['developer', 'json-validator'], target: { kind: 'tool', toolId: 'json-validator' } },
+  { area: 'blog', locale: 'en', segments: ['blog', 'development'], target: { kind: 'blog-category', categoryId: 'development' } },
+  { area: 'blog', locale: 'en', segments: ['blog', 'development', 'json-guides'], target: { kind: 'blog-category', categoryId: 'json-guides' } },
+  { area: 'blog', locale: 'en', segments: ['blog', 'development', 'json-guides', 'what-is-json'], target: { kind: 'article', articleId: 'what-is-json' } },
+  { area: 'tools', locale: 'es', segments: ['desarrollo', 'validador-json'], target: { kind: 'tool', toolId: 'json-validator' } },
+  { area: 'blog', locale: 'es', segments: ['blog', 'desarrollo'], target: { kind: 'blog-category', categoryId: 'development' } },
+  { area: 'blog', locale: 'es', segments: ['blog', 'desarrollo', 'guias-json'], target: { kind: 'blog-category', categoryId: 'json-guides' } },
+  { area: 'blog', locale: 'es', segments: ['blog', 'desarrollo', 'guias-json', 'que-es-json'], target: { kind: 'article', articleId: 'what-is-json' } },
+  { area: 'tools', locale: 'pt', segments: ['desenvolvedor', 'validador-json'], target: { kind: 'tool', toolId: 'json-validator' } },
+  { area: 'blog', locale: 'pt', segments: ['blog', 'desenvolvimento'], target: { kind: 'blog-category', categoryId: 'development' } },
+  { area: 'blog', locale: 'pt', segments: ['blog', 'desenvolvimento', 'guias-json'], target: { kind: 'blog-category', categoryId: 'json-guides' } },
+  { area: 'blog', locale: 'pt', segments: ['blog', 'desenvolvimento', 'guias-json', 'o-que-e-json'], target: { kind: 'article', articleId: 'what-is-json' } },
+  { area: 'tools', locale: 'fr', segments: ['developpement', 'validateur-json'], target: { kind: 'tool', toolId: 'json-validator' } },
+  { area: 'blog', locale: 'fr', segments: ['blog', 'developpement'], target: { kind: 'blog-category', categoryId: 'development' } },
+  { area: 'blog', locale: 'fr', segments: ['blog', 'developpement', 'guides-json'], target: { kind: 'blog-category', categoryId: 'json-guides' } },
+  { area: 'blog', locale: 'fr', segments: ['blog', 'developpement', 'guides-json', 'qu-est-ce-que-json'], target: { kind: 'article', articleId: 'what-is-json' } },
+] as const;
 
 function source(fixtures: { readonly blog?: readonly ArticleContentEntry[] }): ContentCollectionSource {
   return {
