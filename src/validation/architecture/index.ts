@@ -15,8 +15,6 @@ export {
 } from './report';
 export { createArchitectureValidationContext } from './context';
 export type {
-  ArchitectureComposedPageModel,
-  ArchitectureCompositionPorts,
   ArchitectureValidationContext,
 } from './context';
 export {
@@ -25,7 +23,7 @@ export {
   validateToolRegistryIntegrity,
 } from './validators/identity';
 export { validateContentRelations } from './validators/relations';
-export { validatePublicationAndSeo } from './validators/publication';
+export { validateRouteIntegrity } from './validators/publication';
 export { validateSourceBoundaries } from './validators/source-boundaries';
 export {
   assertProductionArchitectureValid,

@@ -29,7 +29,7 @@ import {
   validateTaxonomyReferences,
   validateToolRegistryIntegrity,
 } from './validators/identity';
-import { validatePublicationAndSeo } from './validators/publication';
+import { validateRouteIntegrity } from './validators/publication';
 import { validateSourceBoundaries } from './validators/source-boundaries';
 import { assertArchitectureValid, createArchitectureValidationReport } from './report';
 import type {
@@ -83,7 +83,7 @@ export async function validateArchitecture(input: {
     ...validateTaxonomyReferences(context),
     ...validateToolRegistryIntegrity(context),
     ...validateContentRelations(context),
-    ...(await validatePublicationAndSeo(context)),
+    ...validateRouteIntegrity(context),
     ...validateSourceBoundaries(),
   ];
 
@@ -93,7 +93,6 @@ export async function validateArchitecture(input: {
     toolModules: context.toolModules.getAllToolModules().length,
     routeDefinitions: context.routeDefinitions.length,
     routeRecords: context.routeRegistry.getAll().length,
-    pageModels: context.routeRegistry.getAll().length + 8,
   });
 }
 

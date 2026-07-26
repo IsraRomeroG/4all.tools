@@ -3,6 +3,9 @@ import { access, readdir, readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 
 import type { Locale } from '@/i18n/types';
+import { buildAbsoluteUrl } from '@/routing/builders';
+import { getRouteTargetKey, type RouteRecord, type RouteTarget } from '@/routing/types';
+import { createProductionArchitectureContext } from '@/validation/architecture';
 
 const DIST_ROOT = new URL('../../dist/', import.meta.url);
 
@@ -205,6 +208,32 @@ const FORBIDDEN_VALIDATION_OUTPUT_EXAMPLES = [
 ] as const;
 
 describe('static build output', () => {
+  it('renders every production RouteRecord with generic output invariants', async () => {
+    const { routeRegistry } = await createProductionArchitectureContext();
+    const records = routeRegistry.getAll();
+
+    expect(records.length).toBeGreaterThan(0);
+
+    for (const record of records) {
+      const html = await readDistFile(routeRecordOutputFile(record));
+      const canonicalUrl = buildAbsoluteUrl({
+        locale: record.locale,
+        segments: record.segments,
+      });
+
+      expect(html).toContain(`<html lang="${record.locale}"`);
+      expect(countMatches(html, /rel="canonical"/g)).toBe(1);
+      expect(html).toContain(`<link rel="canonical" href="${canonicalUrl}">`);
+      expect(html).toContain(
+        `data-template-identity="${routeTargetIdentity(record.target)}"`,
+      );
+
+      if (record.locale === 'en') {
+        expect(html).not.toContain('https://4all.tools/en/');
+      }
+    }
+  });
+
   it('matches the exact frozen blog HTML inventory', async () => {
     const htmlFiles = await listHtmlFiles(DIST_ROOT);
     const actualBlogHtmlFiles = htmlFiles.filter(isBlogHtmlArtifact);
@@ -765,6 +794,19 @@ async function readDistFile(relativeFile: string): Promise<string> {
       { cause: error },
     );
   }
+}
+
+function routeRecordOutputFile(record: RouteRecord): string {
+  return [
+    ...(record.locale === 'en' ? [] : [record.locale]),
+    ...record.segments,
+    'index.html',
+  ].join('/');
+}
+
+function routeTargetIdentity(target: RouteTarget): string {
+  const targetKey = getRouteTargetKey(target);
+  return targetKey.slice(targetKey.indexOf(':') + 1);
 }
 
 async function expectDistFileMissing(relativeFile: string): Promise<void> {

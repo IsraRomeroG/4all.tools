@@ -13,5 +13,7 @@ describe('production architecture validation', () => {
     expect(report.inspected.contentEntries).toBeGreaterThan(0);
     expect(report.inspected.toolDefinitions).toBeGreaterThan(0);
     expect(report.inspected.routeRecords).toBeGreaterThan(0);
+    expect(report.inspected).not.toHaveProperty('pageModels');
+    expect(report.inspected).not.toHaveProperty('sourceFiles');
   });
 });

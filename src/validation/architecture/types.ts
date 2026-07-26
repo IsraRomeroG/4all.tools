@@ -7,8 +7,6 @@ export type ArchitectureValidationScope =
   | 'tool-module'
   | 'relation'
   | 'routing'
-  | 'composition'
-  | 'seo'
   | 'source-boundary';
 
 export type ArchitectureValidationIssueCode =
@@ -30,12 +28,7 @@ export type ArchitectureValidationIssueCode =
   | 'UNKNOWN_RELATED_ARTICLE'
   | 'SELF_RELATED_ARTICLE'
   | 'PUBLISHED_ROUTE_DEFINITION_WITHOUT_PUBLIC_VARIANT'
-  | 'PUBLIC_ROUTE_COMPOSITION_FAILED'
-  | 'FIXED_ROOT_COMPOSITION_FAILED'
-  | 'NON_RECIPROCAL_SEO_CLUSTER'
-  | 'SEO_CLUSTER_TARGET_MISMATCH'
   | 'FORBIDDEN_SOURCE_NAMESPACE'
-  | 'NOINDEX_SEO_ALTERNATE_CONFLICT'
   | 'INVALID_ROUTE_RECORD'
   | 'EMPTY_SEGMENTS'
   | 'INVALID_SEGMENT'
@@ -62,7 +55,6 @@ export interface ArchitectureValidationCounts {
   readonly toolModules: number;
   readonly routeDefinitions: number;
   readonly routeRecords: number;
-  readonly pageModels: number;
 }
 
 export interface ArchitectureValidationReport {

@@ -12,7 +12,6 @@ const EMPTY_COUNTS: ArchitectureValidationCounts = {
   toolModules: 0,
   routeDefinitions: 0,
   routeRecords: 0,
-  pageModels: 0,
 };
 
 export function createArchitectureValidationIssue(
