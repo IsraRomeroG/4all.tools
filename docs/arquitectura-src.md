@@ -202,7 +202,6 @@ Es la infraestructura responsable de determinar qué URLs existen y a qué entid
 - `routing/definitions/blog/`: definiciones de artículos y categorías del blog.
 - `routing/providers/`: adapta registros de herramientas y contenido a definiciones de ruta.
 - `routing/registry/`: crea el índice final de rutas y controla namespaces reservados.
-- `routing/resolvers/`: resuelve segmentos recibidos contra el registro.
 - `routing/static-paths/`: convierte registros en parámetros y props para `getStaticPaths()`.
 - `routing/validation/`: detecta colisiones, rutas reservadas y registros inválidos.
 

@@ -29,7 +29,7 @@ English is intentionally unprefixed. `/en/developer/json-validator/` is forbidde
 - `src/domain/taxonomy/` owns immutable taxonomy trees and selectors.
 - `src/content.config.ts` defines Astro content collections and schemas.
 - `src/content/queries/` owns published-content lookup, exact-match semantics, ambiguity errors, and build-time indexes.
-- `src/routing/` owns route targets, localized path builders, explicit route providers, route registry construction, collision validation, and resolvers.
+- `src/routing/` owns route targets, localized path builders, explicit route providers, route registry construction, static path projection, and collision validation.
 - `src/templates/` owns page model composition and Astro templates. `src/views/` is prohibited.
 - `src/features/tools/` owns tool modules, typed tool registration, feature components, engines, and localized feature messages.
 
@@ -114,7 +114,7 @@ src/
 `-- styles/
 ```
 
-`src/components/`, `src/services/`, and `src/server/` are currently empty reserved boundaries and retain `.gitkeep` markers intentionally. Populated boundaries must not keep stale `.gitkeep` files.
+`src/components/` is a populated shared UI boundary for navigation and SEO components. `src/services/` and `src/server/` remain empty reserved boundaries and retain their `.gitkeep` markers intentionally. Populated boundaries must not keep stale `.gitkeep` files.
 
 ## TypeScript Conventions
 

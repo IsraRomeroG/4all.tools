@@ -116,8 +116,6 @@
 | `src/features/tools/definition-registry.ts` | Valida definiciones, IDs, taxonomía y duplicados. | Activo |
 | `src/features/tools/module-registry.ts` | Enlaza definición, componente y mensajes de cada herramienta. | Activo |
 | `src/features/tools/registry.ts` | Fachada pública del registro de herramientas. | Activo |
-| `src/features/tools/component-registry.ts` | API auxiliar para recuperar componentes registrados. | Auxiliar |
-| `src/features/tools/message-registry.ts` | API auxiliar para recuperar mensajes registrados. | Auxiliar |
 | `src/features/tools/developer/json-validator/tool.config.ts` | Configuración canónica, rutas, taxonomía, ejecución cliente y publicación. | Activo |
 | `src/features/tools/developer/json-validator/Tool.astro` | UI ejecutable, editor, acciones, resultado y accesibilidad. | Activo |
 | `src/features/tools/developer/json-validator/client.ts` | Controlador de validación, formato, minificación, copia y limpieza. | Activo |
@@ -169,7 +167,6 @@
 | `src/routing/providers/article-route-provider.ts` | Proveedor de rutas de artículos publicados. | Activo |
 | `src/routing/providers/blog-category-route-provider.ts` | Proveedor de rutas de categorías públicas del blog. | Activo |
 | `src/routing/registry/` | Registro, índice y namespaces reservados de rutas. | Activo |
-| `src/routing/resolvers/` | Resolución de segmentos localizados a destinos tipados. | Activo |
 | `src/routing/static-paths/` | Proyección de registros a `getStaticPaths()` para herramientas, categorías y blog. | Activo |
 | `src/routing/validation/` | Validación de registros, colisiones y rutas reservadas. | Activo |
 | `src/routing/types.ts` | Tipos centrales de áreas, destinos, registros y estrategias. | Activo |

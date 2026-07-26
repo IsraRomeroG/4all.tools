@@ -359,7 +359,6 @@ describe('template foundation', () => {
     const combinedSource = sources.join('\n');
 
     expect(combinedSource).not.toContain('@/routing/');
-    expect(combinedSource).not.toContain('routing/resolvers');
     expect(combinedSource).not.toContain('routing/static-paths');
     expect(combinedSource).not.toContain('routing/registry');
     expect(combinedSource).not.toContain('astro:content');
