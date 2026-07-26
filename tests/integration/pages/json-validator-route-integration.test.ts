@@ -22,7 +22,7 @@ import {
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { getToolDefinition } from '@/features/tools/registry';
-import { getToolModule } from '@/features/tools/module-registry';
+import { getToolModule } from '@/features/tools/registry';
 import type { RouteDefinitionProvider } from '@/routing/definitions';
 import { createRouteRegistry } from '@/routing/registry';
 import { RouteValidationError } from '@/routing/validation';

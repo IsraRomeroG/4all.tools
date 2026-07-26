@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import JsonValidatorTool from '@/features/tools/developer/json-validator/Tool.astro';
 import { getJsonValidatorMessages } from '@/features/tools/developer/json-validator/messages/registry';
-import { jsonValidatorModule } from '@/features/tools/module-registry';
+import { jsonValidatorModule } from '@/features/tools/registry';
 
 describe('json validator tool UI', () => {
   it('renders semantic localized markup with accessible controls', async () => {

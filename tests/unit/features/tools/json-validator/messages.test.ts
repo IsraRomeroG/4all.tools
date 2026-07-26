@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { getJsonValidatorMessages } from '@/features/tools/developer/json-validator/messages/registry';
-import { jsonValidatorModule } from '@/features/tools/module-registry';
+import { jsonValidatorModule } from '@/features/tools/registry';
 
 describe('json validator messages', () => {
   it('returns exact feature dictionaries for all supported locales without fallback', () => {
