@@ -82,7 +82,7 @@ Es la frontera editorial del proyecto. Contiene los archivos Markdown, los schem
 ### Subcarpetas
 
 - `content/tools/`: contenido editorial de las herramientas, separado por idioma.
-- `content/tool-categories/`: contenido de categorías públicas de herramientas.
+- `content/tool-categories/`: contenido de categorías públicas de herramientas. Las categorías raíz viven bajo el locale y las subcategorías pueden organizarse en subcarpetas con el ID de su categoría raíz.
 - `content/blog/`: artículos del blog, separados por idioma y categoría.
 - `content/blog-categories/`: contenido de categorías del blog.
 - `content/schemas/`: schemas Zod para validar frontmatter, publicación, IDs, locales, relaciones y SEO.

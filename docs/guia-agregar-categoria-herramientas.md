@@ -57,6 +57,31 @@ Ubicación:
 src/content/tool-categories/{locale}/
 ```
 
+La organización física puede reflejar la jerarquía de las subcategorías para
+evitar que una carpeta acumule demasiados archivos. La convención oficial es:
+
+```text
+src/content/tool-categories/{locale}/{root-category}/{subcategory}.md
+```
+
+Por ejemplo:
+
+```text
+src/content/tool-categories/en/developer/data-formats.md
+```
+
+Las categorías raíz permanecen directamente bajo el locale:
+
+```text
+src/content/tool-categories/en/developer.md
+```
+
+La carpeta es solo una convención de organización. La identidad y la
+jerarquía canónica siguen siendo `categoryId` en el frontmatter y `parentId`
+en `src/domain/taxonomy/tools/registry.ts`. Por lo tanto, el archivo de
+`data-formats` debe declarar `categoryId: data-formats`, aunque esté dentro de
+la carpeta `developer`.
+
 Una categoría solo puede publicarse en un idioma si tiene contenido válido y publicado para ese idioma.
 
 #### Publicación de la categoría
@@ -99,7 +124,7 @@ Para una nueva categoría raíz y una subcategoría, los cambios mínimos son:
 | Área | Archivo o ubicación | Motivo |
 |---|---|---|
 | Taxonomía | `src/domain/taxonomy/tools/registry.ts` | Agregar los nodos raíz y secundario con IDs, padres, slugs y etiquetas. |
-| Contenido | `src/content/tool-categories/{locale}/<id>.md` | Crear el contenido editorial por idioma. |
+| Contenido | `src/content/tool-categories/{locale}/{root}/<id>.md` para subcategorías; `src/content/tool-categories/{locale}/<id>.md` para raíces | Crear el contenido editorial por idioma. |
 | Routing | `src/routing/registry/create-route-registry.ts` | Derivar la ruta desde contenido publicado y taxonomía; normalmente no se modifica. |
 | Pruebas | Tests de taxonomía, contenido, routing, build y páginas | Verificar identidad, disponibilidad y HTML generado. |
 
@@ -230,7 +255,8 @@ Los selectores de `src/domain/taxonomy/tools/selectors.ts` permitirán consultar
 
 ### Paso 3: crear el contenido editorial
 
-Para publicar la categoría en los cuatro idiomas, crea estos archivos:
+Para publicar la categoría en los cuatro idiomas, crea estos archivos. Las
+subcategorías se guardan dentro de la carpeta de su categoría raíz:
 
 ```text
 src/content/tool-categories/en/security.md
@@ -238,10 +264,10 @@ src/content/tool-categories/es/security.md
 src/content/tool-categories/pt/security.md
 src/content/tool-categories/fr/security.md
 
-src/content/tool-categories/en/credentials.md
-src/content/tool-categories/es/credentials.md
-src/content/tool-categories/pt/credentials.md
-src/content/tool-categories/fr/credentials.md
+src/content/tool-categories/en/security/credentials.md
+src/content/tool-categories/es/security/credentials.md
+src/content/tool-categories/pt/security/credentials.md
+src/content/tool-categories/fr/security/credentials.md
 ```
 
 El nombre del archivo es una convención de organización. La identidad real se toma de `categoryId` en el frontmatter.
@@ -383,6 +409,7 @@ tests/unit/content/schemas/
 Comprueba:
 
 - que existan los archivos de contenido esperados;
+- que las subcategorías puedan cargarse desde una subcarpeta de su categoría raíz;
 - que cada frontmatter use el ID correcto;
 - que el locale del archivo coincida con el campo `locale`;
 - que el estado publicado sea válido;
