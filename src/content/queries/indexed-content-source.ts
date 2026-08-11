@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import type {
   ArticleId,
   BlogCategoryId,
+  StaticPageId,
   ToolCategoryId,
   ToolId,
 } from '@/domain/shared/ids';
@@ -15,12 +16,14 @@ import type { BlogCategoryContentEntry } from './blog-categories';
 import { resolveExactMatch } from './shared';
 import type { ToolCategoryContentEntry } from './tool-categories';
 import type { ToolContentEntry } from './tools';
+import type { StaticPageContentEntry } from './static-pages';
 
 type IndexedCollectionName =
   | 'tools'
   | 'toolCategories'
   | 'blog'
-  | 'blogCategories';
+  | 'blogCategories'
+  | 'staticPages';
 
 export interface ContentCollectionSource {
   getCollection<TCollection extends IndexedCollectionName>(
@@ -52,6 +55,11 @@ export interface BlogCategoryContentKey {
   readonly locale: Locale;
 }
 
+export interface StaticPageContentKey {
+  readonly pageId: StaticPageId;
+  readonly locale: Locale;
+}
+
 export interface ContentIndex<TKey, TEntry> {
   find(key: TKey): TEntry | null;
   require(key: TKey): TEntry;
@@ -76,6 +84,10 @@ export interface PublishedContentIndexes {
     BlogCategoryContentKey,
     BlogCategoryContentEntry
   >;
+  readonly staticPages: LocaleListContentIndex<
+    StaticPageContentKey,
+    StaticPageContentEntry
+  >;
 }
 
 export interface ContentSourceSnapshot {
@@ -84,6 +96,7 @@ export interface ContentSourceSnapshot {
     readonly toolCategories: readonly ToolCategoryContentEntry[];
     readonly blog: readonly ArticleContentEntry[];
     readonly blogCategories: readonly BlogCategoryContentEntry[];
+    readonly staticPages: readonly StaticPageContentEntry[];
   };
   readonly published: PublishedContentIndexes;
 }
@@ -92,7 +105,8 @@ type PublishedEntry =
   | ToolContentEntry
   | ToolCategoryContentEntry
   | ArticleContentEntry
-  | BlogCategoryContentEntry;
+  | BlogCategoryContentEntry
+  | StaticPageContentEntry;
 
 interface CreatePublishedIndexInput<TKey, TEntry extends PublishedEntry> {
   readonly entries: readonly TEntry[];
@@ -114,11 +128,12 @@ export async function createPublishedContentIndexes(
 export async function createContentSourceSnapshot(
   source: ContentCollectionSource = astroContentSource,
 ): Promise<ContentSourceSnapshot> {
-  const [tools, toolCategories, blog, blogCategories] = await Promise.all([
+  const [tools, toolCategories, blog, blogCategories, staticPages] = await Promise.all([
     source.getCollection('tools'),
     source.getCollection('toolCategories'),
     source.getCollection('blog'),
     source.getCollection('blogCategories'),
+    source.getCollection('staticPages'),
   ]);
 
   const all = Object.freeze({
@@ -126,6 +141,7 @@ export async function createContentSourceSnapshot(
     toolCategories: freezeEntries(toolCategories),
     blog: freezeEntries(blog),
     blogCategories: freezeEntries(blogCategories),
+    staticPages: freezeEntries(staticPages),
   });
 
   return Object.freeze({
@@ -139,6 +155,7 @@ function createPublishedContentIndexesFromEntries(entries: {
   readonly toolCategories: readonly ToolCategoryContentEntry[];
   readonly blog: readonly ArticleContentEntry[];
   readonly blogCategories: readonly BlogCategoryContentEntry[];
+  readonly staticPages: readonly StaticPageContentEntry[];
 }): PublishedContentIndexes {
   return Object.freeze({
     tools: createPublishedIndex<ToolContentKey, ToolContentEntry>({
@@ -217,6 +234,27 @@ function createPublishedContentIndexesFromEntries(entries: {
         locale: entry.data.locale,
       }),
       getKeyEntityId: (key) => key.categoryId,
+      getKeyLocale: (key) => key.locale,
+      includeLocaleList: true,
+    }),
+    staticPages: createPublishedIndex<
+      StaticPageContentKey,
+      StaticPageContentEntry
+    >({
+      entries: entries.staticPages,
+      context: ({ pageId, locale }) => ({
+        collection: 'staticPages',
+        entityField: 'pageId',
+        entityId: pageId,
+        locale,
+        status: 'published',
+      }),
+      getEntityId: (entry) => entry.data.pageId,
+      getKey: (entry) => ({
+        pageId: entry.data.pageId,
+        locale: entry.data.locale,
+      }),
+      getKeyEntityId: (key) => key.pageId,
       getKeyLocale: (key) => key.locale,
       includeLocaleList: true,
     }),

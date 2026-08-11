@@ -9,6 +9,7 @@ import {
   toolCategoryContentSchema,
   toolContentSchema,
 } from './content/schemas/tools';
+import { staticPageContentSchema } from './content/schemas/static-pages';
 
 const tools = defineCollection({
   loader: glob({
@@ -42,9 +43,18 @@ const blogCategories = defineCollection({
   schema: blogCategoryContentSchema,
 });
 
+const staticPages = defineCollection({
+  loader: glob({
+    base: './src/content/static-pages',
+    pattern: '**/*.md',
+  }),
+  schema: staticPageContentSchema,
+});
+
 export const collections = {
   tools,
   toolCategories,
   blog,
   blogCategories,
+  staticPages,
 };

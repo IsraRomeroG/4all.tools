@@ -84,7 +84,7 @@ describe('published blog article catalog queries', () => {
     await queries.requirePublishedArticleContent('what-is-json', 'en');
     await queries.requirePublishedBlogCategoryContent('json-guides', 'en');
 
-    expect(source.getCollection).toHaveBeenCalledTimes(4);
+    expect(source.getCollection).toHaveBeenCalledTimes(5);
     expect(source.getCollection).toHaveBeenCalledWith('blog');
     expect(getPublishedContentIndexes).toHaveBeenCalledTimes(4);
   });
@@ -99,10 +99,14 @@ function contentSource(fixtures: {
     toolCategories: [],
     blog: [...(fixtures.blog ?? [])],
     blogCategories: [...(fixtures.blogCategories ?? [])],
+    staticPages: [],
   };
-  const getCollection = vi.fn(async (collection: keyof typeof collections) =>
-    collections[collection] as never,
-  );
+  const getCollection = vi.fn(
+    async (collection: keyof typeof collections) =>
+      collections[collection] as never,
+  ) as unknown as ContentCollectionSource['getCollection'] & ReturnType<
+    typeof vi.fn
+  >;
 
   return { getCollection };
 }

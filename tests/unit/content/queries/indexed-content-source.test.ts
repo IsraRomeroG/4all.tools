@@ -140,11 +140,12 @@ describe('published content indexes', () => {
 
     await createPublishedContentIndexes(source);
 
-    expect(source.getCollection).toHaveBeenCalledTimes(4);
+    expect(source.getCollection).toHaveBeenCalledTimes(5);
     expect(source.getCollection).toHaveBeenCalledWith('tools');
     expect(source.getCollection).toHaveBeenCalledWith('toolCategories');
     expect(source.getCollection).toHaveBeenCalledWith('blog');
     expect(source.getCollection).toHaveBeenCalledWith('blogCategories');
+    expect(source.getCollection).toHaveBeenCalledWith('staticPages');
   });
 
   it('memoizes the default accessor outside DEV', async () => {
@@ -169,7 +170,7 @@ describe('published content indexes', () => {
     expect(secondPromise).toBe(firstPromise);
     expect(secondIndexes).toBe(firstIndexes);
     expect(mocks.getCollection.mock.calls.map(([collection]) => collection))
-      .toEqual(['tools', 'toolCategories', 'blog', 'blogCategories']);
+      .toEqual(['tools', 'toolCategories', 'blog', 'blogCategories', 'staticPages']);
   });
 
   it('shares one production source snapshot between all-entry and published views', async () => {
@@ -192,7 +193,7 @@ describe('published content indexes', () => {
     ]);
 
     expect(snapshot.published).toBe(indexes);
-    expect(mocks.getCollection).toHaveBeenCalledTimes(4);
+    expect(mocks.getCollection).toHaveBeenCalledTimes(5);
   });
 
   it('refreshes the all-entry snapshot in DEV', async () => {
@@ -264,7 +265,7 @@ describe('published content indexes', () => {
       blogTaxonomy,
     });
 
-    expect(source.getCollection).toHaveBeenCalledTimes(4);
+    expect(source.getCollection).toHaveBeenCalledTimes(5);
     expect(registry.getAll().map((record) => `${record.locale}:${record.segments.join('/')}`))
       .toEqual([
         'en:developer',
@@ -277,7 +278,7 @@ describe('published content indexes', () => {
 });
 
 type CollectionFixtures = Partial<
-  Record<'tools' | 'toolCategories' | 'blog' | 'blogCategories', unknown[]>
+  Record<'tools' | 'toolCategories' | 'blog' | 'blogCategories' | 'staticPages', unknown[]>
 >;
 
 function contentSource(fixtures: CollectionFixtures = {}): ContentCollectionSource {
@@ -286,6 +287,7 @@ function contentSource(fixtures: CollectionFixtures = {}): ContentCollectionSour
     toolCategories: fixtures.toolCategories ?? [],
     blog: fixtures.blog ?? [],
     blogCategories: fixtures.blogCategories ?? [],
+    staticPages: fixtures.staticPages ?? [],
   };
   const getCollection: ContentCollectionSource['getCollection'] = vi.fn(
     async (collection) =>

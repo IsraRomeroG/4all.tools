@@ -1,6 +1,7 @@
 import type {
   ArticleContentEntry,
   BlogCategoryContentEntry,
+  StaticPageContentEntry,
   ToolCategoryContentEntry,
   ToolContentEntry,
 } from '@/content/queries';
@@ -20,7 +21,8 @@ type ContentIdentityEntry =
   | ToolContentEntry
   | ToolCategoryContentEntry
   | ArticleContentEntry
-  | BlogCategoryContentEntry;
+  | BlogCategoryContentEntry
+  | StaticPageContentEntry;
 
 interface IdentityMatch {
   readonly entry: ContentIdentityEntry;
@@ -308,6 +310,7 @@ function contentCollections(
     ['toolCategories', content.all.toolCategories],
     ['blog', content.all.blog],
     ['blogCategories', content.all.blogCategories],
+    ['staticPages', content.all.staticPages],
   ];
 }
 
@@ -324,6 +327,8 @@ function getContentIdentity(
       return { id: (entry as ArticleContentEntry).data.articleId, locale: entry.data.locale };
     case 'blogCategories':
       return { id: (entry as BlogCategoryContentEntry).data.categoryId, locale: entry.data.locale };
+    case 'staticPages':
+      return { id: (entry as StaticPageContentEntry).data.pageId, locale: entry.data.locale };
     default:
       throw new Error(`Unknown content collection ${collection}.`);
   }

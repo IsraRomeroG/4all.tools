@@ -147,6 +147,7 @@ function contentSnapshot(fixtures: {
   readonly toolCategories?: readonly unknown[];
   readonly blog?: readonly unknown[];
   readonly blogCategories?: readonly unknown[];
+  readonly staticPages?: readonly unknown[];
 }): ContentSourceSnapshot {
   return {
     all: {
@@ -154,6 +155,7 @@ function contentSnapshot(fixtures: {
       toolCategories: (fixtures.toolCategories ?? []) as never,
       blog: (fixtures.blog ?? []) as never,
       blogCategories: (fixtures.blogCategories ?? []) as never,
+      staticPages: (fixtures.staticPages ?? []) as never,
     },
     published: {} as never,
   };

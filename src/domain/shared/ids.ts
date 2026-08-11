@@ -5,6 +5,7 @@ export type ToolCategoryId = StableEntityId;
 export type BlogCategoryId = StableEntityId;
 export type ArticleId = StableEntityId;
 export type LandingId = StableEntityId;
+export type StaticPageId = StableEntityId;
 
 export const STABLE_ENTITY_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 

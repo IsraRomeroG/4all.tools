@@ -218,6 +218,7 @@ interface CollectionLoadCounters {
   toolCategories: number;
   blog: number;
   blogCategories: number;
+  staticPages: number;
 }
 
 interface MutableTestContentSource extends ContentCollectionSource {
@@ -245,6 +246,7 @@ function createMutableTestContentSource(
     toolCategories: 0,
     blog: 0,
     blogCategories: 0,
+    staticPages: 0,
   };
   const getCollection: ContentCollectionSource['getCollection'] = vi.fn(
     async (collection) => {
@@ -271,6 +273,7 @@ function normalizeCollectionFixtures(fixtures: CollectionFixtures) {
     toolCategories: fixtures.toolCategories ?? [],
     blog: fixtures.blog ?? [],
     blogCategories: fixtures.blogCategories ?? [],
+    staticPages: [],
   };
 
   return collections;

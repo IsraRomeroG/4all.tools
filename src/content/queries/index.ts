@@ -35,6 +35,12 @@ export {
   type ToolCategoryContentEntry,
 } from './tool-categories';
 export {
+  getPublishedStaticPageContent,
+  listPublishedStaticPageContent,
+  requirePublishedStaticPageContent,
+  type StaticPageContentEntry,
+} from './static-pages';
+export {
   createPublishedContentIndexes,
   createContentSourceSnapshot,
   getContentSourceSnapshot,
@@ -50,4 +56,5 @@ export {
   type PublishedContentIndexes,
   type ToolCategoryContentKey,
   type ToolContentKey,
+  type StaticPageContentKey,
 } from './indexed-content-source';
