@@ -61,6 +61,38 @@ describe('static path factories', () => {
     });
   });
 
+  it('projects static-page records through the shared root projection', () => {
+    const registry = createRouteRegistryFromRecords([
+      staticPageRecord({
+        locale: 'en',
+        segments: ['contact'],
+        pageId: 'contact',
+      }),
+      staticPageRecord({
+        locale: 'es',
+        segments: ['contacto'],
+        pageId: 'contact',
+      }),
+    ]);
+
+    expect(getRootCategoryStaticPathEntries(registry, 'en')).toEqual([
+      {
+        params: { category: 'contact' },
+        props: {
+          routeTarget: { kind: 'static-page', pageId: 'contact' },
+        },
+      },
+    ]);
+    expect(getRootCategoryStaticPathEntries(registry, 'es')).toEqual([
+      {
+        params: { category: 'contacto' },
+        props: {
+          routeTarget: { kind: 'static-page', pageId: 'contact' },
+        },
+      },
+    ]);
+  });
+
   it('projects root category static paths from published category content only', async () => {
     const registry = await createRouteRegistry({
       contentIndexes: await getPublishedContentIndexes(),
@@ -413,6 +445,22 @@ function blogCategoryRecord(input: {
     target: {
       kind: 'blog-category',
       categoryId: input.categoryId,
+    },
+  });
+}
+
+function staticPageRecord(input: {
+  readonly locale: RouteRecord['locale'];
+  readonly segments: readonly string[];
+  readonly pageId: string;
+}): RouteRecord {
+  return record({
+    area: 'static',
+    locale: input.locale,
+    segments: input.segments,
+    target: {
+      kind: 'static-page',
+      pageId: input.pageId,
     },
   });
 }

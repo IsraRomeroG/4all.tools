@@ -45,7 +45,11 @@ describe('architecture route integrity validation', () => {
   });
 });
 
-function record(kind: RouteTarget['kind'], id: string, segment: string): RouteRecord {
+function record(
+  kind: Exclude<RouteTarget['kind'], 'static-page'>,
+  id: string,
+  segment: string,
+): RouteRecord {
   const target: RouteTarget = kind === 'tool'
     ? { kind, toolId: id }
     : kind === 'tool-category'

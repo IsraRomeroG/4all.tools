@@ -52,6 +52,7 @@ export async function composeToolAreaAdapterPage(
 
     case 'article':
     case 'blog-category':
+    case 'static-page':
       throw new UnsupportedPageTargetError({
         locale,
         targetKind: routeTarget.kind,

@@ -1,6 +1,7 @@
 import type {
   ArticleId,
   BlogCategoryId,
+  StaticPageId,
   ToolCategoryId,
   ToolId,
 } from '@/domain/shared/ids';
@@ -15,6 +16,7 @@ export const ROUTE_KINDS = [
   'tool-category',
   'article',
   'blog-category',
+  'static-page',
 ] as const;
 
 export type RouteKind = (typeof ROUTE_KINDS)[number];
@@ -39,6 +41,10 @@ export type RouteTarget =
   | {
       readonly kind: 'blog-category';
       readonly categoryId: BlogCategoryId;
+    }
+  | {
+      readonly kind: 'static-page';
+      readonly pageId: StaticPageId;
     };
 
 export type RouteTargetKey = string;
@@ -74,6 +80,9 @@ export function getRouteTargetKey(target: RouteTarget): RouteTargetKey {
 
     case 'blog-category':
       return `blog-category:${target.categoryId}`;
+
+    case 'static-page':
+      return `static-page:${target.pageId}`;
 
     default:
       return assertNever(target);

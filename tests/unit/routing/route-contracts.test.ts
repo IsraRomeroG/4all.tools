@@ -3,6 +3,7 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import type {
   ArticleId,
   BlogCategoryId,
+  StaticPageId,
   ToolCategoryId,
   ToolId,
 } from '@/domain/shared/ids';
@@ -28,6 +29,7 @@ describe('routing route contracts', () => {
       'tool-category',
       'article',
       'blog-category',
+      'static-page',
     ]);
     expect(ROUTE_STRATEGIES).toEqual(['flat', 'hierarchical']);
   });
@@ -57,6 +59,12 @@ describe('routing route contracts', () => {
       readonly kind: 'blog-category';
       readonly categoryId: BlogCategoryId;
     }>();
+    expectTypeOf<
+      Extract<RouteTarget, { kind: 'static-page' }>
+    >().toEqualTypeOf<{
+      readonly kind: 'static-page';
+      readonly pageId: StaticPageId;
+    }>();
   });
 
   it('generates deterministic target keys', () => {
@@ -84,6 +92,12 @@ describe('routing route contracts', () => {
         categoryId: 'json-guides',
       }),
     ).toBe('blog-category:json-guides');
+    expect(
+      getRouteTargetKey({
+        kind: 'static-page',
+        pageId: 'contact',
+      }),
+    ).toBe('static-page:contact');
   });
 
   it('keeps target keys locale-independent', () => {
@@ -159,6 +173,8 @@ describe('routing route contracts', () => {
           return `article ${target.articleId}`;
         case 'blog-category':
           return `blog category ${target.categoryId}`;
+        case 'static-page':
+          return `static page ${target.pageId}`;
         default:
           return assertNever(target);
       }

@@ -9,6 +9,7 @@ import { SUPPORTED_LOCALES } from '@/i18n/types';
 import {
   buildArticlePathSegments,
   buildBlogCategoryPathSegments,
+  buildStaticPagePathSegments,
   buildToolCategoryPathSegments,
   buildToolPathSegments,
 } from '@/routing/builders';
@@ -32,9 +33,35 @@ export async function createRouteRegistry(
     ...buildToolCategoryRecords(input.contentIndexes, input.toolTaxonomy),
     ...buildArticleRecords(input.contentIndexes, input.blogTaxonomy),
     ...buildBlogCategoryRecords(input.contentIndexes, input.blogTaxonomy),
+    ...buildStaticPageRecords(input.contentIndexes),
   ];
 
   return createRouteRegistryFromRecords(sortRouteRecords(records));
+}
+
+function buildStaticPageRecords(
+  indexes: PublishedContentIndexes,
+): readonly RouteRecord[] {
+  const records: RouteRecord[] = [];
+
+  for (const locale of SUPPORTED_LOCALES) {
+    for (const content of indexes.staticPages.list(locale)) {
+      const sourceId = sourceIdFor('static-page-content', content.id);
+      records.push({
+        area: 'static',
+        locale,
+        segments: buildStaticPagePathSegments({
+          locale,
+          routeSlug: content.data.routeSlug,
+          sourceId,
+        }),
+        target: { kind: 'static-page', pageId: content.data.pageId },
+        sourceId,
+      });
+    }
+  }
+
+  return records;
 }
 
 function buildToolRecords(

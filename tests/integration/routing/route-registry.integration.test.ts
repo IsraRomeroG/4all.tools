@@ -5,6 +5,7 @@ import {
   getPublishedContentIndexes,
   type ContentCollectionSource,
   type ArticleContentEntry,
+  type StaticPageContentEntry,
 } from '@/content/queries';
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
@@ -52,18 +53,70 @@ describe('route registry integration', () => {
 
     expect(second.getAll()).toEqual(first.getAll());
   });
+
+  it('derives localized static-page routes from exact published content', async () => {
+    const indexes = await createPublishedContentIndexes(source({
+      staticPages: [
+        staticPage('en', 'contact', 'contact'),
+        staticPage('es', 'contact', 'contacto'),
+        staticPage('pt', 'contact', 'contato', 'draft'),
+      ],
+    }));
+    const registry = await createRouteRegistry({
+      contentIndexes: indexes,
+      toolRegistry,
+      toolTaxonomy,
+      blogTaxonomy,
+    });
+
+    expect(registry.getCanonical('en', { kind: 'static-page', pageId: 'contact' })).toMatchObject({
+      area: 'static',
+      segments: ['contact'],
+      sourceId: 'static-page-content:static-pages/en/contact',
+    });
+    expect(registry.getCanonical('es', { kind: 'static-page', pageId: 'contact' })?.segments)
+      .toEqual(['contacto']);
+    expect(registry.getCanonical('pt', { kind: 'static-page', pageId: 'contact' })).toBeNull();
+  });
 });
 
-function source(fixtures: { readonly blog?: readonly ArticleContentEntry[] }): ContentCollectionSource {
+function source(fixtures: {
+  readonly blog?: readonly ArticleContentEntry[];
+  readonly staticPages?: readonly StaticPageContentEntry[];
+}): ContentCollectionSource {
   return {
     getCollection: async (collection) => {
       if (collection === 'blog') {
         return (fixtures.blog ?? []) as never;
       }
 
+      if (collection === 'staticPages') {
+        return (fixtures.staticPages ?? []) as never;
+      }
+
       return [] as never;
     },
   };
+}
+
+function staticPage(
+  locale: 'en' | 'es' | 'pt' | 'fr',
+  pageId: string,
+  routeSlug: string,
+  status: 'published' | 'draft' = 'published',
+): StaticPageContentEntry {
+  return {
+    id: `static-pages/${locale}/${pageId}`,
+    collection: 'staticPages',
+    data: {
+      pageId,
+      locale,
+      routeSlug,
+      status,
+      title: pageId,
+      seo: { title: pageId, description: pageId, noindex: false },
+    },
+  } as unknown as StaticPageContentEntry;
 }
 
 function article(locale: 'en' | 'es' | 'pt' | 'fr', articleId: string, routeSlug: string): ArticleContentEntry {

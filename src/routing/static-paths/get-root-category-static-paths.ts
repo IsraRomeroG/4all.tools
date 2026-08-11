@@ -8,11 +8,12 @@ import {
   getRecordsForLocale,
   requireSegment,
   type RootCategoryStaticPathEntry,
+  type RootStaticPathEntry,
   type StaticPathFactory,
   type StaticPathFactoryInput,
 } from './shared';
 
-const ROOT_CATEGORY_PROJECTION = 'root-category';
+const ROOT_PROJECTION = 'root';
 
 export function createRootCategoryStaticPaths(
   input: StaticPathFactoryInput,
@@ -28,34 +29,32 @@ export function createRootCategoryStaticPaths(
 export function getRootCategoryStaticPathEntries(
   registry: RouteRegistry,
   locale: Locale,
-): readonly RootCategoryStaticPathEntry[] {
+): readonly RootStaticPathEntry[] {
   const entries = getRecordsForLocale(registry, locale)
-    .filter(isRootCategoryRecord)
-    .map(projectRootCategoryRecord);
+    .filter(isRootRecord)
+    .map(projectRootRecord);
 
   assertUniqueStaticPathEntries(
     entries,
     (entry) => `category=${entry.params.category}`,
-    ROOT_CATEGORY_PROJECTION,
+    ROOT_PROJECTION,
   );
 
   return Object.freeze(entries);
 }
 
-function isRootCategoryRecord(record: RouteRecord): boolean {
+function isRootRecord(record: RouteRecord): boolean {
   return (
-    record.area === 'tools' &&
-    record.target.kind === 'tool-category' &&
+    ((record.area === 'tools' && record.target.kind === 'tool-category') ||
+      (record.area === 'static' && record.target.kind === 'static-page')) &&
     record.segments.length === 1
   );
 }
 
-function projectRootCategoryRecord(
-  record: RouteRecord,
-): RootCategoryStaticPathEntry {
+function projectRootRecord(record: RouteRecord): RootCategoryStaticPathEntry {
   return freezeEntry({
     params: Object.freeze({
-      category: requireSegment(record, 0, ROOT_CATEGORY_PROJECTION),
+      category: requireSegment(record, 0, ROOT_PROJECTION),
     }),
     props: Object.freeze({
       routeTarget: record.target,

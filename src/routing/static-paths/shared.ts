@@ -23,6 +23,8 @@ export interface RootCategoryStaticPathEntry {
   readonly props: StaticPathProps;
 }
 
+export type RootStaticPathEntry = RootCategoryStaticPathEntry;
+
 export interface ToolAreaStaticPathEntry {
   readonly params: {
     readonly category: string;

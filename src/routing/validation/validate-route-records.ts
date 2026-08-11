@@ -277,8 +277,10 @@ function isAreaTargetCompatible(
       return target.kind === 'article' || target.kind === 'blog-category';
 
     case 'home':
-    case 'static':
       return false;
+
+    case 'static':
+      return target.kind === 'static-page';
 
     default:
       return false;
@@ -300,6 +302,9 @@ function isRouteTarget(target: unknown): target is RouteTarget {
 
     case 'article':
       return isNonEmptyString(target.articleId);
+
+    case 'static-page':
+      return isNonEmptyString(target.pageId);
 
     default:
       return false;
