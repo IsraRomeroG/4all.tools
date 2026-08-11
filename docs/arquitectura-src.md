@@ -100,6 +100,12 @@ Aunque está en la raíz de `src`, funciona como punto de registro de Astro Cont
 
 Las consultas no deben asumir que existe una traducción alternativa. Si falta contenido en un idioma, el resultado debe permanecer observable como ausente o producir un error explícito cuando sea obligatorio.
 
+## Static editorial pages (P17)
+
+The `staticPages` collection is registered as an internal publishing family with a strict contract: stable `pageId`, locale, one-segment localized `routeSlug`, publication status, title, SEO metadata, and Markdown body. Published entries are indexed in the shared exact-match snapshot; missing locales do not fall back to another locale.
+
+The route registry derives `area: static` records with `target.kind: static-page`, and the existing root one-segment projection dispatches them alongside root tool categories. `StaticPageModel`, `composeStaticPageModel`, and `StaticPageTemplate.astro` prepare and render the page without collection or URL discovery in the template. P17 does not publish a real page or add a public URL.
+
 ## `src/domain/`
 
 Contiene el modelo de dominio: identidades, estados, taxonomías y contratos de las herramientas. Esta capa no debe depender de componentes Astro ni de detalles de presentación.

@@ -44,6 +44,27 @@ describe('architecture identity validation', () => {
     }]);
   });
 
+  it('reports duplicate static-page identities through the common validator', () => {
+    const issues = validateContentIdentities({
+      content: contentSnapshot({
+        staticPages: [
+          entry('static-pages/en/contact-a', {
+            pageId: 'contact', locale: 'en', status: 'published',
+          }),
+          entry('static-pages/en/contact-b', {
+            pageId: 'contact', locale: 'en', status: 'draft',
+          }),
+        ],
+      }),
+    });
+
+    expect(issues).toMatchObject([{
+      code: 'DUPLICATE_CONTENT_IDENTITY',
+      entityKey: 'contact',
+      locale: 'en',
+    }]);
+  });
+
   it('rejects content that references an unknown tool module', () => {
     const issues = validateTaxonomyReferences({
       content: contentSnapshot({

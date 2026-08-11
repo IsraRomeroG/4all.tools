@@ -4,7 +4,7 @@ Astro static site for localized web tools.
 
 ## Project Status
 
-P00-P16 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, validation/test guardrail slimming, the single tool registry, content-owned route publication, simplified composers, selective runtime immutability, and scalable verification exist in source.
+P00-P17 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, validation/test guardrail slimming, the single tool registry, content-owned route publication, simplified composers, static editorial-page infrastructure, selective runtime immutability, and scalable verification exist in source.
 
 ## Canonical JSON Validator Routes
 
@@ -83,6 +83,8 @@ Markdown content.
 Published content queries must not silently fall back to another locale. Missing localized content is either `null` or a `ContentNotFoundError` for required APIs; duplicate exact matches remain `AmbiguousContentError`.
 
 Production and static-build route composition shares the same memoized published-content snapshot used by content query APIs. Development route-registry access reconstructs from the current content snapshot so newly published localized content can affect route availability without a process restart. Page composers consume stable authorities directly and expose only the route registry input that varies at page delivery time.
+
+Static editorial pages use the `staticPages` collection and the same exact published-content snapshot, route registry, SEO composition, language switcher, and root one-segment adapters as the other page families. Add a real page only with its stable `pageId`, localized `routeSlug`, published Markdown entries, route-inventory coverage, and the corresponding canonical/SEO/build tests; P17 publishes no editorial page by itself.
 
 Verification combines generic route/build invariants, a small set of home/category/blog/client-tool golden pages, and feature-specific behavior tests. Published locales receive generic render smoke coverage without duplicating identical interaction scenarios per locale.
 

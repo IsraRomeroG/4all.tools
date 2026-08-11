@@ -163,7 +163,7 @@ describe('delivery route registry content-index lifecycle', () => {
     ]);
     expect(content?.id).toBe('tools/en/developer/json-validator');
     expect(mocks.getCollection.mock.calls.map(([collection]) => collection))
-      .toEqual(['tools', 'toolCategories', 'blog', 'blogCategories']);
+      .toEqual(['tools', 'toolCategories', 'blog', 'blogCategories', 'staticPages']);
   });
 
   it('preserves duplicate published-content diagnostics through route publication', async () => {
@@ -316,6 +316,7 @@ function expectLoadCounters(
     toolCategories: expected,
     blog: expected,
     blogCategories: expected,
+    staticPages: expected,
   });
 }
 

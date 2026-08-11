@@ -2,6 +2,12 @@
 
 4all.tools es un sitio web estático multilingüe construido con Astro. El proyecto combina herramientas web ejecutables en el navegador, contenido editorial, rutas localizadas y una arquitectura orientada a tipos.
 
+## Static editorial pages
+
+The project has reusable infrastructure for localized static editorial pages through the `staticPages` collection. Each published translation owns its stable `pageId` and localized flat `routeSlug`; English remains unprefixed, and missing translations stay unavailable. The shared root adapter renders `StaticPageTemplate` with prepared title, Markdown, SEO, and language-switcher models.
+
+P17 intentionally publishes no placeholder page, changes no public route inventory, and adds no redirects. A future real page must add published Markdown, its localized URL matrix, inventory/build coverage, and any migration decision separately.
+
 ## 1. Página principal
 
 - Página de inicio en inglés, español, portugués y francés.

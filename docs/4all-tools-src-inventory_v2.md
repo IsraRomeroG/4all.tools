@@ -2,8 +2,8 @@
 
 **Repositorio:** `IsraRomeroG/4all.tools`  
 **Rama revisada:** `main`  
-**Fecha de revisión:** 25 de julio de 2026
-**Total de archivos dentro de `src/`:** 177
+**Fecha de revisión:** 11 de agosto de 2026
+**Total de archivos dentro de `src/`:** 183
 
 ## Conclusiones principales
 
@@ -34,6 +34,10 @@
 | `src/services/` y `src/server/` | Reservados |
 
 ## Inventario por área
+
+### P17: infraestructura de páginas editoriales estáticas
+
+`staticPages` está registrada en `src/content.config.ts`, con schema estricto, consultas exactas e índice publicado compartido. `StaticPageId`, `static-page` RouteTarget, registros `area: static`, proyección root, `StaticPageModel`, composer y `StaticPageTemplate.astro` están activos internamente. No hay entradas Markdown productivas, rutas nuevas en `PUBLIC_ROUTE_INVENTORY` ni reglas `.htaccess`.
 
 ### Configuración, contenido y estilos globales
 
