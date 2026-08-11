@@ -90,7 +90,6 @@ const EXPECTED_JSON_VALIDATOR_ALTERNATES = [
 const EXPECTED_JSON_VALIDATOR_BREADCRUMBS = [
   'Home',
   'Developer Tools',
-  'Data Formats',
   'JSON',
   'JSON Validator',
 ] as const;

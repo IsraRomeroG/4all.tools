@@ -41,8 +41,8 @@ Ejemplo de la taxonomía actual:
 
 ```text
 developer
-└── data-formats
-    └── json
+├── data-formats
+└── json
 ```
 
 La taxonomía sirve para clasificar herramientas y construir rutas conceptuales. Por sí sola no publica URLs.

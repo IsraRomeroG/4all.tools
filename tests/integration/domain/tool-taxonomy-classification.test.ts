@@ -14,9 +14,9 @@ describe('tool taxonomy classification semantics', () => {
     expect(getToolRootCategory(primaryCategoryId).id).toBe('developer');
     expect(
       getToolCategoryAncestors(primaryCategoryId).map((node) => node.id),
-    ).toEqual(['developer', 'data-formats']);
+    ).toEqual(['developer']);
     expect(
       getToolCategoryPathFromRoot(primaryCategoryId).map((node) => node.id),
-    ).toEqual(['developer', 'data-formats', 'json']);
+    ).toEqual(['developer', 'json']);
   });
 });

@@ -31,7 +31,6 @@ describe('breadcrumb builders', () => {
         label: 'Developer Tools',
         url: '/developer/',
       },
-      { kind: 'taxonomy', state: 'text', label: 'Data Formats' },
       { kind: 'taxonomy', state: 'text', label: 'JSON' },
       { kind: 'entity', state: 'current', label: 'JSON Validator' },
     ]);
@@ -53,7 +52,6 @@ describe('breadcrumb builders', () => {
     expect(model.items).toMatchObject([
       { label: 'Inicio', url: '/es/' },
       { label: 'Herramientas para desarrolladores', url: '/es/desarrollo/' },
-      { label: 'Formatos de datos', state: 'text' },
       { label: 'JSON', state: 'text' },
       { label: 'Validador JSON', state: 'current' },
     ]);
@@ -70,7 +68,7 @@ describe('breadcrumb builders', () => {
       messages: getGlobalMessages('en').navigation,
     });
 
-    expect(model.items[3]).toEqual({
+    expect(model.items[2]).toEqual({
       kind: 'taxonomy',
       state: 'link',
       label: 'JSON',

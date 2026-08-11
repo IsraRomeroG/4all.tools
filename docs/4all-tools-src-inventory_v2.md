@@ -103,7 +103,7 @@
 | `src/domain/shared/ids.ts` | IDs estables de herramientas, categorías y artículos. | Activo |
 | `src/domain/shared/publication.ts` | Contratos del estado de publicación. | Activo |
 | `src/domain/taxonomy/shared/` | Motor inmutable de árboles, tipos y errores de taxonomía. | Activo |
-| `src/domain/taxonomy/tools/registry.ts` | Taxonomía de herramientas: `developer` → `data-formats` → `json`. | Activo |
+| `src/domain/taxonomy/tools/registry.ts` | Taxonomía de herramientas: `developer` → `data-formats` y `developer` → `json`. | Activo |
 | `src/domain/taxonomy/tools/selectors.ts` | Selectores de la taxonomía de herramientas. | Activo |
 | `src/domain/taxonomy/blog/registry.ts` | Taxonomía del blog: `development` → `json-guides`. | Activo |
 | `src/domain/taxonomy/blog/selectors.ts` | Selectores de la taxonomía del blog. | Activo |

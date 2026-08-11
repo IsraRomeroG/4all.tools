@@ -51,7 +51,7 @@ export const TOOL_CATEGORY_NODES = [
   },
   {
     id: 'json',
-    parentId: 'data-formats',
+    parentId: 'developer',
     localized: {
       en: {
         slug: 'json',

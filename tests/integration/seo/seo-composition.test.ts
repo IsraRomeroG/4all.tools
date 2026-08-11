@@ -76,12 +76,12 @@ describe('SEO page model composition', () => {
       );
       expect(page.breadcrumbs.items.map((item) => item.label)).toEqual(
         page.locale === 'en'
-          ? ['Home', 'Developer Tools', 'Data Formats', 'JSON', 'JSON Validator']
+          ? ['Home', 'Developer Tools', 'JSON', 'JSON Validator']
           : page.locale === 'es'
-            ? ['Inicio', 'Herramientas para desarrolladores', 'Formatos de datos', 'JSON', 'Validador JSON']
+            ? ['Inicio', 'Herramientas para desarrolladores', 'JSON', 'Validador JSON']
             : page.locale === 'pt'
-              ? ['Início', 'Ferramentas para desenvolvedores', 'Formatos de dados', 'JSON', 'Validador JSON']
-              : ['Accueil', 'Outils pour développeurs', 'Formats de données', 'JSON', 'Validateur JSON'],
+              ? ['Início', 'Ferramentas para desenvolvedores', 'JSON', 'Validador JSON']
+              : ['Accueil', 'Outils pour développeurs', 'JSON', 'Validateur JSON'],
       );
       expect(page.breadcrumbs.items.filter((item) => item.state === 'link')).toHaveLength(
         page.locale === 'en' ? 2 : 1,
