@@ -1,0 +1,31 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import LanguageSwitcher from '@/components/navigation/LanguageSwitcher.astro';
+import SeoHead from '@/components/seo/SeoHead.astro';
+import type { StaticPageModel } from './models/static-page';
+
+interface Props {
+  page: StaticPageModel;
+}
+
+const { page } = Astro.props;
+const Content = page.content.Content;
+---
+
+<BaseLayout locale={page.locale} mainClass="min-h-screen bg-slate-50">
+  <LanguageSwitcher slot="site-header" model={page.languageSwitcher} />
+  <Fragment slot="head">
+    <SeoHead seo={page.seo} />
+  </Fragment>
+
+  <article
+    class="mx-auto grid w-full max-w-3xl gap-8 px-4 py-10 sm:px-6 lg:px-8"
+    data-template="static-page"
+    data-template-identity={page.pageId}
+  >
+    <h1 class="text-3xl font-semibold tracking-normal text-slate-950">{page.title}</h1>
+    <section class="prose prose-slate max-w-none" data-template-region="static-page-content">
+      <Content />
+    </section>
+  </article>
+</BaseLayout>

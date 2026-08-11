@@ -7,6 +7,7 @@ import ArticleTemplate from '@/templates/ArticleTemplate.astro';
 import BlogIndexTemplate from '@/templates/BlogIndexTemplate.astro';
 import CategoryTemplate from '@/templates/CategoryTemplate.astro';
 import HomeTemplate from '@/templates/HomeTemplate.astro';
+import StaticPageTemplate from '@/templates/StaticPageTemplate.astro';
 import ToolTemplate from '@/templates/ToolTemplate.astro';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
@@ -27,6 +28,7 @@ const TEMPLATE_FILES = [
   'src/templates/BlogIndexTemplate.astro',
   'src/templates/BlogCategoryTemplate.astro',
   'src/templates/ArticleTemplate.astro',
+  'src/templates/StaticPageTemplate.astro',
 ] as const;
 
 async function projectPathExists(path: string): Promise<boolean> {
@@ -336,6 +338,44 @@ describe('template foundation', () => {
     expect(article).toContain('data-fixture-article-body');
   });
 
+  it('renders a static editorial page from a prepared localized model', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(StaticPageTemplate, {
+      partial: false,
+      props: {
+        page: {
+          kind: 'static-page',
+          locale: 'es',
+          route: route({
+            locale: 'es',
+            segments: ['contacto'],
+            target: { kind: 'static-page', pageId: 'contact' },
+          }),
+          seo: seo({
+            title: 'Contacto',
+            description: 'Contacta con 4all.tools.',
+            canonicalUrl: 'https://4all.tools/es/contacto/',
+          }),
+          languageSwitcher: languageSwitcher('es'),
+          title: 'Contacto',
+          pageId: 'contact',
+          content: {
+            Content: FixtureContent,
+            headings: [],
+          },
+        },
+      },
+    });
+
+    expect(html).toContain('<html lang="es" dir="ltr">');
+    expect(html).toMatch(/<h1[^>]*>Contacto<\/h1>/);
+    expect(html).toContain('data-template="static-page"');
+    expect(html).toContain('data-template-identity="contact"');
+    expect(html).toContain('data-fixture-rendered-content');
+    expect(html).not.toContain('canonicalUrl =');
+    expect(html).not.toContain('<form');
+  });
+
   it('uses src/templates without introducing src/views', async () => {
     for (const file of TEMPLATE_FILES) {
       expect(await projectPathExists(file)).toBe(true);
@@ -351,7 +391,11 @@ function route(input: {
   readonly target: RouteTarget;
 }): RouteRecord {
   return {
-    area: input.target.kind === 'article' || input.target.kind === 'blog-category' ? 'blog' : 'tools',
+    area: input.target.kind === 'article' || input.target.kind === 'blog-category'
+      ? 'blog'
+      : input.target.kind === 'static-page'
+        ? 'static'
+        : 'tools',
     locale: input.locale,
     segments: input.segments,
     target: input.target,
