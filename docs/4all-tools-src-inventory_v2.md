@@ -35,9 +35,11 @@
 
 ## Inventario por área
 
-### P17: infraestructura de site pages editoriales
+### P17/P18: infraestructura y publicación de site pages editoriales
 
-`sitePages` está registrada en `src/content.config.ts`, con schema estricto, consultas exactas e índice publicado compartido. `SitePageId`, `site-page` RouteTarget, registros `area: site`, proyección `[root]`, `SitePageModel`, composer y `SitePageTemplate.astro` están activos internamente. La admisión se limita a documentos editoriales independientes, no taxonómicos, principalmente Markdown y sin una arquitectura de feature propia. `src/content/site/` conserva copy singleton sin publicar rutas, mientras `src/content/site-pages/` contiene documentos localizados que pueden generar RouteRecords. No hay entradas Markdown productivas, rutas nuevas en `PUBLIC_ROUTE_INVENTORY` ni reglas `.htaccess`.
+P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `terms` en `en`, `es`, `pt` y `fr`. El inventario público queda en 34 `RouteRecord`; About y Contact son indexables, mientras Privacy y Terms son públicas con `noindex` y quedan fuera del sitemap indexable. `src/navigation/site-footer/` prepara enlaces desde `RouteRegistry` y `src/components/navigation/SiteFooter.astro` los presenta mediante el slot `site-footer`. No se añadió un mapa paralelo de URLs, formulario/backend de contacto ni inventario alternativo de sitemap.
+
+`sitePages` está registrada en `src/content.config.ts`, con schema estricto, consultas exactas e índice publicado compartido. `SitePageId`, `site-page` RouteTarget, registros `area: site`, proyección `[root]`, `SitePageModel`, composer y `SitePageTemplate.astro` están activos. P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `terms` en `en`, `es`, `pt` y `fr`, elevando el inventario público a 34 RouteRecords. `src/content/site/` conserva copy singleton sin publicar rutas, mientras `src/content/site-pages/` contiene los documentos localizados publicados que generan RouteRecords. No hay mapa paralelo de URLs, reglas `.htaccess`, formulario/backend de contacto ni inventario alternativo de sitemap.
 
 ### Configuración, contenido y estilos globales
 
@@ -56,6 +58,8 @@
 | `src/components/seo/SeoHead.astro` | Renderiza canonical, alternates, `x-default`, Open Graph y directivas de indexabilidad. | Activo |
 | `src/navigation/breadcrumbs/` | Modelos y builders de breadcrumbs para herramientas, categorías y blog. | Activo interno |
 | `src/navigation/language-switcher/` | Modelo tipado y builder del selector de idioma. | Activo interno |
+| `src/navigation/site-footer/` | Modelo y builder de enlaces de footer resueltos desde `RouteRegistry`, con etiquetas localizadas. | Activo interno |
+| `src/components/navigation/SiteFooter.astro` | Presentación semántica del footer global a través del slot `site-footer`; no descubre rutas ni contenido. | Activo |
 | `src/seo/` | Contratos, composición, disponibilidad, indexabilidad y validación de clusters SEO localizados. | Activo interno |
 
 ### Espacios reservados
@@ -83,7 +87,7 @@
 | `src/content/schemas/tools.ts` | Schemas de herramientas y categorías de herramientas. | Activo |
 | `src/content/schemas/blog.ts` | Schemas de artículos y categorías del blog. | Activo |
 | `src/content/schemas/site-pages.ts` | Schema estricto de `SitePageId`, locale, `routeSlug`, publicación, título y SEO para site pages. | Activo interno |
-| `src/content/site-pages/` | Raíz reservada para Markdown localizado de site pages; actualmente no contiene entradas productivas. | Activo interno |
+| `src/content/site-pages/` | 16 documentos Markdown publicados para `about`, `contact`, `privacy` y `terms` en cuatro locales. | Activo y público |
 | `src/content/site/blog-index.ts` | Metadatos editoriales del índice del blog. | Activo |
 
 ### Consultas de contenido

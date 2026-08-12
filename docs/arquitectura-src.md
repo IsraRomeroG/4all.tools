@@ -102,11 +102,13 @@ Aunque está en la raíz de `src`, funciona como punto de registro de Astro Cont
 
 Las consultas no deben asumir que existe una traducción alternativa. Si falta contenido en un idioma, el resultado debe permanecer observable como ausente o producir un error explícito cuando sea obligatorio.
 
-## Site pages (P17-C02)
+## Site pages (P17-C02, publicado por P18)
 
 The `sitePages` collection is registered as an internal publishing family with a strict contract: stable `SitePageId`, locale, one-segment localized `routeSlug`, publication status, title, SEO metadata, and Markdown body. Published entries are indexed in the shared exact-match snapshot; missing locales do not fall back to another locale.
 
-The route registry derives `area: site` records with `target.kind: site-page`, and the neutral `[root]` one-segment projection dispatches them alongside root tool categories. `SitePageModel`, `composeSitePageModel`, and `SitePageTemplate.astro` prepare and render the page without collection or URL discovery in the template. P17 does not publish a real page or add a public URL.
+The route registry derives `area: site` records with `target.kind: site-page`, and the neutral `[root]` one-segment projection dispatches them alongside root tool categories. `SitePageModel`, `composeSitePageModel`, and `SitePageTemplate.astro` prepare and render the page without collection or URL discovery in the template. P18 publishes `about`, `contact`, `privacy`, and `terms` in `en`, `es`, `pt`, and `fr`, for 16 production routes and 34 total `RouteRecord` entries. About and Contact are indexable; Privacy and Terms remain public `noindex` pages and are excluded from the indexable sitemap.
+
+Global footer navigation is prepared in `src/navigation/site-footer/` from the same `RouteRegistry` and rendered by `src/components/navigation/SiteFooter.astro` through the existing `BaseLayout` slot. It provides localized links to all four site-page identities without a hardcoded URL catalog. Contact is intentionally email-only at the declared `hello@4all.tools` destination; P18 adds no form, backend, API, CAPTCHA, or legal schema fields without consumers.
 
 A document belongs in `sitePages` only when it is an independent site-owned editorial document, is not an existing tool/taxonomy/blog entity, shares one stable `SitePageId` across translations, needs at most one canonical root route per locale, is primarily Markdown, and does not need a dedicated feature architecture. Shared singleton copy remains in `content/site/`; it has no `SitePageId`, `routeSlug`, or automatic RouteRecord. The same item must not be represented in both locations.
 

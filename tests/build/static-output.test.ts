@@ -95,6 +95,10 @@ const EXPECTED_JSON_VALIDATOR_BREADCRUMBS = [
 ] as const;
 
 const FORBIDDEN_OUTPUTS = [
+  'en/about/index.html',
+  'en/contact/index.html',
+  'en/privacy/index.html',
+  'en/terms/index.html',
   'en/developer/json-validator/index.html',
   'developer/data-formats/json/json-validator/index.html',
   'es/desarrollo/formatos-de-datos/json/validador-json/index.html',
