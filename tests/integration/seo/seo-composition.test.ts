@@ -84,7 +84,7 @@ describe('SEO page model composition', () => {
               : ['Accueil', 'Outils pour développeurs', 'JSON', 'Validateur JSON'],
       );
       expect(page.breadcrumbs.items.filter((item) => item.state === 'link')).toHaveLength(
-        page.locale === 'en' ? 2 : 1,
+        page.locale === 'pt' || page.locale === 'fr' ? 1 : 2,
       );
     }
   });
@@ -109,14 +109,20 @@ describe('SEO page model composition', () => {
         hrefLang: 'en',
         url: 'https://4all.tools/developer/',
       },
+      {
+        locale: 'es',
+        hrefLang: 'es',
+        url: 'https://4all.tools/es/desarrollo/',
+      },
     ]);
     expect(page.seo.xDefaultUrl).toBe('https://4all.tools/developer/');
     expect(page.localizedRouteCluster?.variants.map((variant) => variant.locale)).toEqual([
       'en',
+      'es',
     ]);
     expect(page.languageSwitcher.items).toEqual([
       expect.objectContaining({ locale: 'en', state: 'current' }),
-      expect.objectContaining({ locale: 'es', state: 'unavailable' }),
+      expect.objectContaining({ locale: 'es', state: 'available', url: '/es/desarrollo/' }),
       expect.objectContaining({ locale: 'pt', state: 'unavailable' }),
       expect.objectContaining({ locale: 'fr', state: 'unavailable' }),
     ]);

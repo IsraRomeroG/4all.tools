@@ -46,6 +46,12 @@ export const PUBLIC_ROUTE_INVENTORY = [
   {
     area: 'tools',
     locale: 'es',
+    segments: ['desarrollo'],
+    target: { kind: 'tool-category', categoryId: 'developer' },
+  },
+  {
+    area: 'tools',
+    locale: 'es',
     segments: ['desarrollo', 'validador-json'],
     target: { kind: 'tool', toolId: 'json-validator' },
   },

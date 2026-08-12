@@ -44,7 +44,6 @@ describe('localized route path builders', () => {
 
     expect(buildToolPathSegments({ definition, locale: 'en', taxonomy: toolTaxonomy })).toEqual([
       'developer',
-      'data-formats',
       'json',
       'json-validator',
     ]);

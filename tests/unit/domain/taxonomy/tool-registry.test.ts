@@ -24,7 +24,7 @@ describe('tool taxonomy registry', () => {
     ]);
     expect(toolTaxonomy.getNode('developer').parentId).toBeNull();
     expect(toolTaxonomy.getParent('data-formats')?.id).toBe('developer');
-    expect(toolTaxonomy.getParent('json')?.id).toBe('data-formats');
+    expect(toolTaxonomy.getParent('json')?.id).toBe('developer');
     expect(toolTaxonomy.getRoot('json').id).toBe('developer');
   });
 
@@ -46,11 +46,9 @@ describe('tool taxonomy registry', () => {
   it('resolves json ancestors and path from root', () => {
     expect(toolTaxonomy.getAncestors('json').map((node) => node.id)).toEqual([
       'developer',
-      'data-formats',
     ]);
     expect(toolTaxonomy.getPathFromRoot('json').map((node) => node.id)).toEqual([
       'developer',
-      'data-formats',
       'json',
     ]);
   });
@@ -58,22 +56,18 @@ describe('tool taxonomy registry', () => {
   it('resolves localized taxonomy paths without public route semantics', () => {
     expect(toolTaxonomy.getLocalizedPath('json', 'en')).toEqual([
       'developer',
-      'data-formats',
       'json',
     ]);
     expect(toolTaxonomy.getLocalizedPath('json', 'es')).toEqual([
       'desarrollo',
-      'formatos-de-datos',
       'json',
     ]);
     expect(toolTaxonomy.getLocalizedPath('json', 'pt')).toEqual([
       'desenvolvedor',
-      'formatos-de-dados',
       'json',
     ]);
     expect(toolTaxonomy.getLocalizedPath('json', 'fr')).toEqual([
       'developpement',
-      'formats-de-donnees',
       'json',
     ]);
   });
@@ -95,23 +89,21 @@ describe('tool taxonomy registry', () => {
     expect(findToolCategory('json')?.id).toBe('json');
     expect(findToolCategory('missing')).toBeUndefined();
     expect(getToolCategory('json').id).toBe('json');
-    expect(getToolCategoryParent('json')?.id).toBe('data-formats');
+    expect(getToolCategoryParent('json')?.id).toBe('developer');
     expect(getToolCategoryChildren('developer').map((node) => node.id)).toEqual([
       'data-formats',
+      'json',
     ]);
     expect(getToolCategoryAncestors('json').map((node) => node.id)).toEqual([
       'developer',
-      'data-formats',
     ]);
     expect(getToolRootCategory('json').id).toBe('developer');
     expect(getToolCategoryPathFromRoot('json').map((node) => node.id)).toEqual([
       'developer',
-      'data-formats',
       'json',
     ]);
     expect(getLocalizedToolCategoryPath('json', 'es')).toEqual([
       'desarrollo',
-      'formatos-de-datos',
       'json',
     ]);
   });
