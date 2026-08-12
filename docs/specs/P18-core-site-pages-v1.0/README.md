@@ -2,7 +2,7 @@
 
 > **Package:** `P18-core-site-pages-v1.0`  
 > **Phase:** P18  
-> **Status:** Ready  
+> **Status:** Complete
 > **Baseline:** `72dc1194b97559b475c7f500e5d911d1d2e22898`  
 > **Depends on:** P17 Complete
 

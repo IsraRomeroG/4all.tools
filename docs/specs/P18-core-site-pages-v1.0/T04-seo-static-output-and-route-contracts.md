@@ -126,7 +126,9 @@ Assert:
 - Spanish document language;
 - Spanish canonical;
 - `noindex`;
-- localized hreflang cluster;
+- no SEO `hreflang` or `x-default` link elements, as required by the existing
+  `noindex` SEO contract;
+- four localized route variants remain available to the language switcher;
 - no English content fallback;
 - localized footer;
 - language switcher.
@@ -148,7 +150,10 @@ fr → https://4all.tools/fr/contact/
 
 Each locale page must canonicalize to itself.
 
-Localized alternates must be reciprocal and use the existing SEO cluster logic. Do not introduce site-page-specific hreflang code.
+For indexable targets, localized alternates must be reciprocal and use the
+existing SEO cluster logic. For `noindex` targets, the localized route cluster
+still drives navigation, but the SEO head intentionally omits alternates and
+`x-default`. Do not introduce site-page-specific hreflang code.
 
 ## 6. Indexability and sitemap
 
