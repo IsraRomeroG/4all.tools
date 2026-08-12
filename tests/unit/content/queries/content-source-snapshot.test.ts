@@ -41,7 +41,7 @@ describe('content source snapshot', () => {
       .toBeNull();
   });
 
-  it('indexes static pages by exact page identity and locale', async () => {
+  it('indexes site pages by exact page identity and locale', async () => {
     const englishPage = entry('site-pages/en/contact', {
       pageId: 'contact',
       locale: 'en',

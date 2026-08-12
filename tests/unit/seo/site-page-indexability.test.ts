@@ -4,7 +4,7 @@ import { createPublishedContentSeoIndexabilityResolver } from '@/seo';
 import type { PublishedContentIndexes } from '@/content/queries';
 
 describe('site-page SEO indexability', () => {
-  it('resolves published, noindex, and missing static pages exactly', () => {
+  it('resolves published, noindex, and missing site pages exactly', () => {
     const sitePageIndex = {
       find: ({ pageId, locale }: { pageId: string; locale: 'en' | 'es' }) => {
         if (pageId !== 'contact' || locale !== 'en') {
@@ -25,7 +25,7 @@ describe('site-page SEO indexability', () => {
     expect(resolver.isIndexable({ kind: 'site-page', pageId: 'contact' }, 'es')).toBe(false);
   });
 
-  it('preserves noindex for a published static page', () => {
+  it('preserves noindex for a published site page', () => {
     const indexes = {
       sitePages: {
         find: () => ({ data: { seo: { noindex: true } } }),

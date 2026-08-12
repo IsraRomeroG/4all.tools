@@ -47,12 +47,12 @@ describe('route collision validation', () => {
     );
   });
 
-  it('detects a static page colliding with a root tool category', () => {
+  it('detects a site page colliding with a root tool category', () => {
     const issues = inspectRouteRecords([
       sitePageRecord({
         pageId: 'contact',
         segments: ['developer'],
-        sourceId: 'fixture:static-contact',
+        sourceId: 'fixture:site-contact',
       }),
       toolCategoryRecord({
         categoryId: 'developer',
@@ -76,17 +76,17 @@ describe('route collision validation', () => {
     );
   });
 
-  it('detects distinct static pages claiming the same public path', () => {
+  it('detects distinct site pages claiming the same public path', () => {
     const issues = inspectRouteRecords([
       sitePageRecord({
         pageId: 'contact',
         segments: ['developer', 'shared'],
-        sourceId: 'fixture:static-contact',
+        sourceId: 'fixture:site-contact',
       }),
       sitePageRecord({
         pageId: 'privacy',
         segments: ['developer', 'shared'],
-        sourceId: 'fixture:static-privacy',
+        sourceId: 'fixture:site-privacy',
       }),
     ]);
 
@@ -105,17 +105,17 @@ describe('route collision validation', () => {
     );
   });
 
-  it('detects one static page target claimed by two paths', () => {
+  it('detects one site page target claimed by two paths', () => {
     const issues = inspectRouteRecords([
       sitePageRecord({
         pageId: 'contact',
         segments: ['contact'],
-        sourceId: 'fixture:static-contact-flat',
+        sourceId: 'fixture:site-contact-flat',
       }),
       sitePageRecord({
         pageId: 'contact',
         segments: ['legal', 'contact'],
-        sourceId: 'fixture:static-contact-nested',
+        sourceId: 'fixture:site-contact-nested',
       }),
     ]);
 

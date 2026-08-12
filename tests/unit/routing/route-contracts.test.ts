@@ -174,7 +174,7 @@ describe('routing route contracts', () => {
         case 'blog-category':
           return `blog category ${target.categoryId}`;
         case 'site-page':
-          return `static page ${target.pageId}`;
+          return `site page ${target.pageId}`;
         default:
           return assertNever(target);
       }

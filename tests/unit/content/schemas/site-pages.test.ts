@@ -14,7 +14,7 @@ const validSitePageEntry = {
   },
 };
 
-describe('static page content schema', () => {
+describe('site page content schema', () => {
   it('accepts the minimal editorial contract', () => {
     expect(sitePageContentSchema.parse(validSitePageEntry)).toMatchObject(
       validSitePageEntry,

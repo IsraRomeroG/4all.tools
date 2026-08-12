@@ -171,7 +171,7 @@ describe('routing reserved namespaces', () => {
     ['en', ['_astro'], 'astro'],
     ['pt', ['api'], 'api'],
   ] as const)(
-    'rejects a static page from the reserved %s namespace owned by %s',
+    'rejects a site page from the reserved %s namespace owned by %s',
     (locale, segments, reservedOwner) => {
       const conflict = getReservedNamespaceConflict(
         sitePageInput(locale, segments),
