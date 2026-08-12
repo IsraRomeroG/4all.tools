@@ -11,9 +11,9 @@ vi.mock('@/content/queries/astro-content', () => ({
 import {
   AmbiguousContentError,
   ContentNotFoundError,
-  getPublishedStaticPageContent,
-  listPublishedStaticPageContent,
-  requirePublishedStaticPageContent,
+  getPublishedSitePageContent,
+  listPublishedSitePageContent,
+  requirePublishedSitePageContent,
   resetPublishedContentIndexesForTesting,
 } from '@/content/queries';
 
@@ -22,34 +22,34 @@ interface TestEntry {
   readonly data: Record<string, unknown>;
 }
 
-let staticPages: TestEntry[];
+let sitePages: TestEntry[];
 
-describe('static-page content query services', () => {
+describe('site-page content query services', () => {
   beforeEach(() => {
     resetPublishedContentIndexesForTesting();
-    staticPages = [
-      entry('static-pages/en/contact', {
+    sitePages = [
+      entry('site-pages/en/contact', {
         pageId: 'contact',
         locale: 'en',
         routeSlug: 'contact',
         status: 'published',
         title: 'Contact',
       }),
-      entry('static-pages/es/contact', {
+      entry('site-pages/es/contact', {
         pageId: 'contact',
         locale: 'es',
         routeSlug: 'contacto',
         status: 'published',
         title: 'Contacto',
       }),
-      entry('static-pages/en/privacy-draft', {
+      entry('site-pages/en/privacy-draft', {
         pageId: 'privacy',
         locale: 'en',
         routeSlug: 'privacy',
         status: 'draft',
         title: 'Privacy draft',
       }),
-      entry('static-pages/fr/terms-archived', {
+      entry('site-pages/fr/terms-archived', {
         pageId: 'terms',
         locale: 'fr',
         routeSlug: 'terms',
@@ -59,8 +59,8 @@ describe('static-page content query services', () => {
     ];
 
     mocks.getCollection.mockImplementation(async (collection: string) => {
-      if (collection === 'staticPages') {
-        return staticPages;
+      if (collection === 'sitePages') {
+        return sitePages;
       }
 
       return [];
@@ -68,32 +68,32 @@ describe('static-page content query services', () => {
   });
 
   it('gets one exact published entry by pageId and locale', async () => {
-    await expect(getPublishedStaticPageContent('contact', 'en')).resolves.toMatchObject({
-      id: 'static-pages/en/contact',
+    await expect(getPublishedSitePageContent('contact', 'en')).resolves.toMatchObject({
+      id: 'site-pages/en/contact',
       data: { pageId: 'contact', locale: 'en', routeSlug: 'contact' },
     });
   });
 
   it('does not fall back to English for a missing locale', async () => {
-    await expect(getPublishedStaticPageContent('contact', 'pt')).resolves.toBeNull();
-    await expect(listPublishedStaticPageContent('pt')).resolves.toEqual([]);
+    await expect(getPublishedSitePageContent('contact', 'pt')).resolves.toBeNull();
+    await expect(listPublishedSitePageContent('pt')).resolves.toEqual([]);
   });
 
   it('requires the exact published entry', async () => {
-    await expect(requirePublishedStaticPageContent('contact', 'es')).resolves.toMatchObject({
-      id: 'static-pages/es/contact',
+    await expect(requirePublishedSitePageContent('contact', 'es')).resolves.toMatchObject({
+      id: 'site-pages/es/contact',
       data: { title: 'Contacto' },
     });
   });
 
   it('reports the exact missing-content context', async () => {
     try {
-      await requirePublishedStaticPageContent('contact', 'pt');
-      throw new Error('Expected missing static-page content to throw.');
+      await requirePublishedSitePageContent('contact', 'pt');
+      throw new Error('Expected missing site-page content to throw.');
     } catch (error) {
       expect(error).toBeInstanceOf(ContentNotFoundError);
       expect((error as ContentNotFoundError).context).toEqual({
-        collection: 'staticPages',
+        collection: 'sitePages',
         entityField: 'pageId',
         entityId: 'contact',
         locale: 'pt',
@@ -103,23 +103,23 @@ describe('static-page content query services', () => {
   });
 
   it('lists only published entries for the requested locale', async () => {
-    await expect(listPublishedStaticPageContent('en')).resolves.toEqual([
-      expect.objectContaining({ id: 'static-pages/en/contact' }),
+    await expect(listPublishedSitePageContent('en')).resolves.toEqual([
+      expect.objectContaining({ id: 'site-pages/en/contact' }),
     ]);
-    await expect(listPublishedStaticPageContent('fr')).resolves.toEqual([]);
+    await expect(listPublishedSitePageContent('fr')).resolves.toEqual([]);
   });
 
   it('excludes draft and archived entries from published queries', async () => {
-    await expect(getPublishedStaticPageContent('privacy', 'en')).resolves.toBeNull();
-    await expect(getPublishedStaticPageContent('terms', 'fr')).resolves.toBeNull();
-    await expect(listPublishedStaticPageContent('en')).resolves.not.toContainEqual(
-      expect.objectContaining({ id: 'static-pages/en/privacy-draft' }),
+    await expect(getPublishedSitePageContent('privacy', 'en')).resolves.toBeNull();
+    await expect(getPublishedSitePageContent('terms', 'fr')).resolves.toBeNull();
+    await expect(listPublishedSitePageContent('en')).resolves.not.toContainEqual(
+      expect.objectContaining({ id: 'site-pages/en/privacy-draft' }),
     );
   });
 
   it('preserves ambiguity for duplicate published identities', async () => {
-    staticPages.push(
-      entry('static-pages/en/contact-duplicate', {
+    sitePages.push(
+      entry('site-pages/en/contact-duplicate', {
         pageId: 'contact',
         locale: 'en',
         routeSlug: 'contact-copy',
@@ -128,13 +128,13 @@ describe('static-page content query services', () => {
       }),
     );
 
-    await expect(getPublishedStaticPageContent('contact', 'en')).rejects.toBeInstanceOf(
+    await expect(getPublishedSitePageContent('contact', 'en')).rejects.toBeInstanceOf(
       AmbiguousContentError,
     );
-    await expect(requirePublishedStaticPageContent('contact', 'en')).rejects.toBeInstanceOf(
+    await expect(requirePublishedSitePageContent('contact', 'en')).rejects.toBeInstanceOf(
       AmbiguousContentError,
     );
-    await expect(listPublishedStaticPageContent('en')).rejects.toBeInstanceOf(
+    await expect(listPublishedSitePageContent('en')).rejects.toBeInstanceOf(
       AmbiguousContentError,
     );
   });

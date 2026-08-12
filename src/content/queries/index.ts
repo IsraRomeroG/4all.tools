@@ -35,11 +35,11 @@ export {
   type ToolCategoryContentEntry,
 } from './tool-categories';
 export {
-  getPublishedStaticPageContent,
-  listPublishedStaticPageContent,
-  requirePublishedStaticPageContent,
-  type StaticPageContentEntry,
-} from './static-pages';
+  getPublishedSitePageContent,
+  listPublishedSitePageContent,
+  requirePublishedSitePageContent,
+  type SitePageContentEntry,
+} from './site-pages';
 export {
   createPublishedContentIndexes,
   createContentSourceSnapshot,
@@ -56,5 +56,5 @@ export {
   type PublishedContentIndexes,
   type ToolCategoryContentKey,
   type ToolContentKey,
-  type StaticPageContentKey,
+  type SitePageContentKey,
 } from './indexed-content-source';

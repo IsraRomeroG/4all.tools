@@ -44,14 +44,14 @@ describe('architecture identity validation', () => {
     }]);
   });
 
-  it('reports duplicate static-page identities through the common validator', () => {
+  it('reports duplicate site-page identities through the common validator', () => {
     const issues = validateContentIdentities({
       content: contentSnapshot({
-        staticPages: [
-          entry('static-pages/en/contact-a', {
+        sitePages: [
+          entry('site-pages/en/contact-a', {
             pageId: 'contact', locale: 'en', status: 'published',
           }),
-          entry('static-pages/en/contact-b', {
+          entry('site-pages/en/contact-b', {
             pageId: 'contact', locale: 'en', status: 'draft',
           }),
         ],
@@ -168,7 +168,7 @@ function contentSnapshot(fixtures: {
   readonly toolCategories?: readonly unknown[];
   readonly blog?: readonly unknown[];
   readonly blogCategories?: readonly unknown[];
-  readonly staticPages?: readonly unknown[];
+  readonly sitePages?: readonly unknown[];
 }): ContentSourceSnapshot {
   return {
     all: {
@@ -176,7 +176,7 @@ function contentSnapshot(fixtures: {
       toolCategories: (fixtures.toolCategories ?? []) as never,
       blog: (fixtures.blog ?? []) as never,
       blogCategories: (fixtures.blogCategories ?? []) as never,
-      staticPages: (fixtures.staticPages ?? []) as never,
+      sitePages: (fixtures.sitePages ?? []) as never,
     },
     published: {} as never,
   };

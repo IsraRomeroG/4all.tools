@@ -3,7 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import type {
   ArticleId,
   BlogCategoryId,
-  StaticPageId,
+  SitePageId,
   ToolCategoryId,
   ToolId,
 } from '@/domain/shared/ids';
@@ -16,14 +16,14 @@ import type { BlogCategoryContentEntry } from './blog-categories';
 import { resolveExactMatch } from './shared';
 import type { ToolCategoryContentEntry } from './tool-categories';
 import type { ToolContentEntry } from './tools';
-import type { StaticPageContentEntry } from './static-pages';
+import type { SitePageContentEntry } from './site-pages';
 
 type IndexedCollectionName =
   | 'tools'
   | 'toolCategories'
   | 'blog'
   | 'blogCategories'
-  | 'staticPages';
+  | 'sitePages';
 
 export interface ContentCollectionSource {
   getCollection<TCollection extends IndexedCollectionName>(
@@ -55,8 +55,8 @@ export interface BlogCategoryContentKey {
   readonly locale: Locale;
 }
 
-export interface StaticPageContentKey {
-  readonly pageId: StaticPageId;
+export interface SitePageContentKey {
+  readonly pageId: SitePageId;
   readonly locale: Locale;
 }
 
@@ -84,9 +84,9 @@ export interface PublishedContentIndexes {
     BlogCategoryContentKey,
     BlogCategoryContentEntry
   >;
-  readonly staticPages: LocaleListContentIndex<
-    StaticPageContentKey,
-    StaticPageContentEntry
+  readonly sitePages: LocaleListContentIndex<
+    SitePageContentKey,
+    SitePageContentEntry
   >;
 }
 
@@ -96,7 +96,7 @@ export interface ContentSourceSnapshot {
     readonly toolCategories: readonly ToolCategoryContentEntry[];
     readonly blog: readonly ArticleContentEntry[];
     readonly blogCategories: readonly BlogCategoryContentEntry[];
-    readonly staticPages: readonly StaticPageContentEntry[];
+    readonly sitePages: readonly SitePageContentEntry[];
   };
   readonly published: PublishedContentIndexes;
 }
@@ -106,7 +106,7 @@ type PublishedEntry =
   | ToolCategoryContentEntry
   | ArticleContentEntry
   | BlogCategoryContentEntry
-  | StaticPageContentEntry;
+  | SitePageContentEntry;
 
 interface CreatePublishedIndexInput<TKey, TEntry extends PublishedEntry> {
   readonly entries: readonly TEntry[];
@@ -128,12 +128,12 @@ export async function createPublishedContentIndexes(
 export async function createContentSourceSnapshot(
   source: ContentCollectionSource = astroContentSource,
 ): Promise<ContentSourceSnapshot> {
-  const [tools, toolCategories, blog, blogCategories, staticPages] = await Promise.all([
+  const [tools, toolCategories, blog, blogCategories, sitePages] = await Promise.all([
     source.getCollection('tools'),
     source.getCollection('toolCategories'),
     source.getCollection('blog'),
     source.getCollection('blogCategories'),
-    source.getCollection('staticPages'),
+    source.getCollection('sitePages'),
   ]);
 
   const all = Object.freeze({
@@ -141,7 +141,7 @@ export async function createContentSourceSnapshot(
     toolCategories: freezeEntries(toolCategories),
     blog: freezeEntries(blog),
     blogCategories: freezeEntries(blogCategories),
-    staticPages: freezeEntries(staticPages),
+    sitePages: freezeEntries(sitePages),
   });
 
   return Object.freeze({
@@ -155,7 +155,7 @@ function createPublishedContentIndexesFromEntries(entries: {
   readonly toolCategories: readonly ToolCategoryContentEntry[];
   readonly blog: readonly ArticleContentEntry[];
   readonly blogCategories: readonly BlogCategoryContentEntry[];
-  readonly staticPages: readonly StaticPageContentEntry[];
+  readonly sitePages: readonly SitePageContentEntry[];
 }): PublishedContentIndexes {
   return Object.freeze({
     tools: createPublishedIndex<ToolContentKey, ToolContentEntry>({
@@ -237,13 +237,13 @@ function createPublishedContentIndexesFromEntries(entries: {
       getKeyLocale: (key) => key.locale,
       includeLocaleList: true,
     }),
-    staticPages: createPublishedIndex<
-      StaticPageContentKey,
-      StaticPageContentEntry
+    sitePages: createPublishedIndex<
+      SitePageContentKey,
+      SitePageContentEntry
     >({
-      entries: entries.staticPages,
+      entries: entries.sitePages,
       context: ({ pageId, locale }) => ({
-        collection: 'staticPages',
+        collection: 'sitePages',
         entityField: 'pageId',
         entityId: pageId,
         locale,

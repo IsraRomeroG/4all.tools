@@ -42,43 +42,43 @@ describe('content source snapshot', () => {
   });
 
   it('indexes static pages by exact page identity and locale', async () => {
-    const englishPage = entry('static-pages/en/contact', {
+    const englishPage = entry('site-pages/en/contact', {
       pageId: 'contact',
       locale: 'en',
       routeSlug: 'contact',
       status: 'published',
     });
-    const spanishDraft = entry('static-pages/es/contact', {
+    const spanishDraft = entry('site-pages/es/contact', {
       pageId: 'contact',
       locale: 'es',
       routeSlug: 'contacto',
       status: 'draft',
     });
     const snapshot = await createContentSourceSnapshot(
-      contentSource({ staticPages: [englishPage, spanishDraft] }),
+      contentSource({ sitePages: [englishPage, spanishDraft] }),
     );
 
-    expect(snapshot.all.staticPages).toEqual([englishPage, spanishDraft]);
+    expect(snapshot.all.sitePages).toEqual([englishPage, spanishDraft]);
     expect(
-      snapshot.published.staticPages.find({ pageId: 'contact', locale: 'en' }),
+      snapshot.published.sitePages.find({ pageId: 'contact', locale: 'en' }),
     ).toBe(englishPage);
     expect(
-      snapshot.published.staticPages.find({ pageId: 'contact', locale: 'es' }),
+      snapshot.published.sitePages.find({ pageId: 'contact', locale: 'es' }),
     ).toBeNull();
-    expect(snapshot.published.staticPages.list('es')).toEqual([]);
+    expect(snapshot.published.sitePages.list('es')).toEqual([]);
   });
 });
 
 function contentSource(fixtures: {
   readonly tools?: readonly unknown[];
-  readonly staticPages?: readonly unknown[];
+  readonly sitePages?: readonly unknown[];
 }): ContentCollectionSource & { readonly getCollection: ReturnType<typeof vi.fn> } {
   const collections = {
     tools: [...(fixtures.tools ?? [])],
     toolCategories: [],
     blog: [],
     blogCategories: [],
-    staticPages: [...(fixtures.staticPages ?? [])],
+    sitePages: [...(fixtures.sitePages ?? [])],
   };
   const getCollection = vi.fn(async (collection: keyof typeof collections) =>
     collections[collection] as never,

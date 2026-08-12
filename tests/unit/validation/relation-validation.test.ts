@@ -82,7 +82,7 @@ function contentSnapshot(entries: readonly unknown[]): ContentSourceSnapshot {
       toolCategories: [],
       blog: entries as never,
       blogCategories: [],
-      staticPages: [],
+      sitePages: [],
     },
     published: {} as never,
   };

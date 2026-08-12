@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { staticPageContentSchema } from '@/content/schemas/static-pages';
+import { sitePageContentSchema } from '@/content/schemas/site-pages';
 
-const validStaticPageEntry = {
+const validSitePageEntry = {
   pageId: 'contact',
   locale: 'en',
   routeSlug: 'contact',
@@ -16,8 +16,8 @@ const validStaticPageEntry = {
 
 describe('static page content schema', () => {
   it('accepts the minimal editorial contract', () => {
-    expect(staticPageContentSchema.parse(validStaticPageEntry)).toMatchObject(
-      validStaticPageEntry,
+    expect(sitePageContentSchema.parse(validSitePageEntry)).toMatchObject(
+      validSitePageEntry,
     );
   });
 
@@ -31,16 +31,16 @@ describe('static page content schema', () => {
     ['unknown field', { summary: 'Not part of the contract' }],
   ])('rejects %s', (_name, override) => {
     expect(() =>
-      staticPageContentSchema.parse({ ...validStaticPageEntry, ...override }),
+      sitePageContentSchema.parse({ ...validSitePageEntry, ...override }),
     ).toThrow();
   });
 
   it('rejects canonical ownership in SEO metadata', () => {
     expect(() =>
-      staticPageContentSchema.parse({
-        ...validStaticPageEntry,
+      sitePageContentSchema.parse({
+        ...validSitePageEntry,
         seo: {
-          ...validStaticPageEntry.seo,
+          ...validSitePageEntry.seo,
           canonicalUrl: 'https://4all.tools/contact/',
         },
       }),

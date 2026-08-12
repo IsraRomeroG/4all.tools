@@ -9,7 +9,7 @@ import {
   seoSchema,
 } from './shared';
 
-export const staticPageContentSchema = z
+export const sitePageContentSchema = z
   .object({
     pageId: entityIdSchema,
     locale: localeSchema,
@@ -25,4 +25,4 @@ export const staticPageContentSchema = z
   })
   .strict();
 
-export type StaticPageContentData = z.infer<typeof staticPageContentSchema>;
+export type SitePageContentData = z.infer<typeof sitePageContentSchema>;

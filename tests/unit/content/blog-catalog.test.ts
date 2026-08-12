@@ -99,7 +99,7 @@ function contentSource(fixtures: {
     toolCategories: [],
     blog: [...(fixtures.blog ?? [])],
     blogCategories: [...(fixtures.blogCategories ?? [])],
-    staticPages: [],
+    sitePages: [],
   };
   const getCollection = vi.fn(
     async (collection: keyof typeof collections) =>

@@ -9,7 +9,7 @@ import {
   toolCategoryContentSchema,
   toolContentSchema,
 } from './content/schemas/tools';
-import { staticPageContentSchema } from './content/schemas/static-pages';
+import { sitePageContentSchema } from './content/schemas/site-pages';
 
 const tools = defineCollection({
   loader: glob({
@@ -43,12 +43,12 @@ const blogCategories = defineCollection({
   schema: blogCategoryContentSchema,
 });
 
-const staticPages = defineCollection({
+const sitePages = defineCollection({
   loader: glob({
-    base: './src/content/static-pages',
+    base: './src/content/site-pages',
     pattern: '**/*.md',
   }),
-  schema: staticPageContentSchema,
+  schema: sitePageContentSchema,
 });
 
 export const collections = {
@@ -56,5 +56,5 @@ export const collections = {
   toolCategories,
   blog,
   blogCategories,
-  staticPages,
+  sitePages,
 };

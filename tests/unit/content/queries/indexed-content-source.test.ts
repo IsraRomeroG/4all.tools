@@ -145,7 +145,7 @@ describe('published content indexes', () => {
     expect(source.getCollection).toHaveBeenCalledWith('toolCategories');
     expect(source.getCollection).toHaveBeenCalledWith('blog');
     expect(source.getCollection).toHaveBeenCalledWith('blogCategories');
-    expect(source.getCollection).toHaveBeenCalledWith('staticPages');
+    expect(source.getCollection).toHaveBeenCalledWith('sitePages');
   });
 
   it('memoizes the default accessor outside DEV', async () => {
@@ -170,7 +170,7 @@ describe('published content indexes', () => {
     expect(secondPromise).toBe(firstPromise);
     expect(secondIndexes).toBe(firstIndexes);
     expect(mocks.getCollection.mock.calls.map(([collection]) => collection))
-      .toEqual(['tools', 'toolCategories', 'blog', 'blogCategories', 'staticPages']);
+      .toEqual(['tools', 'toolCategories', 'blog', 'blogCategories', 'sitePages']);
   });
 
   it('shares one production source snapshot between all-entry and published views', async () => {
@@ -278,7 +278,7 @@ describe('published content indexes', () => {
 });
 
 type CollectionFixtures = Partial<
-  Record<'tools' | 'toolCategories' | 'blog' | 'blogCategories' | 'staticPages', unknown[]>
+  Record<'tools' | 'toolCategories' | 'blog' | 'blogCategories' | 'sitePages', unknown[]>
 >;
 
 function contentSource(fixtures: CollectionFixtures = {}): ContentCollectionSource {
@@ -287,7 +287,7 @@ function contentSource(fixtures: CollectionFixtures = {}): ContentCollectionSour
     toolCategories: fixtures.toolCategories ?? [],
     blog: fixtures.blog ?? [],
     blogCategories: fixtures.blogCategories ?? [],
-    staticPages: fixtures.staticPages ?? [],
+    sitePages: fixtures.sitePages ?? [],
   };
   const getCollection: ContentCollectionSource['getCollection'] = vi.fn(
     async (collection) =>
