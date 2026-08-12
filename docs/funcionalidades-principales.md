@@ -85,12 +85,13 @@ Código principal: `src/domain/taxonomy/`.
 
 ## 6. Gestión de contenido
 
-El contenido se escribe en Markdown y se carga mediante Astro Content Collections. Existen cuatro colecciones:
+El contenido se escribe en Markdown y se carga mediante Astro Content Collections. Existen cinco colecciones:
 
 - `tools`: contenido editorial de las herramientas;
 - `toolCategories`: categorías de herramientas;
 - `blog`: artículos;
-- `blogCategories`: categorías del blog.
+- `blogCategories`: categorías del blog;
+- `sitePages`: páginas editoriales independientes del sitio.
 
 Los esquemas validan el frontmatter, los identificadores, los idiomas, la publicación, las relaciones y los datos SEO.
 
@@ -111,7 +112,8 @@ El routing genera páginas estáticas para:
 - herramientas;
 - categorías de herramientas;
 - artículos;
-- categorías del blog.
+- categorías del blog;
+- site pages editoriales.
 
 El sistema se encarga de:
 
@@ -191,7 +193,8 @@ El renderizado se organiza mediante layouts y templates compartidos:
 - `CategoryTemplate`: categorías de herramientas;
 - `BlogIndexTemplate`: índice del blog;
 - `BlogCategoryTemplate`: categorías del blog;
-- `ArticleTemplate`: artículos.
+- `ArticleTemplate`: artículos;
+- `SitePageTemplate`: páginas editoriales independientes del sitio.
 
 Los composers convierten identidad, contenido, routing y SEO en modelos preparados para esos templates.
 
