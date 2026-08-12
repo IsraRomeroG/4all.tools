@@ -46,7 +46,7 @@ describe('architecture route integrity validation', () => {
 });
 
 function record(
-  kind: Exclude<RouteTarget['kind'], 'static-page'>,
+  kind: Exclude<RouteTarget['kind'], 'site-page'>,
   id: string,
   segment: string,
 ): RouteRecord {

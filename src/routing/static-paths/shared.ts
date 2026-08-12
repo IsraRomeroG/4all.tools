@@ -16,18 +16,16 @@ export interface StaticPathProps extends Record<string, unknown> {
   readonly routeTarget: RouteTarget;
 }
 
-export interface RootCategoryStaticPathEntry {
+export interface RootStaticPathEntry {
   readonly params: {
-    readonly category: string;
+    readonly root: string;
   };
   readonly props: StaticPathProps;
 }
 
-export type RootStaticPathEntry = RootCategoryStaticPathEntry;
-
 export interface ToolAreaStaticPathEntry {
   readonly params: {
-    readonly category: string;
+    readonly root: string;
     readonly path: string;
   };
   readonly props: StaticPathProps;

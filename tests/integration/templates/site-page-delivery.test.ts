@@ -21,25 +21,25 @@ import {
   createRouteRegistry,
   createRouteRegistryFromRecords,
 } from '@/routing/registry';
-import { getRootCategoryStaticPathEntries } from '@/routing/static-paths';
+import { getRootStaticPathEntries } from '@/routing/static-paths';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
 import {
   composeRootAdapterPage,
-  composeStaticPageModel,
+  composeSitePageModel,
   MissingCanonicalRouteError,
   PageModelCompositionError,
 } from '@/templates/composers';
 import type { ContentCollectionSource } from '@/content/queries';
-import type { StaticPageContentEntry } from '@/content/queries';
-import StaticPageTemplate from '@/templates/StaticPageTemplate.astro';
+import type { SitePageContentEntry } from '@/content/queries';
+import SitePageTemplate from '@/templates/SitePageTemplate.astro';
 
-describe('static-page composer and root adapter delivery', () => {
+describe('site-page composer and root adapter delivery', () => {
   beforeEach(() => {
     resetPublishedContentIndexesForTesting();
-    activeStaticPages = baseStaticPageFixtures;
+    activeSitePages = baseSitePageFixtures;
     mocks.getCollection.mockImplementation(async (collection: string) => {
-      if (collection === 'staticPages') {
-        return activeStaticPages;
+      if (collection === 'sitePages') {
+        return activeSitePages;
       }
 
       if (collection === 'toolCategories') {
@@ -52,22 +52,22 @@ describe('static-page composer and root adapter delivery', () => {
 
   it('composes localized EN and ES pages from one stable page identity', async () => {
     const registry = await fixtureRegistry();
-    const english = await composeStaticPageModel('en', 'contact', {
+    const english = await composeSitePageModel('en', 'contact', {
       routeRegistry: registry,
     });
-    const spanish = await composeStaticPageModel('es', 'contact', {
+    const spanish = await composeSitePageModel('es', 'contact', {
       routeRegistry: registry,
     });
 
     expect(english).toMatchObject({
-      kind: 'static-page',
+      kind: 'site-page',
       pageId: 'contact',
       title: 'Contact',
       route: { locale: 'en', segments: ['contact'] },
       seo: { canonicalUrl: 'https://4all.tools/contact/' },
     });
     expect(spanish).toMatchObject({
-      kind: 'static-page',
+      kind: 'site-page',
       pageId: 'contact',
       title: 'Contacto',
       route: { locale: 'es', segments: ['contacto'] },
@@ -92,22 +92,22 @@ describe('static-page composer and root adapter delivery', () => {
     expect(await renderContent(english)).not.toContain('Spanish contact body');
   });
 
-  it('dispatches root category and static-page targets through one adapter', async () => {
+  it('dispatches root category and site-page targets through one adapter', async () => {
     const registry = await fixtureRegistry();
     const category = await composeRootAdapterPage(
       'en',
       { kind: 'tool-category', categoryId: 'developer' },
       { routeRegistry: registry },
     );
-    const staticPage = await composeRootAdapterPage(
+    const sitePage = await composeRootAdapterPage(
       'en',
-      { kind: 'static-page', pageId: 'contact' },
+      { kind: 'site-page', pageId: 'contact' },
       { routeRegistry: registry },
     );
 
     expect(category.kind).toBe('tool-category');
-    expect(staticPage.kind).toBe('static-page');
-    expect(staticPage).toMatchObject({ pageId: 'contact' });
+    expect(sitePage.kind).toBe('site-page');
+    expect(sitePage).toMatchObject({ pageId: 'contact' });
   });
 
   it.each([
@@ -116,22 +116,22 @@ describe('static-page composer and root adapter delivery', () => {
     ['pt', 'contato'],
     ['fr', 'contact'],
   ] as const)('supports the shared root adapter family for %s', async (locale, slug) => {
-    activeStaticPages = allStaticPageFixtures;
+    activeSitePages = allSitePageFixtures;
     const registry = await fixtureRegistry();
     const page = await composeRootAdapterPage(
       locale,
-      { kind: 'static-page', pageId: 'contact' },
+      { kind: 'site-page', pageId: 'contact' },
       { routeRegistry: registry },
     );
 
     expect(page).toMatchObject({
-      kind: 'static-page',
+      kind: 'site-page',
       locale,
       route: { locale, segments: [slug] },
     });
-    expect(getRootCategoryStaticPathEntries(registry, locale)).toContainEqual({
-      params: { category: slug },
-      props: { routeTarget: { kind: 'static-page', pageId: 'contact' } },
+    expect(getRootStaticPathEntries(registry, locale)).toContainEqual({
+      params: { root: slug },
+      props: { routeTarget: { kind: 'site-page', pageId: 'contact' } },
     });
   });
 
@@ -152,24 +152,24 @@ describe('static-page composer and root adapter delivery', () => {
 
   it('fails when the requested canonical route is missing', async () => {
     const registry = createRouteRegistryFromRecords([
-      route('en', ['contact'], { kind: 'static-page', pageId: 'contact' }),
+      route('en', ['contact'], { kind: 'site-page', pageId: 'contact' }),
     ]);
 
     await expect(
-      composeStaticPageModel('es', 'contact', { routeRegistry: registry }),
+      composeSitePageModel('es', 'contact', { routeRegistry: registry }),
     ).rejects.toBeInstanceOf(MissingCanonicalRouteError);
   });
 
   it('fails when content is missing even if a route target exists', async () => {
     const registry = createRouteRegistryFromRecords([
-      route('pt', ['contato'], { kind: 'static-page', pageId: 'missing' }),
+      route('pt', ['contato'], { kind: 'site-page', pageId: 'missing' }),
     ]);
 
     await expect(
-      composeStaticPageModel('pt', 'missing', { routeRegistry: registry }),
+      composeSitePageModel('pt', 'missing', { routeRegistry: registry }),
     ).rejects.toMatchObject({
       code: 'PAGE_MODEL_COMPOSITION_FAILED',
-      context: { locale: 'pt', targetKind: 'static-page', entityId: 'missing' },
+      context: { locale: 'pt', targetKind: 'site-page', entityId: 'missing' },
     });
   });
 
@@ -181,25 +181,25 @@ describe('static-page composer and root adapter delivery', () => {
     };
 
     await expect(
-      composeStaticPageModel('en', 'contact', {
+      composeSitePageModel('en', 'contact', {
         routeRegistry: mismatchedRegistry,
       }),
     ).rejects.toBeInstanceOf(PageModelCompositionError);
   });
 });
 
-const baseStaticPageFixtures = [
-  staticPage('en', 'contact', 'contact', 'Contact', 'English contact body'),
-  staticPage('es', 'contact', 'contacto', 'Contacto', 'Spanish contact body'),
-] as unknown as readonly StaticPageContentEntry[];
+const baseSitePageFixtures = [
+  sitePage('en', 'contact', 'contact', 'Contact', 'English contact body'),
+  sitePage('es', 'contact', 'contacto', 'Contacto', 'Spanish contact body'),
+] as unknown as readonly SitePageContentEntry[];
 
-const allStaticPageFixtures = [
-  ...baseStaticPageFixtures,
-  staticPage('pt', 'contact', 'contato', 'Contato', 'Portuguese contact body'),
-  staticPage('fr', 'contact', 'contact', 'Contact', 'French contact body'),
-] as unknown as readonly StaticPageContentEntry[];
+const allSitePageFixtures = [
+  ...baseSitePageFixtures,
+  sitePage('pt', 'contact', 'contato', 'Contato', 'Portuguese contact body'),
+  sitePage('fr', 'contact', 'contact', 'Contact', 'French contact body'),
+] as unknown as readonly SitePageContentEntry[];
 
-let activeStaticPages: readonly StaticPageContentEntry[] = baseStaticPageFixtures;
+let activeSitePages: readonly SitePageContentEntry[] = baseSitePageFixtures;
 
 const toolCategoryFixture = {
   id: 'tool-categories/en/developer',
@@ -231,8 +231,8 @@ async function fixtureRegistry() {
 
 const fixtureSource: ContentCollectionSource = {
   getCollection: (async (collection) => {
-    if (collection === 'staticPages') {
-      return activeStaticPages as never;
+    if (collection === 'sitePages') {
+      return activeSitePages as never;
     }
 
     if (collection === 'toolCategories') {
@@ -243,7 +243,7 @@ const fixtureSource: ContentCollectionSource = {
   }) as ContentCollectionSource['getCollection'],
 };
 
-function staticPage(
+function sitePage(
   locale: Locale,
   pageId: string,
   routeSlug: string,
@@ -251,8 +251,8 @@ function staticPage(
   body: string,
 ) {
   return {
-    id: `static-pages/${locale}/${pageId}`,
-    collection: 'staticPages',
+    id: `site-pages/${locale}/${pageId}`,
+    collection: 'sitePages',
     data: {
       pageId,
       locale,
@@ -279,22 +279,22 @@ function staticPage(
 function route(locale: Locale, segments: readonly string[], target: RouteTarget): RouteRecord {
   return {
     area:
-      target.kind === 'static-page'
-        ? 'static'
+      target.kind === 'site-page'
+        ? 'site'
         : target.kind === 'article' || target.kind === 'blog-category'
           ? 'blog'
           : 'tools',
     locale,
     segments,
     target,
-    sourceId: 'fixture:static-page-delivery',
+    sourceId: 'fixture:site-page-delivery',
   };
 }
 
 async function renderContent(page: object): Promise<string> {
   const container = await AstroContainer.create();
 
-  return container.renderToString(StaticPageTemplate, {
+  return container.renderToString(SitePageTemplate, {
     partial: false,
     props: { page },
   });

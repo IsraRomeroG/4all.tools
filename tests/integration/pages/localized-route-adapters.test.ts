@@ -11,7 +11,7 @@ import {
   UnsupportedPageTargetError,
 } from '@/templates/composers';
 import {
-  getRootCategoryStaticPathEntries,
+  getRootStaticPathEntries,
   getToolAreaStaticPathEntries,
 } from '@/routing/static-paths';
 import { createRouteRegistryFromRecords } from '@/routing/registry';
@@ -21,14 +21,14 @@ import type { RouteRecord, RouteTarget } from '@/routing/types';
 const PROJECT_ROOT = new URL('../../../', import.meta.url);
 const LOCALIZED_PAGE_FILES = [
   'src/pages/es/index.astro',
-  'src/pages/es/[category]/index.astro',
-  'src/pages/es/[category]/[...path].astro',
+  'src/pages/es/[root]/index.astro',
+  'src/pages/es/[root]/[...path].astro',
   'src/pages/pt/index.astro',
-  'src/pages/pt/[category]/index.astro',
-  'src/pages/pt/[category]/[...path].astro',
+  'src/pages/pt/[root]/index.astro',
+  'src/pages/pt/[root]/[...path].astro',
   'src/pages/fr/index.astro',
-  'src/pages/fr/[category]/index.astro',
-  'src/pages/fr/[category]/[...path].astro',
+  'src/pages/fr/[root]/index.astro',
+  'src/pages/fr/[root]/[...path].astro',
 ] as const;
 
 describe('localized route adapters', () => {
@@ -66,12 +66,12 @@ describe('localized route adapters', () => {
   });
 
   it('projects localized category slugs while preserving stable category identity', () => {
-    const entries = getRootCategoryStaticPathEntries(fixtureRouteRegistry(), 'es');
+    const entries = getRootStaticPathEntries(fixtureRouteRegistry(), 'es');
 
     expect(entries).toEqual([
       {
         params: {
-          category: 'desarrollo',
+          root: 'desarrollo',
         },
         props: {
           routeTarget: {
@@ -87,19 +87,19 @@ describe('localized route adapters', () => {
     const registry = fixtureRouteRegistry();
     const expected = {
       en: {
-        category: 'developer',
+        root: 'developer',
         path: 'json-validator',
       },
       es: {
-        category: 'desarrollo',
+        root: 'desarrollo',
         path: 'validador-json',
       },
       pt: {
-        category: 'desenvolvedor',
+        root: 'desenvolvedor',
         path: 'validador-json',
       },
       fr: {
-        category: 'developpement',
+        root: 'developpement',
         path: 'validateur-json',
       },
     } as const;
@@ -124,7 +124,7 @@ describe('localized route adapters', () => {
 
     expect(entries).toContainEqual({
       params: {
-        category: 'desarrollo',
+        root: 'desarrollo',
         path: 'formatos-de-datos/json/validador-json',
       },
       props: {

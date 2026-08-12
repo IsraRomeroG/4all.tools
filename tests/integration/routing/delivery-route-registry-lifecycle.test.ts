@@ -163,7 +163,7 @@ describe('delivery route registry content-index lifecycle', () => {
     ]);
     expect(content?.id).toBe('tools/en/developer/json-validator');
     expect(mocks.getCollection.mock.calls.map(([collection]) => collection))
-      .toEqual(['tools', 'toolCategories', 'blog', 'blogCategories', 'staticPages']);
+      .toEqual(['tools', 'toolCategories', 'blog', 'blogCategories', 'sitePages']);
   });
 
   it('preserves duplicate published-content diagnostics through route publication', async () => {
@@ -218,7 +218,7 @@ interface CollectionLoadCounters {
   toolCategories: number;
   blog: number;
   blogCategories: number;
-  staticPages: number;
+  sitePages: number;
 }
 
 interface MutableTestContentSource extends ContentCollectionSource {
@@ -246,7 +246,7 @@ function createMutableTestContentSource(
     toolCategories: 0,
     blog: 0,
     blogCategories: 0,
-    staticPages: 0,
+    sitePages: 0,
   };
   const getCollection: ContentCollectionSource['getCollection'] = vi.fn(
     async (collection) => {
@@ -273,7 +273,7 @@ function normalizeCollectionFixtures(fixtures: CollectionFixtures) {
     toolCategories: fixtures.toolCategories ?? [],
     blog: fixtures.blog ?? [],
     blogCategories: fixtures.blogCategories ?? [],
-    staticPages: [],
+    sitePages: [],
   };
 
   return collections;
@@ -316,7 +316,7 @@ function expectLoadCounters(
     toolCategories: expected,
     blog: expected,
     blogCategories: expected,
-    staticPages: expected,
+    sitePages: expected,
   });
 }
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  composeRootCategoryAdapterPage,
+  composeRootAdapterPage,
   composeToolAreaAdapterPage,
   getDeliveryRouteRegistry,
 } from '@/templates/composers';
@@ -91,7 +91,7 @@ describe('SEO page model composition', () => {
 
   it('composes the explicit developer category from route ownership', async () => {
     const registry = await getDeliveryRouteRegistry();
-    const page = await composeRootCategoryAdapterPage(
+    const page = await composeRootAdapterPage(
       'en',
       {
         kind: 'tool-category',
@@ -101,6 +101,10 @@ describe('SEO page model composition', () => {
         routeRegistry: registry,
       },
     );
+
+    if (page.kind !== 'tool-category') {
+      throw new Error('Expected developer root target to compose a tool category page.');
+    }
 
     expect(page.seo.canonicalUrl).toBe('https://4all.tools/developer/');
     expect(page.seo.alternates).toEqual([

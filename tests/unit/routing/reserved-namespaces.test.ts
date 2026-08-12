@@ -174,15 +174,15 @@ describe('routing reserved namespaces', () => {
     'rejects a static page from the reserved %s namespace owned by %s',
     (locale, segments, reservedOwner) => {
       const conflict = getReservedNamespaceConflict(
-        staticPageInput(locale, segments),
+        sitePageInput(locale, segments),
       );
 
       expect(conflict).toMatchObject({
         code: 'RESERVED_ROOT_SEGMENT',
         locale,
         reservedOwner,
-        routeArea: 'static',
-        target: { kind: 'static-page', pageId: 'contact' },
+        routeArea: 'site',
+        target: { kind: 'site-page', pageId: 'contact' },
       });
     },
   );
@@ -272,16 +272,16 @@ function articleInput(
   });
 }
 
-function staticPageInput(
+function sitePageInput(
   locale: ReservedPathValidationInput['locale'],
   segments: readonly string[],
 ): ReservedPathValidationInput {
   return input({
     locale,
-    area: 'static',
+    area: 'site',
     segments,
     target: {
-      kind: 'static-page',
+      kind: 'site-page',
       pageId: 'contact',
     },
   });

@@ -7,7 +7,6 @@ import {
   freezeEntry,
   getRecordsForLocale,
   requireSegment,
-  type RootCategoryStaticPathEntry,
   type RootStaticPathEntry,
   type StaticPathFactory,
   type StaticPathFactoryInput,
@@ -15,18 +14,18 @@ import {
 
 const ROOT_PROJECTION = 'root';
 
-export function createRootCategoryStaticPaths(
+export function createRootStaticPaths(
   input: StaticPathFactoryInput,
 ): StaticPathFactory {
   return (async () => [
-    ...getRootCategoryStaticPathEntries(
+    ...getRootStaticPathEntries(
       await input.getRegistry(),
       input.locale,
     ),
   ]) satisfies StaticPathFactory;
 }
 
-export function getRootCategoryStaticPathEntries(
+export function getRootStaticPathEntries(
   registry: RouteRegistry,
   locale: Locale,
 ): readonly RootStaticPathEntry[] {
@@ -36,7 +35,7 @@ export function getRootCategoryStaticPathEntries(
 
   assertUniqueStaticPathEntries(
     entries,
-    (entry) => `category=${entry.params.category}`,
+    (entry) => `root=${entry.params.root}`,
     ROOT_PROJECTION,
   );
 
@@ -46,15 +45,15 @@ export function getRootCategoryStaticPathEntries(
 function isRootRecord(record: RouteRecord): boolean {
   return (
     ((record.area === 'tools' && record.target.kind === 'tool-category') ||
-      (record.area === 'static' && record.target.kind === 'static-page')) &&
+      (record.area === 'site' && record.target.kind === 'site-page')) &&
     record.segments.length === 1
   );
 }
 
-function projectRootRecord(record: RouteRecord): RootCategoryStaticPathEntry {
+function projectRootRecord(record: RouteRecord): RootStaticPathEntry {
   return freezeEntry({
     params: Object.freeze({
-      category: requireSegment(record, 0, ROOT_PROJECTION),
+      root: requireSegment(record, 0, ROOT_PROJECTION),
     }),
     props: Object.freeze({
       routeTarget: record.target,

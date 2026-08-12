@@ -1,13 +1,13 @@
 import type {
   ArticleId,
   BlogCategoryId,
-  StaticPageId,
+  SitePageId,
   ToolCategoryId,
   ToolId,
 } from '@/domain/shared/ids';
 import type { Locale } from '@/i18n/types';
 
-export const ROUTE_AREAS = ['home', 'tools', 'blog', 'static'] as const;
+export const ROUTE_AREAS = ['home', 'tools', 'blog', 'site'] as const;
 
 export type RouteArea = (typeof ROUTE_AREAS)[number];
 
@@ -16,7 +16,7 @@ export const ROUTE_KINDS = [
   'tool-category',
   'article',
   'blog-category',
-  'static-page',
+  'site-page',
 ] as const;
 
 export type RouteKind = (typeof ROUTE_KINDS)[number];
@@ -43,8 +43,8 @@ export type RouteTarget =
       readonly categoryId: BlogCategoryId;
     }
   | {
-      readonly kind: 'static-page';
-      readonly pageId: StaticPageId;
+      readonly kind: 'site-page';
+      readonly pageId: SitePageId;
     };
 
 export type RouteTargetKey = string;
@@ -81,8 +81,8 @@ export function getRouteTargetKey(target: RouteTarget): RouteTargetKey {
     case 'blog-category':
       return `blog-category:${target.categoryId}`;
 
-    case 'static-page':
-      return `static-page:${target.pageId}`;
+    case 'site-page':
+      return `site-page:${target.pageId}`;
 
     default:
       return assertNever(target);

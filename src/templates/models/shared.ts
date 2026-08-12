@@ -87,4 +87,4 @@ export type {
   BlogCategorySummaryModel,
   BlogIndexPageModel,
 } from './blog';
-export type { StaticPageModel } from './static-page';
+export type { SitePageModel } from './site-page';

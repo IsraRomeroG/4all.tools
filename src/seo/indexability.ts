@@ -43,8 +43,8 @@ export function createPublishedContentSeoIndexabilityResolver(
           return entry !== null && !entry.data.seo.noindex;
         }
 
-        case 'static-page': {
-          const entry = indexes.staticPages.find({
+        case 'site-page': {
+          const entry = indexes.sitePages.find({
             pageId: target.pageId,
             locale,
           });

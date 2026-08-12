@@ -49,7 +49,7 @@ describe('route collision validation', () => {
 
   it('detects a static page colliding with a root tool category', () => {
     const issues = inspectRouteRecords([
-      staticPageRecord({
+      sitePageRecord({
         pageId: 'contact',
         segments: ['developer'],
         sourceId: 'fixture:static-contact',
@@ -70,7 +70,7 @@ describe('route collision validation', () => {
     });
     expect(issue?.context.owners).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ targetKey: 'static-page:contact' }),
+        expect.objectContaining({ targetKey: 'site-page:contact' }),
         expect.objectContaining({ targetKey: 'tool-category:developer' }),
       ]),
     );
@@ -78,12 +78,12 @@ describe('route collision validation', () => {
 
   it('detects distinct static pages claiming the same public path', () => {
     const issues = inspectRouteRecords([
-      staticPageRecord({
+      sitePageRecord({
         pageId: 'contact',
         segments: ['developer', 'shared'],
         sourceId: 'fixture:static-contact',
       }),
-      staticPageRecord({
+      sitePageRecord({
         pageId: 'privacy',
         segments: ['developer', 'shared'],
         sourceId: 'fixture:static-privacy',
@@ -99,20 +99,20 @@ describe('route collision validation', () => {
     });
     expect(issue?.context.owners).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ targetKey: 'static-page:contact' }),
-        expect.objectContaining({ targetKey: 'static-page:privacy' }),
+        expect.objectContaining({ targetKey: 'site-page:contact' }),
+        expect.objectContaining({ targetKey: 'site-page:privacy' }),
       ]),
     );
   });
 
   it('detects one static page target claimed by two paths', () => {
     const issues = inspectRouteRecords([
-      staticPageRecord({
+      sitePageRecord({
         pageId: 'contact',
         segments: ['contact'],
         sourceId: 'fixture:static-contact-flat',
       }),
-      staticPageRecord({
+      sitePageRecord({
         pageId: 'contact',
         segments: ['legal', 'contact'],
         sourceId: 'fixture:static-contact-nested',
@@ -123,9 +123,9 @@ describe('route collision validation', () => {
       expect.objectContaining({
         code: 'DUPLICATE_CANONICAL_TARGET',
         locale: 'en',
-        targetKey: 'static-page:contact',
+        targetKey: 'site-page:contact',
         context: expect.objectContaining({
-          localizedTargetKey: 'en:static-page:contact',
+          localizedTargetKey: 'en:site-page:contact',
           paths: ['contact', 'legal/contact'],
         }),
       }),
@@ -254,17 +254,17 @@ function issueCodes(
   return inspectRouteRecords(records).map((issue) => issue.code);
 }
 
-function staticPageRecord(input: {
+function sitePageRecord(input: {
   readonly pageId: string;
   readonly segments: readonly string[];
   readonly sourceId: string;
 }): RouteRecord {
   return {
-    area: 'static',
+    area: 'site',
     locale: 'en',
     segments: input.segments,
     target: {
-      kind: 'static-page',
+      kind: 'site-page',
       pageId: input.pageId,
     },
     sourceId: input.sourceId,

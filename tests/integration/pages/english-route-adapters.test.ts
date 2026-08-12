@@ -4,9 +4,9 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
 import HomePage from '@/pages/index.astro';
-import RootCategoryPage, {
-  getStaticPaths as getRootCategoryStaticPaths,
-} from '@/pages/[category]/index.astro';
+import RootPage, {
+  getStaticPaths as getRootStaticPaths,
+} from '@/pages/[root]/index.astro';
 import {
   composeToolAreaAdapterPage,
   getDeliveryRouteRegistry,
@@ -36,12 +36,12 @@ describe('English route adapters', () => {
     expect(html).not.toContain('/en/');
   });
 
-  it('delegates root category static paths to P04 using stable target props', async () => {
-    const paths = await getRootCategoryStaticPaths(STATIC_PATH_OPTIONS);
+  it('delegates root static paths to P04 using stable target props', async () => {
+    const paths = await getRootStaticPaths(STATIC_PATH_OPTIONS);
 
     expect(paths).toContainEqual({
       params: {
-        category: 'developer',
+        root: 'developer',
       },
       props: {
         routeTarget: {
@@ -52,13 +52,13 @@ describe('English route adapters', () => {
     });
   });
 
-  it('renders a root category page from routeTarget props, not params identity', async () => {
+  it('renders a root page from routeTarget props, not params identity', async () => {
     const container = await AstroContainer.create();
-    const html = await container.renderToString(RootCategoryPage, {
+    const html = await container.renderToString(RootPage, {
       partial: false,
       request: new Request('https://example.com/not-the-category-id/'),
       params: {
-        category: 'not-the-category-id',
+        root: 'not-the-category-id',
       },
       props: {
         routeTarget: {
@@ -79,7 +79,7 @@ describe('English route adapters', () => {
 
     expect(entries).toContainEqual({
       params: {
-        category: 'developer',
+        root: 'developer',
         path: 'json-validator',
       },
       props: {
@@ -96,7 +96,7 @@ describe('English route adapters', () => {
 
     expect(entries).toContainEqual({
       params: {
-        category: 'developer',
+        root: 'developer',
         path: 'data-formats/json/json-validator',
       },
       props: {
@@ -133,7 +133,7 @@ describe('English route adapters', () => {
 
     expect(entries).toContainEqual({
       params: {
-        category: 'developer',
+        root: 'developer',
         path: 'json-validator',
       },
       props: {

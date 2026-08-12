@@ -3,7 +3,7 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import type {
   ArticleId,
   BlogCategoryId,
-  StaticPageId,
+  SitePageId,
   ToolCategoryId,
   ToolId,
 } from '@/domain/shared/ids';
@@ -23,13 +23,13 @@ import {
 
 describe('routing route contracts', () => {
   it('declares route areas, kinds, and strategies in deterministic order', () => {
-    expect(ROUTE_AREAS).toEqual(['home', 'tools', 'blog', 'static']);
+    expect(ROUTE_AREAS).toEqual(['home', 'tools', 'blog', 'site']);
     expect(ROUTE_KINDS).toEqual([
       'tool',
       'tool-category',
       'article',
       'blog-category',
-      'static-page',
+      'site-page',
     ]);
     expect(ROUTE_STRATEGIES).toEqual(['flat', 'hierarchical']);
   });
@@ -60,10 +60,10 @@ describe('routing route contracts', () => {
       readonly categoryId: BlogCategoryId;
     }>();
     expectTypeOf<
-      Extract<RouteTarget, { kind: 'static-page' }>
+      Extract<RouteTarget, { kind: 'site-page' }>
     >().toEqualTypeOf<{
-      readonly kind: 'static-page';
-      readonly pageId: StaticPageId;
+      readonly kind: 'site-page';
+      readonly pageId: SitePageId;
     }>();
   });
 
@@ -94,10 +94,10 @@ describe('routing route contracts', () => {
     ).toBe('blog-category:json-guides');
     expect(
       getRouteTargetKey({
-        kind: 'static-page',
+        kind: 'site-page',
         pageId: 'contact',
       }),
-    ).toBe('static-page:contact');
+    ).toBe('site-page:contact');
   });
 
   it('keeps target keys locale-independent', () => {
@@ -173,7 +173,7 @@ describe('routing route contracts', () => {
           return `article ${target.articleId}`;
         case 'blog-category':
           return `blog category ${target.categoryId}`;
-        case 'static-page':
+        case 'site-page':
           return `static page ${target.pageId}`;
         default:
           return assertNever(target);

@@ -9,7 +9,7 @@ import { SUPPORTED_LOCALES } from '@/i18n/types';
 import {
   buildArticlePathSegments,
   buildBlogCategoryPathSegments,
-  buildStaticPagePathSegments,
+  buildSitePagePathSegments,
   buildToolCategoryPathSegments,
   buildToolPathSegments,
 } from '@/routing/builders';
@@ -33,29 +33,29 @@ export async function createRouteRegistry(
     ...buildToolCategoryRecords(input.contentIndexes, input.toolTaxonomy),
     ...buildArticleRecords(input.contentIndexes, input.blogTaxonomy),
     ...buildBlogCategoryRecords(input.contentIndexes, input.blogTaxonomy),
-    ...buildStaticPageRecords(input.contentIndexes),
+    ...buildSitePageRecords(input.contentIndexes),
   ];
 
   return createRouteRegistryFromRecords(sortRouteRecords(records));
 }
 
-function buildStaticPageRecords(
+function buildSitePageRecords(
   indexes: PublishedContentIndexes,
 ): readonly RouteRecord[] {
   const records: RouteRecord[] = [];
 
   for (const locale of SUPPORTED_LOCALES) {
-    for (const content of indexes.staticPages.list(locale)) {
-      const sourceId = sourceIdFor('static-page-content', content.id);
+    for (const content of indexes.sitePages.list(locale)) {
+      const sourceId = sourceIdFor('site-page-content', content.id);
       records.push({
-        area: 'static',
+        area: 'site',
         locale,
-        segments: buildStaticPagePathSegments({
+        segments: buildSitePagePathSegments({
           locale,
           routeSlug: content.data.routeSlug,
           sourceId,
         }),
-        target: { kind: 'static-page', pageId: content.data.pageId },
+        target: { kind: 'site-page', pageId: content.data.pageId },
         sourceId,
       });
     }

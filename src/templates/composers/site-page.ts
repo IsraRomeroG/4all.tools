@@ -1,10 +1,10 @@
-import type { StaticPageId } from '@/domain/shared/ids';
-import { requirePublishedStaticPageContent } from '@/content/queries';
+import type { SitePageId } from '@/domain/shared/ids';
+import { requirePublishedSitePageContent } from '@/content/queries';
 import type { Locale } from '@/i18n/types';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
 import type { RouteRegistry } from '@/routing/registry';
-import type { StaticPageModel } from '@/templates/models/static-page';
+import type { SitePageModel } from '@/templates/models/site-page';
 
 import {
   MissingCanonicalRouteError,
@@ -14,22 +14,22 @@ import {
 import { renderContentEntry } from './rendered-content';
 import { composeRouteSeoPageModel } from './seo';
 
-export interface StaticPageComposerDependencies {
+export interface SitePageComposerDependencies {
   readonly routeRegistry: Pick<RouteRegistry, 'getCanonical' | 'getByTarget'>;
 }
 
-export async function composeStaticPageModel(
+export async function composeSitePageModel(
   locale: Locale,
-  pageId: StaticPageId,
-  dependencies: StaticPageComposerDependencies,
-): Promise<StaticPageModel> {
+  pageId: SitePageId,
+  dependencies: SitePageComposerDependencies,
+): Promise<SitePageModel> {
   const context = {
     locale,
-    targetKind: 'static-page',
+    targetKind: 'site-page',
     entityId: pageId,
   } as const;
   const route = dependencies.routeRegistry.getCanonical(locale, {
-    kind: 'static-page',
+    kind: 'site-page',
     pageId,
   });
 
@@ -38,26 +38,26 @@ export async function composeStaticPageModel(
   }
 
   if (
-    route.area !== 'static' ||
-    route.target.kind !== 'static-page' ||
+    route.area !== 'site' ||
+    route.target.kind !== 'site-page' ||
     route.target.pageId !== pageId
   ) {
     throw new PageModelCompositionError(
       'PAGE_MODEL_COMPOSITION_FAILED',
-      `Canonical route does not match static page ${pageId}:${locale}.`,
+      `Canonical route does not match site page ${pageId}:${locale}.`,
       context,
     );
   }
 
-  const contentEntry = await withStaticPageCompositionContext(
+  const contentEntry = await withSitePageCompositionContext(
     context,
-    () => requirePublishedStaticPageContent(pageId, locale),
-    'Failed to load published static page content.',
+    () => requirePublishedSitePageContent(pageId, locale),
+    'Failed to load published site page content.',
   );
-  const content = await withStaticPageCompositionContext(
+  const content = await withSitePageCompositionContext(
     context,
     () => renderContentEntry(contentEntry),
-    'Failed to render static page content.',
+    'Failed to render site page content.',
   );
   const seoComposition = await composeRouteSeoPageModel(
     {
@@ -69,7 +69,7 @@ export async function composeStaticPageModel(
   const messages = getGlobalMessages(locale);
 
   return {
-    kind: 'static-page',
+    kind: 'site-page',
     locale,
     route,
     seo: seoComposition.seo,
@@ -83,11 +83,11 @@ export async function composeStaticPageModel(
   };
 }
 
-async function withStaticPageCompositionContext<T>(
+async function withSitePageCompositionContext<T>(
   context: {
     readonly locale: Locale;
-    readonly targetKind: 'static-page';
-    readonly entityId: StaticPageId;
+    readonly targetKind: 'site-page';
+    readonly entityId: SitePageId;
   },
   action: () => Promise<T>,
   message: string,

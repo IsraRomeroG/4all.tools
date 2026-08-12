@@ -8,7 +8,7 @@ export type RenderableContentEntry =
   | CollectionEntry<'toolCategories'>
   | CollectionEntry<'blog'>
   | CollectionEntry<'blogCategories'>
-  | CollectionEntry<'staticPages'>;
+  | CollectionEntry<'sitePages'>;
 
 export type RenderContent = (
   entry: RenderableContentEntry,

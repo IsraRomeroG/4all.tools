@@ -7,7 +7,7 @@ import ArticleTemplate from '@/templates/ArticleTemplate.astro';
 import BlogIndexTemplate from '@/templates/BlogIndexTemplate.astro';
 import CategoryTemplate from '@/templates/CategoryTemplate.astro';
 import HomeTemplate from '@/templates/HomeTemplate.astro';
-import StaticPageTemplate from '@/templates/StaticPageTemplate.astro';
+import SitePageTemplate from '@/templates/SitePageTemplate.astro';
 import ToolTemplate from '@/templates/ToolTemplate.astro';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
@@ -28,7 +28,7 @@ const TEMPLATE_FILES = [
   'src/templates/BlogIndexTemplate.astro',
   'src/templates/BlogCategoryTemplate.astro',
   'src/templates/ArticleTemplate.astro',
-  'src/templates/StaticPageTemplate.astro',
+  'src/templates/SitePageTemplate.astro',
 ] as const;
 
 async function projectPathExists(path: string): Promise<boolean> {
@@ -340,16 +340,16 @@ describe('template foundation', () => {
 
   it('renders a static editorial page from a prepared localized model', async () => {
     const container = await AstroContainer.create();
-    const html = await container.renderToString(StaticPageTemplate, {
+    const html = await container.renderToString(SitePageTemplate, {
       partial: false,
       props: {
         page: {
-          kind: 'static-page',
+          kind: 'site-page',
           locale: 'es',
           route: route({
             locale: 'es',
             segments: ['contacto'],
-            target: { kind: 'static-page', pageId: 'contact' },
+            target: { kind: 'site-page', pageId: 'contact' },
           }),
           seo: seo({
             title: 'Contacto',
@@ -369,7 +369,7 @@ describe('template foundation', () => {
 
     expect(html).toContain('<html lang="es" dir="ltr">');
     expect(html).toMatch(/<h1[^>]*>Contacto<\/h1>/);
-    expect(html).toContain('data-template="static-page"');
+    expect(html).toContain('data-template="site-page"');
     expect(html).toContain('data-template-identity="contact"');
     expect(html).toContain('data-fixture-rendered-content');
     expect(html).not.toContain('canonicalUrl =');
@@ -393,8 +393,8 @@ function route(input: {
   return {
     area: input.target.kind === 'article' || input.target.kind === 'blog-category'
       ? 'blog'
-      : input.target.kind === 'static-page'
-        ? 'static'
+      : input.target.kind === 'site-page'
+        ? 'site'
         : 'tools',
     locale: input.locale,
     segments: input.segments,

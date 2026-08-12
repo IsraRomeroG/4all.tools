@@ -5,7 +5,7 @@ import {
   getPublishedContentIndexes,
   type ContentCollectionSource,
   type ArticleContentEntry,
-  type StaticPageContentEntry,
+  type SitePageContentEntry,
 } from '@/content/queries';
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
@@ -54,12 +54,12 @@ describe('route registry integration', () => {
     expect(second.getAll()).toEqual(first.getAll());
   });
 
-  it('derives localized static-page routes from exact published content', async () => {
+  it('derives localized site-page routes from exact published content', async () => {
     const indexes = await createPublishedContentIndexes(source({
-      staticPages: [
-        staticPage('en', 'contact', 'contact'),
-        staticPage('es', 'contact', 'contacto'),
-        staticPage('pt', 'contact', 'contato', 'draft'),
+      sitePages: [
+        sitePage('en', 'contact', 'contact'),
+        sitePage('es', 'contact', 'contacto'),
+        sitePage('pt', 'contact', 'contato', 'draft'),
       ],
     }));
     const registry = await createRouteRegistry({
@@ -69,20 +69,20 @@ describe('route registry integration', () => {
       blogTaxonomy,
     });
 
-    expect(registry.getCanonical('en', { kind: 'static-page', pageId: 'contact' })).toMatchObject({
-      area: 'static',
+    expect(registry.getCanonical('en', { kind: 'site-page', pageId: 'contact' })).toMatchObject({
+      area: 'site',
       segments: ['contact'],
-      sourceId: 'static-page-content:static-pages/en/contact',
+      sourceId: 'site-page-content:site-pages/en/contact',
     });
-    expect(registry.getCanonical('es', { kind: 'static-page', pageId: 'contact' })?.segments)
+    expect(registry.getCanonical('es', { kind: 'site-page', pageId: 'contact' })?.segments)
       .toEqual(['contacto']);
-    expect(registry.getCanonical('pt', { kind: 'static-page', pageId: 'contact' })).toBeNull();
+    expect(registry.getCanonical('pt', { kind: 'site-page', pageId: 'contact' })).toBeNull();
   });
 });
 
 function source(fixtures: {
   readonly blog?: readonly ArticleContentEntry[];
-  readonly staticPages?: readonly StaticPageContentEntry[];
+  readonly sitePages?: readonly SitePageContentEntry[];
 }): ContentCollectionSource {
   return {
     getCollection: async (collection) => {
@@ -90,8 +90,8 @@ function source(fixtures: {
         return (fixtures.blog ?? []) as never;
       }
 
-      if (collection === 'staticPages') {
-        return (fixtures.staticPages ?? []) as never;
+      if (collection === 'sitePages') {
+        return (fixtures.sitePages ?? []) as never;
       }
 
       return [] as never;
@@ -99,15 +99,15 @@ function source(fixtures: {
   };
 }
 
-function staticPage(
+function sitePage(
   locale: 'en' | 'es' | 'pt' | 'fr',
   pageId: string,
   routeSlug: string,
   status: 'published' | 'draft' = 'published',
-): StaticPageContentEntry {
+): SitePageContentEntry {
   return {
-    id: `static-pages/${locale}/${pageId}`,
-    collection: 'staticPages',
+    id: `site-pages/${locale}/${pageId}`,
+    collection: 'sitePages',
     data: {
       pageId,
       locale,
@@ -116,7 +116,7 @@ function staticPage(
       title: pageId,
       seo: { title: pageId, description: pageId, noindex: false },
     },
-  } as unknown as StaticPageContentEntry;
+  } as unknown as SitePageContentEntry;
 }
 
 function article(locale: 'en' | 'es' | 'pt' | 'fr', articleId: string, routeSlug: string): ArticleContentEntry {

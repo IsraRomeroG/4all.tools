@@ -279,8 +279,8 @@ function isAreaTargetCompatible(
     case 'home':
       return false;
 
-    case 'static':
-      return target.kind === 'static-page';
+    case 'site':
+      return target.kind === 'site-page';
 
     default:
       return false;
@@ -303,7 +303,7 @@ function isRouteTarget(target: unknown): target is RouteTarget {
     case 'article':
       return isNonEmptyString(target.articleId);
 
-    case 'static-page':
+    case 'site-page':
       return isNonEmptyString(target.pageId);
 
     default:

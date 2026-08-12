@@ -2,7 +2,7 @@ import type { Locale } from '@/i18n/types';
 
 import { freezeValidatedSegments } from './shared-path-builder';
 
-export function buildStaticPagePathSegments(input: {
+export function buildSitePagePathSegments(input: {
   readonly locale: Locale;
   readonly routeSlug: string;
   readonly sourceId?: string;

@@ -5,16 +5,16 @@ import { describe, expect, it } from 'vitest';
 
 import EnglishToolAreaPage, {
   getStaticPaths as getEnglishToolAreaStaticPaths,
-} from '@/pages/[category]/[...path].astro';
+} from '@/pages/[root]/[...path].astro';
 import SpanishToolAreaPage, {
   getStaticPaths as getSpanishToolAreaStaticPaths,
-} from '@/pages/es/[category]/[...path].astro';
+} from '@/pages/es/[root]/[...path].astro';
 import PortugueseToolAreaPage, {
   getStaticPaths as getPortugueseToolAreaStaticPaths,
-} from '@/pages/pt/[category]/[...path].astro';
+} from '@/pages/pt/[root]/[...path].astro';
 import FrenchToolAreaPage, {
   getStaticPaths as getFrenchToolAreaStaticPaths,
-} from '@/pages/fr/[category]/[...path].astro';
+} from '@/pages/fr/[root]/[...path].astro';
 import {
   composeToolAreaAdapterPage,
   getDeliveryRouteRegistry,
@@ -33,7 +33,7 @@ const EXPECTED = {
     page: EnglishToolAreaPage,
     getStaticPaths: getEnglishToolAreaStaticPaths,
     params: {
-      category: 'developer',
+      root: 'developer',
       path: 'json-validator',
     },
     segments: ['developer', 'json-validator'],
@@ -48,7 +48,7 @@ const EXPECTED = {
     page: SpanishToolAreaPage,
     getStaticPaths: getSpanishToolAreaStaticPaths,
     params: {
-      category: 'desarrollo',
+      root: 'desarrollo',
       path: 'validador-json',
     },
     segments: ['desarrollo', 'validador-json'],
@@ -63,7 +63,7 @@ const EXPECTED = {
     page: PortugueseToolAreaPage,
     getStaticPaths: getPortugueseToolAreaStaticPaths,
     params: {
-      category: 'desenvolvedor',
+      root: 'desenvolvedor',
       path: 'validador-json',
     },
     segments: ['desenvolvedor', 'validador-json'],
@@ -78,7 +78,7 @@ const EXPECTED = {
     page: FrenchToolAreaPage,
     getStaticPaths: getFrenchToolAreaStaticPaths,
     params: {
-      category: 'developpement',
+      root: 'developpement',
       path: 'validateur-json',
     },
     segments: ['developpement', 'validateur-json'],
@@ -240,7 +240,7 @@ describe('json-validator end-to-end route integration', () => {
 
     expect(englishEntries).toContainEqual({
       params: {
-        category: 'developer',
+        root: 'developer',
         path: 'json-validator',
       },
       props: {

@@ -36,7 +36,7 @@ export function getToolAreaStaticPathEntries(
 
   assertUniqueStaticPathEntries(
     entries,
-    (entry) => `category=${entry.params.category}|path=${entry.params.path}`,
+    (entry) => `root=${entry.params.root}|path=${entry.params.path}`,
     TOOL_AREA_PROJECTION,
   );
 
@@ -54,7 +54,7 @@ function isToolAreaCatchAllRecord(record: RouteRecord): boolean {
 function projectToolAreaRecord(record: RouteRecord): ToolAreaStaticPathEntry {
   return freezeEntry({
     params: Object.freeze({
-      category: requireSegment(record, 0, TOOL_AREA_PROJECTION),
+      root: requireSegment(record, 0, TOOL_AREA_PROJECTION),
       path: requireRestPath(record, 1, TOOL_AREA_PROJECTION),
     }),
     props: Object.freeze({

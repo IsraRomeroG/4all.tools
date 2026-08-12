@@ -4,11 +4,11 @@ import {
   RoutingInvariantError,
   createBlogStaticPaths,
   createRouteRegistry,
-  createRootCategoryStaticPaths,
+  createRootStaticPaths,
   createRouteRegistryFromRecords,
   createToolAreaStaticPaths,
   getBlogStaticPathEntries,
-  getRootCategoryStaticPathEntries,
+  getRootStaticPathEntries,
   getToolAreaStaticPathEntries,
   type RouteRegistry,
   type StaticPathFactory,
@@ -20,13 +20,13 @@ import { toolRegistry } from '@/features/tools/registry';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
 
 describe('static path factories', () => {
-  it('projects root category static paths for English and Spanish index routes', () => {
+  it('projects root static paths for English and Spanish index routes', () => {
     const registry = fixtureRegistry();
 
-    expect(getRootCategoryStaticPathEntries(registry, 'en')).toEqual([
+    expect(getRootStaticPathEntries(registry, 'en')).toEqual([
       {
         params: {
-          category: 'developer',
+          root: 'developer',
         },
         props: {
           routeTarget: {
@@ -36,10 +36,10 @@ describe('static path factories', () => {
         },
       },
     ]);
-    expect(getRootCategoryStaticPathEntries(registry, 'es')).toEqual([
+    expect(getRootStaticPathEntries(registry, 'es')).toEqual([
       {
         params: {
-          category: 'desarrollo',
+          root: 'desarrollo',
         },
         props: {
           routeTarget: {
@@ -51,8 +51,8 @@ describe('static path factories', () => {
     ]);
   });
 
-  it('excludes tool records and nested category records from root category projection', () => {
-    const entries = getRootCategoryStaticPathEntries(fixtureRegistry(), 'en');
+  it('excludes tool records and nested category records from root projection', () => {
+    const entries = getRootStaticPathEntries(fixtureRegistry(), 'en');
 
     expect(entries).toHaveLength(1);
     expect(entries[0]?.props.routeTarget).toEqual({
@@ -61,51 +61,71 @@ describe('static path factories', () => {
     });
   });
 
-  it('projects static-page records through the shared root projection', () => {
+  it('projects site-page records through the shared root projection', () => {
     const registry = createRouteRegistryFromRecords([
-      staticPageRecord({
+      sitePageRecord({
         locale: 'en',
         segments: ['contact'],
         pageId: 'contact',
       }),
-      staticPageRecord({
+      sitePageRecord({
         locale: 'es',
         segments: ['contacto'],
         pageId: 'contact',
       }),
     ]);
 
-    expect(getRootCategoryStaticPathEntries(registry, 'en')).toEqual([
+    expect(getRootStaticPathEntries(registry, 'en')).toEqual([
       {
-        params: { category: 'contact' },
+        params: { root: 'contact' },
         props: {
-          routeTarget: { kind: 'static-page', pageId: 'contact' },
+          routeTarget: { kind: 'site-page', pageId: 'contact' },
         },
       },
     ]);
-    expect(getRootCategoryStaticPathEntries(registry, 'es')).toEqual([
+    expect(getRootStaticPathEntries(registry, 'es')).toEqual([
       {
-        params: { category: 'contacto' },
+        params: { root: 'contacto' },
         props: {
-          routeTarget: { kind: 'static-page', pageId: 'contact' },
+          routeTarget: { kind: 'site-page', pageId: 'contact' },
         },
       },
     ]);
   });
 
-  it('excludes nested static-page records from the root projection', () => {
+  it('excludes nested site-page records from the root projection', () => {
     const registry = createRouteRegistryFromRecords([
-      staticPageRecord({
+      sitePageRecord({
         locale: 'en',
         segments: ['legal', 'contact'],
         pageId: 'contact',
       }),
     ]);
 
-    expect(getRootCategoryStaticPathEntries(registry, 'en')).toEqual([]);
+    expect(getRootStaticPathEntries(registry, 'en')).toEqual([]);
   });
 
-  it('projects root category static paths from published category content only', async () => {
+  it('rejects duplicate root params before Astro receives static paths', () => {
+    const registry = rawRegistry([
+      toolCategoryRecord({
+        locale: 'en',
+        segments: ['shared'],
+        categoryId: 'developer',
+      }),
+      sitePageRecord({
+        locale: 'en',
+        segments: ['shared'],
+        pageId: 'contact',
+      }),
+    ]);
+
+    expectRouteError(
+      () => getRootStaticPathEntries(registry, 'en'),
+      'INVALID_STATIC_PATH_PROJECTION',
+    );
+  });
+
+  it('projects root static paths from published category content only', async () => {
     const registry = await createRouteRegistry({
       contentIndexes: await getPublishedContentIndexes(),
       toolRegistry,
@@ -113,10 +133,10 @@ describe('static path factories', () => {
       blogTaxonomy,
     });
 
-    expect(getRootCategoryStaticPathEntries(registry, 'en')).toEqual([
+    expect(getRootStaticPathEntries(registry, 'en')).toEqual([
       {
         params: {
-          category: 'developer',
+          root: 'developer',
         },
         props: {
           routeTarget: {
@@ -145,7 +165,7 @@ describe('static path factories', () => {
 
     expect(entries).toContainEqual({
       params: {
-        category: 'developer',
+        root: 'developer',
         path: 'json-validator',
       },
       props: {
@@ -157,7 +177,7 @@ describe('static path factories', () => {
     });
     expect(entries).toContainEqual({
       params: {
-        category: 'developer',
+        root: 'developer',
         path: 'data-formats/json/json-formatter',
       },
       props: {
@@ -175,7 +195,7 @@ describe('static path factories', () => {
     expect(entries).toEqual([
       {
         params: {
-          category: 'desarrollo',
+          root: 'desarrollo',
           path: 'validador-json',
         },
         props: {
@@ -186,7 +206,7 @@ describe('static path factories', () => {
         },
       },
     ]);
-    expect(entries[0]?.params.category).not.toBe('es');
+    expect(entries[0]?.params.root).not.toBe('es');
   });
 
   it('projects nested category landings through the tool-area catch-all', () => {
@@ -194,7 +214,7 @@ describe('static path factories', () => {
 
     expect(entries).toContainEqual({
       params: {
-        category: 'developer',
+        root: 'developer',
         path: 'formatters',
       },
       props: {
@@ -296,7 +316,7 @@ describe('static path factories', () => {
   it('returns string params and stable route targets in props', () => {
     const [entry] = getToolAreaStaticPathEntries(fixtureRegistry(), 'en');
 
-    expect(typeof entry?.params.category).toBe('string');
+    expect(typeof entry?.params.root).toBe('string');
     expect(typeof entry?.params.path).toBe('string');
     expect(entry?.props.routeTarget).toEqual({
       kind: 'tool-category',
@@ -321,7 +341,7 @@ describe('static path factories', () => {
 
   it('creates Astro-compatible factory functions from injected registries', async () => {
     const registry = fixtureRegistry();
-    const rootPaths = await createRootCategoryStaticPaths({
+    const rootPaths = await createRootStaticPaths({
       locale: 'en',
       getRegistry: () => registry,
     })(STATIC_PATH_OPTIONS);
@@ -461,17 +481,17 @@ function blogCategoryRecord(input: {
   });
 }
 
-function staticPageRecord(input: {
+function sitePageRecord(input: {
   readonly locale: RouteRecord['locale'];
   readonly segments: readonly string[];
   readonly pageId: string;
 }): RouteRecord {
   return record({
-    area: 'static',
+    area: 'site',
     locale: input.locale,
     segments: input.segments,
     target: {
-      kind: 'static-page',
+      kind: 'site-page',
       pageId: input.pageId,
     },
   });

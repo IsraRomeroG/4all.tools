@@ -1,7 +1,7 @@
 import type { Locale } from '@/i18n/types';
 import type { RouteRegistry } from '@/routing/registry';
 import { assertNever, type RouteTarget } from '@/routing/types';
-import type { StaticPageModel } from '@/templates/models/static-page';
+import type { SitePageModel } from '@/templates/models/site-page';
 import type { ToolCategoryPageModel, ToolPageModel } from '@/templates/models/shared';
 
 import { UnsupportedPageTargetError } from './errors';
@@ -11,14 +11,14 @@ import {
 import {
   composeToolPageModel,
 } from './tool';
-import { composeStaticPageModel } from './static-page';
+import { composeSitePageModel } from './site-page';
 
 export interface RouteAdapterComposerDependencies {
   readonly routeRegistry: RouteRegistry;
 }
 
 export type ToolAreaPageModel = ToolPageModel | ToolCategoryPageModel;
-export type RootAdapterPageModel = ToolCategoryPageModel | StaticPageModel;
+export type RootAdapterPageModel = ToolCategoryPageModel | SitePageModel;
 
 export async function composeRootAdapterPage(
   locale: Locale,
@@ -31,8 +31,8 @@ export async function composeRootAdapterPage(
         routeRegistry: dependencies.routeRegistry,
       });
 
-    case 'static-page':
-      return composeStaticPageModel(locale, routeTarget.pageId, {
+    case 'site-page':
+      return composeSitePageModel(locale, routeTarget.pageId, {
         routeRegistry: dependencies.routeRegistry,
       });
 
@@ -42,21 +42,6 @@ export async function composeRootAdapterPage(
         targetKind: routeTarget.kind,
       });
   }
-}
-
-export async function composeRootCategoryAdapterPage(
-  locale: Locale,
-  routeTarget: RouteTarget,
-  dependencies: RouteAdapterComposerDependencies,
-): Promise<ToolCategoryPageModel> {
-  if (routeTarget.kind !== 'tool-category') {
-    throw new UnsupportedPageTargetError({
-      locale,
-      targetKind: routeTarget.kind,
-    });
-  }
-
-  return composeRootAdapterPage(locale, routeTarget, dependencies) as Promise<ToolCategoryPageModel>;
 }
 
 export async function composeToolAreaAdapterPage(
@@ -77,7 +62,7 @@ export async function composeToolAreaAdapterPage(
 
     case 'article':
     case 'blog-category':
-    case 'static-page':
+    case 'site-page':
       throw new UnsupportedPageTargetError({
         locale,
         targetKind: routeTarget.kind,
