@@ -44,7 +44,7 @@
 | Archivo | Descripción | Estado |
 |---|---|---|
 | `src/config/site.ts` | URL canónica del sitio y política de barra final. | Activo |
-| `src/content.config.ts` | Registra las colecciones `tools`, `toolCategories`, `blog` y `blogCategories` con sus schemas. | Activo |
+| `src/content.config.ts` | Registra las cinco colecciones `tools`, `toolCategories`, `blog`, `blogCategories` y `sitePages` con sus schemas. | Activo |
 | `src/styles/global.css` | Punto de entrada de estilos globales y Tailwind CSS 4. | Activo |
 
 ### Componentes, navegación y SEO
@@ -82,6 +82,8 @@
 | `src/content/schemas/shared.ts` | Schemas comunes para locale, publicación, fechas y SEO. | Activo |
 | `src/content/schemas/tools.ts` | Schemas de herramientas y categorías de herramientas. | Activo |
 | `src/content/schemas/blog.ts` | Schemas de artículos y categorías del blog. | Activo |
+| `src/content/schemas/site-pages.ts` | Schema estricto de `SitePageId`, locale, `routeSlug`, publicación, título y SEO para site pages. | Activo interno |
+| `src/content/site-pages/` | Raíz reservada para Markdown localizado de site pages; actualmente no contiene entradas productivas. | Activo interno |
 | `src/content/site/blog-index.ts` | Metadatos editoriales del índice del blog. | Activo |
 
 ### Consultas de contenido
@@ -95,6 +97,7 @@
 | `src/content/queries/tool-categories.ts` | Consulta contenido publicado de categorías de herramientas. | Activo |
 | `src/content/queries/blog.ts` | Consulta artículos publicados por ID estable e idioma. | Activo |
 | `src/content/queries/blog-categories.ts` | Consulta categorías del blog por ID estable e idioma. | Activo |
+| `src/content/queries/site-pages.ts` | API exacta para consultar, exigir y listar site pages publicadas por `SitePageId` y locale. | Activo interno |
 | `src/content/queries/blog-content-queries.ts` | Accesores compartidos para catálogos y composición del blog. | Activo |
 | `src/content/queries/shared.ts` | Filtrado de publicaciones y resolución de coincidencias únicas. | Activo |
 | `src/content/queries/errors.ts` | Errores de contenido ausente, ambiguo y contexto de diagnóstico. | Activo |
@@ -104,7 +107,7 @@
 
 | Archivo o grupo | Descripción | Estado |
 |---|---|---|
-| `src/domain/shared/ids.ts` | IDs estables de herramientas, categorías y artículos. | Activo |
+| `src/domain/shared/ids.ts` | IDs estables de herramientas, categorías, artículos y `SitePageId`. | Activo |
 | `src/domain/shared/publication.ts` | Contratos del estado de publicación. | Activo |
 | `src/domain/taxonomy/shared/` | Motor inmutable de árboles, tipos y errores de taxonomía. | Activo |
 | `src/domain/taxonomy/tools/registry.ts` | Taxonomía de herramientas: `developer` → `data-formats` y `developer` → `json`. | Activo |
@@ -148,10 +151,10 @@
 |---|---|---|
 | `src/pages/index.astro` | Portada inglesa sin prefijo. | Activo |
 | `src/pages/{es,pt,fr}/index.astro` | Portadas localizadas. | Activo |
-| `src/pages/[category]/index.astro` | Categorías raíz de herramientas en inglés. | Activo |
-| `src/pages/{es,pt,fr}/[category]/index.astro` | Adaptadores de categorías raíz de herramientas localizadas. | Activo como adaptadores; sin categoría raíz publicada actualmente |
-| `src/pages/[category]/[...path].astro` | Catch-all del área de herramientas en inglés. | Activo |
-| `src/pages/{es,pt,fr}/[category]/[...path].astro` | Catch-all localizado del área de herramientas. | Activo |
+| `src/pages/[root]/index.astro` | Adaptador neutral de rutas raíz en inglés; despacha `tool-category` y `site-page` mediante `routeTarget`. | Activo interno |
+| `src/pages/{es,pt,fr}/[root]/index.astro` | Adaptadores neutrales de rutas raíz localizadas; despachan `tool-category` y `site-page`. | Activo interno |
+| `src/pages/[root]/[...path].astro` | Catch-all del área de herramientas en inglés, con parámetros `{ root, path }`. | Activo |
+| `src/pages/{es,pt,fr}/[root]/[...path].astro` | Catch-all localizado del área de herramientas, con parámetros `{ root, path }`. | Activo |
 | `src/pages/blog/index.astro` | Índice inglés del blog. | Activo |
 | `src/pages/{es,pt,fr}/blog/index.astro` | Índices localizados del blog. | Activo |
 | `src/pages/blog/[...path].astro` | Catch-all inglés para categorías y artículos del blog. | Activo |
@@ -161,10 +164,12 @@
 
 | Archivo o grupo | Descripción | Estado |
 |---|---|---|
-| `src/routing/builders/` | Constructores de URLs localizadas para herramientas, categorías, artículos y blog. | Activo |
+| `src/routing/builders/site-page-path-builder.ts` | Valida y construye el segmento raíz localizado mediante `buildSitePagePathSegments()`. | Activo interno |
+| `src/routing/builders/` | Constructores de URLs localizadas para herramientas, categorías, artículos, blog y site pages. | Activo |
 | `src/routing/registry/create-route-registry.ts` | Deriva registros finales desde contenido localizado publicado, `ToolRegistry` y taxonomías. | Activo |
 | `src/routing/registry/` | Registro, índice y namespaces reservados de rutas. | Activo |
-| `src/routing/static-paths/` | Proyección de registros a `getStaticPaths()` para herramientas, categorías y blog. | Activo |
+| `src/routing/static-paths/get-root-static-paths.ts` | Proyecta categorías raíz y site pages de un segmento a `{ params: { root }, props: { routeTarget } }`. | Activo interno |
+| `src/routing/static-paths/` | Proyección de registros a `getStaticPaths()` para herramientas, categorías raíz/site pages y blog; la proyección genérica usa `root`. | Activo |
 | `src/routing/validation/` | Validación de registros, colisiones y rutas reservadas. | Activo |
 | `src/routing/types.ts` | Tipos centrales de áreas, destinos, registros y estrategias. | Activo |
 
@@ -178,11 +183,14 @@
 | `src/templates/BlogIndexTemplate.astro` | Renderiza el índice del blog. | Activo |
 | `src/templates/BlogCategoryTemplate.astro` | Renderiza categorías del blog y sus artículos. | Activo |
 | `src/templates/ArticleTemplate.astro` | Renderiza artículos del blog. | Activo |
-| `src/templates/models/` | Modelos tipados para portada, herramientas, categorías, blog y datos compartidos. | Activo |
+| `src/templates/SitePageTemplate.astro` | Renderiza site pages con título, Markdown, SEO y selector de idioma preparados. | Activo interno |
+| `src/templates/models/site-page.ts` | Define `SitePageModel`, el modelo de entrega consumer-facing para site pages. | Activo interno |
+| `src/templates/models/` | Modelos tipados para portada, herramientas, categorías, blog, site pages y datos compartidos. | Activo |
 | `src/templates/composers/home.ts` | Composición de la portada. | Activo |
 | `src/templates/composers/category.ts` | Composición de categorías de herramientas. | Activo |
 | `src/templates/composers/tool.ts` | Composición y validación del modelo de herramienta. | Activo |
 | `src/templates/composers/blog/` | Catálogos, fechas, categorías, artículos, índice y adaptadores del blog. | Activo |
+| `src/templates/composers/site-page.ts` | Compone `SitePageModel` desde contenido publicado, `RouteRegistry`, SEO y selector de idioma. | Activo interno |
 | `src/templates/composers/delivery-route-registry.ts` | Registro de entrega compartido por build y runtime de desarrollo. | Activo |
 | `src/templates/composers/route-adapters.ts` | Convierte destinos de routing en modelos de página. | Activo |
 | `src/templates/composers/rendered-content.ts` | Adapta contenido Astro renderizable. | Activo |
@@ -228,7 +236,7 @@
 ### Flujo del JSON Validator
 
 ```text
-src/pages/*/[category]/[...path].astro
+src/pages/*/[root]/[...path].astro
   → static-path factories + delivery route registry
   → content indexes + ToolRegistry + taxonomy
   → ToolTemplate.astro
