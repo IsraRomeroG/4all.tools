@@ -4,7 +4,7 @@ Astro static site for localized web tools.
 
 ## Project Status
 
-P00-P17 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, validation/test guardrail slimming, the single tool registry, content-owned route publication, simplified composers, static editorial-page infrastructure, selective runtime immutability, and scalable verification exist in source.
+P00-P17 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, validation/test guardrail slimming, the single tool registry, content-owned route publication, simplified composers, site-page editorial infrastructure, selective runtime immutability, and scalable verification exist in source.
 
 ## Canonical JSON Validator Routes
 
