@@ -73,6 +73,8 @@ describe('static-page composer and root adapter delivery', () => {
       route: { locale: 'es', segments: ['contacto'] },
       seo: { canonicalUrl: 'https://4all.tools/es/contacto/' },
     });
+    expect(Object.hasOwn(english, 'localizedRouteCluster')).toBe(false);
+    expect(Object.hasOwn(spanish, 'localizedRouteCluster')).toBe(false);
     expect(english.languageSwitcher.items).toEqual([
       expect.objectContaining({ locale: 'en', state: 'current' }),
       expect.objectContaining({ locale: 'es', state: 'available', url: '/es/contacto/' }),

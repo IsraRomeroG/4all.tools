@@ -73,7 +73,6 @@ export async function composeStaticPageModel(
     locale,
     route,
     seo: seoComposition.seo,
-    localizedRouteCluster: seoComposition.localizedRouteCluster,
     languageSwitcher: buildLanguageSwitcherModel({
       cluster: seoComposition.localizedRouteCluster,
       messages: messages.language,
