@@ -445,6 +445,64 @@ describe('static build output', () => {
     expect(spanishHome).not.toContain('href="/about/"');
   });
 
+  it('verifies the English About site-page archetype', async () => {
+    const html = await readDistFile('about/index.html');
+
+    expect(html).toContain('<html lang="en" dir="ltr">');
+    expect(html).toContain('<title>About 4all.tools</title>');
+    expect(html).toContain('<meta name="description" content="Learn how 4all.tools combines practical web tools with clear, multilingual editorial content.">');
+    expect(html).toContain('<meta name="robots" content="index,follow">');
+    expect(html).toContain('<link rel="canonical" href="https://4all.tools/about/">');
+    expect(countMatches(html, /rel="alternate"/g)).toBe(5);
+    for (const alternate of [
+      'https://4all.tools/about/',
+      'https://4all.tools/es/acerca-de/',
+      'https://4all.tools/pt/sobre/',
+      'https://4all.tools/fr/a-propos/',
+    ]) {
+      expect(html).toContain(alternate);
+    }
+    expect(html).toContain('hreflang="x-default" href="https://4all.tools/about/"');
+    expect(html).toContain('data-language-switcher');
+    expect(html).toContain('<li data-locale="en" data-state="current">');
+    expect(html).toContain('<li data-locale="es" data-state="available">');
+    expect(html).toContain('<li data-locale="pt" data-state="available">');
+    expect(html).toContain('<li data-locale="fr" data-state="available">');
+    expect(html).toContain('data-template="site-page" data-template-identity="about"');
+    expect(html).toContain('4all.tools brings practical web tools');
+    expect(html).toContain('data-site-footer');
+    for (const url of ['/about/', '/contact/', '/privacy/', '/terms/']) {
+      expect(html).toContain(`href="${url}"`);
+    }
+    expect(html).not.toContain('/en/');
+    expect(html).not.toContain('Esta Pol');
+  });
+
+  it('verifies the Spanish Privacy site-page archetype', async () => {
+    const html = await readDistFile('es/privacidad/index.html');
+
+    expect(html).toContain('<html lang="es" dir="ltr">');
+    expect(html).toContain('<title>Pol');
+    expect(html).toContain('<meta name="description" content="Conoce ');
+    expect(html).toContain('<meta name="robots" content="noindex,follow">');
+    expect(html).toContain('<link rel="canonical" href="https://4all.tools/es/privacidad/">');
+    expect(countMatches(html, /rel="alternate"/g)).toBe(0);
+    expect(html).toContain('data-language-switcher');
+    expect(html).toContain('<li data-locale="en" data-state="available">');
+    expect(html).toContain('<li data-locale="es" data-state="current">');
+    expect(html).toContain('<li data-locale="pt" data-state="available">');
+    expect(html).toContain('<li data-locale="fr" data-state="available">');
+    expect(html).toContain('data-template="site-page" data-template-identity="privacy"');
+    expect(html).toContain('Esta Pol');
+    expect(html).toContain('data-site-footer');
+    for (const url of ['/es/acerca-de/', '/es/contacto/', '/es/privacidad/', '/es/terminos/']) {
+      expect(html).toContain(`href="${url}"`);
+    }
+    expect(html).not.toContain('href="/about/"');
+    expect(html).not.toContain('4all.tools brings practical web tools');
+    expect(html).not.toContain('/en/');
+  });
+
   it('emits the approved static robots policy', async () => {
     await expect(readDistFile('robots.txt')).resolves.toBe(
       'User-agent: *\nAllow: /\nSitemap: https://4all.tools/sitemap-index.xml\n',

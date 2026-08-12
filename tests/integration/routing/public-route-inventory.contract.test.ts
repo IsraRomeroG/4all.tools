@@ -24,6 +24,8 @@ describe('public route inventory contract', () => {
 
     const actual = registry.getAll().map(normalizeRouteRecord);
 
+    expect(actual).toHaveLength(34);
+    expect(actual.filter((record) => record.area === 'site')).toHaveLength(16);
     expect(actual).toEqual(PUBLIC_ROUTE_INVENTORY);
   });
 });
