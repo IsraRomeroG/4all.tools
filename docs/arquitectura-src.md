@@ -199,11 +199,19 @@ Es la entrada pública de Astro. Cada archivo de esta carpeta representa una fam
 
 - `pages/index.astro`: inicio inglés sin prefijo.
 - `pages/es/`, `pages/pt/` y `pages/fr/`: inicios localizados y adaptadores localizados.
-- `[category]/index.astro`: categorías raíz de herramientas.
-- `[category]/[...path].astro`: catch-all del área de herramientas.
+- `[root]/index.astro`: adaptador neutral de rutas raíz; despacha `tool-category` y `site-page` según el `routeTarget` estable.
+- `[root]/[...path].astro`: catch-all del área de herramientas, con parámetros `{ root, path }`.
 - `blog/index.astro`: índice del blog.
 - `blog/[...path].astro`: catch-all de categorías y artículos del blog.
 - Las mismas familias bajo `es/`, `pt/` y `fr/` generan las variantes localizadas.
+
+`[root]/index.astro` no infiere la identidad por el slug ni por el nombre del parámetro:
+
+```text
+[root]/index.astro
+├── tool-category → CategoryTemplate
+└── site-page     → SitePageTemplate
+```
 
 Las páginas no contienen una implementación específica para cada herramienta. Reciben un destino estable desde `getStaticPaths()`, solicitan el modelo correspondiente y delegan el renderizado.
 
