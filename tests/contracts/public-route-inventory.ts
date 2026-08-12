@@ -44,6 +44,18 @@ export const PUBLIC_ROUTE_INVENTORY = [
     target: { kind: 'article', articleId: 'what-is-json' },
   },
   {
+    area: 'site',
+    locale: 'en',
+    segments: ['about'],
+    target: { kind: 'site-page', pageId: 'about' },
+  },
+  {
+    area: 'site',
+    locale: 'en',
+    segments: ['contact'],
+    target: { kind: 'site-page', pageId: 'contact' },
+  },
+  {
     area: 'tools',
     locale: 'es',
     segments: ['desarrollo'],
@@ -74,6 +86,18 @@ export const PUBLIC_ROUTE_INVENTORY = [
     target: { kind: 'article', articleId: 'what-is-json' },
   },
   {
+    area: 'site',
+    locale: 'es',
+    segments: ['acerca-de'],
+    target: { kind: 'site-page', pageId: 'about' },
+  },
+  {
+    area: 'site',
+    locale: 'es',
+    segments: ['contacto'],
+    target: { kind: 'site-page', pageId: 'contact' },
+  },
+  {
     area: 'tools',
     locale: 'pt',
     segments: ['desenvolvedor', 'validador-json'],
@@ -98,6 +122,18 @@ export const PUBLIC_ROUTE_INVENTORY = [
     target: { kind: 'article', articleId: 'what-is-json' },
   },
   {
+    area: 'site',
+    locale: 'pt',
+    segments: ['contato'],
+    target: { kind: 'site-page', pageId: 'contact' },
+  },
+  {
+    area: 'site',
+    locale: 'pt',
+    segments: ['sobre'],
+    target: { kind: 'site-page', pageId: 'about' },
+  },
+  {
     area: 'tools',
     locale: 'fr',
     segments: ['developpement', 'validateur-json'],
@@ -120,5 +156,17 @@ export const PUBLIC_ROUTE_INVENTORY = [
     locale: 'fr',
     segments: ['blog', 'developpement', 'guides-json', 'qu-est-ce-que-json'],
     target: { kind: 'article', articleId: 'what-is-json' },
+  },
+  {
+    area: 'site',
+    locale: 'fr',
+    segments: ['a-propos'],
+    target: { kind: 'site-page', pageId: 'about' },
+  },
+  {
+    area: 'site',
+    locale: 'fr',
+    segments: ['contact'],
+    target: { kind: 'site-page', pageId: 'contact' },
   },
 ] as const satisfies readonly PublicRouteContractRecord[];

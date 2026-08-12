@@ -125,7 +125,7 @@ describe('static path factories', () => {
     );
   });
 
-  it('projects root static paths from published category content only', async () => {
+  it('projects root static paths from published category and site-page content', async () => {
     const registry = await createRouteRegistry({
       contentIndexes: await getPublishedContentIndexes(),
       toolRegistry,
@@ -142,6 +142,28 @@ describe('static path factories', () => {
           routeTarget: {
             kind: 'tool-category',
             categoryId: 'developer',
+          },
+        },
+      },
+      {
+        params: {
+          root: 'about',
+        },
+        props: {
+          routeTarget: {
+            kind: 'site-page',
+            pageId: 'about',
+          },
+        },
+      },
+      {
+        params: {
+          root: 'contact',
+        },
+        props: {
+          routeTarget: {
+            kind: 'site-page',
+            pageId: 'contact',
           },
         },
       },
