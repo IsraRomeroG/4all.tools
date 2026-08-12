@@ -25,6 +25,7 @@ import {
   RESERVED_BLOG_TOOL_ROOT,
   SAME_TARGET_DIFFERENT_LOCALES,
   SAME_TEXT_PATH_DIFFERENT_LOCALES,
+  toolCategoryRecord,
 } from '../../fixtures/routing/invalid-route-records';
 
 describe('route collision validation', () => {
@@ -42,6 +43,91 @@ describe('route collision validation', () => {
         code: 'DUPLICATE_PUBLIC_PATH',
         locale: 'en',
         path: 'developer/shared',
+      }),
+    );
+  });
+
+  it('detects a static page colliding with a root tool category', () => {
+    const issues = inspectRouteRecords([
+      staticPageRecord({
+        pageId: 'contact',
+        segments: ['developer'],
+        sourceId: 'fixture:static-contact',
+      }),
+      toolCategoryRecord({
+        categoryId: 'developer',
+        segments: ['developer'],
+        sourceId: 'fixture:category-developer',
+      }),
+    ]);
+
+    const issue = issues.find((candidate) => candidate.code === 'DUPLICATE_PUBLIC_PATH');
+
+    expect(issue).toMatchObject({
+      code: 'DUPLICATE_PUBLIC_PATH',
+      locale: 'en',
+      path: 'developer',
+    });
+    expect(issue?.context.owners).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ targetKey: 'static-page:contact' }),
+        expect.objectContaining({ targetKey: 'tool-category:developer' }),
+      ]),
+    );
+  });
+
+  it('detects distinct static pages claiming the same public path', () => {
+    const issues = inspectRouteRecords([
+      staticPageRecord({
+        pageId: 'contact',
+        segments: ['developer', 'shared'],
+        sourceId: 'fixture:static-contact',
+      }),
+      staticPageRecord({
+        pageId: 'privacy',
+        segments: ['developer', 'shared'],
+        sourceId: 'fixture:static-privacy',
+      }),
+    ]);
+
+    const issue = issues.find((candidate) => candidate.code === 'DUPLICATE_PUBLIC_PATH');
+
+    expect(issue).toMatchObject({
+      code: 'DUPLICATE_PUBLIC_PATH',
+      locale: 'en',
+      path: 'developer/shared',
+    });
+    expect(issue?.context.owners).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ targetKey: 'static-page:contact' }),
+        expect.objectContaining({ targetKey: 'static-page:privacy' }),
+      ]),
+    );
+  });
+
+  it('detects one static page target claimed by two paths', () => {
+    const issues = inspectRouteRecords([
+      staticPageRecord({
+        pageId: 'contact',
+        segments: ['contact'],
+        sourceId: 'fixture:static-contact-flat',
+      }),
+      staticPageRecord({
+        pageId: 'contact',
+        segments: ['legal', 'contact'],
+        sourceId: 'fixture:static-contact-nested',
+      }),
+    ]);
+
+    expect(issues).toContainEqual(
+      expect.objectContaining({
+        code: 'DUPLICATE_CANONICAL_TARGET',
+        locale: 'en',
+        targetKey: 'static-page:contact',
+        context: expect.objectContaining({
+          localizedTargetKey: 'en:static-page:contact',
+          paths: ['contact', 'legal/contact'],
+        }),
       }),
     );
   });
@@ -166,6 +252,23 @@ function issueCodes(
   records: readonly RouteRecord[],
 ): readonly RouteValidationIssue['code'][] {
   return inspectRouteRecords(records).map((issue) => issue.code);
+}
+
+function staticPageRecord(input: {
+  readonly pageId: string;
+  readonly segments: readonly string[];
+  readonly sourceId: string;
+}): RouteRecord {
+  return {
+    area: 'static',
+    locale: 'en',
+    segments: input.segments,
+    target: {
+      kind: 'static-page',
+      pageId: input.pageId,
+    },
+    sourceId: input.sourceId,
+  };
 }
 
 function summarizeIssues(

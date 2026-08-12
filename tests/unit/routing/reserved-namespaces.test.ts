@@ -165,6 +165,28 @@ describe('routing reserved namespaces', () => {
     });
   });
 
+  it.each([
+    ['en', ['blog'], 'blog-platform'],
+    ['en', ['es'], 'i18n'],
+    ['en', ['_astro'], 'astro'],
+    ['pt', ['api'], 'api'],
+  ] as const)(
+    'rejects a static page from the reserved %s namespace owned by %s',
+    (locale, segments, reservedOwner) => {
+      const conflict = getReservedNamespaceConflict(
+        staticPageInput(locale, segments),
+      );
+
+      expect(conflict).toMatchObject({
+        code: 'RESERVED_ROOT_SEGMENT',
+        locale,
+        reservedOwner,
+        routeArea: 'static',
+        target: { kind: 'static-page', pageId: 'contact' },
+      });
+    },
+  );
+
   it('compares reserved roots case-insensitively without normalizing output', () => {
     const conflict = getReservedNamespaceConflict(
       toolInput('en', ['Blog', 'example-tool']),
@@ -246,6 +268,21 @@ function articleInput(
     target: {
       kind: 'article',
       articleId: 'what-is-json',
+    },
+  });
+}
+
+function staticPageInput(
+  locale: ReservedPathValidationInput['locale'],
+  segments: readonly string[],
+): ReservedPathValidationInput {
+  return input({
+    locale,
+    area: 'static',
+    segments,
+    target: {
+      kind: 'static-page',
+      pageId: 'contact',
     },
   });
 }

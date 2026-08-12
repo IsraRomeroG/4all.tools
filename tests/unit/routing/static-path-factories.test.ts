@@ -93,6 +93,18 @@ describe('static path factories', () => {
     ]);
   });
 
+  it('excludes nested static-page records from the root projection', () => {
+    const registry = createRouteRegistryFromRecords([
+      staticPageRecord({
+        locale: 'en',
+        segments: ['legal', 'contact'],
+        pageId: 'contact',
+      }),
+    ]);
+
+    expect(getRootCategoryStaticPathEntries(registry, 'en')).toEqual([]);
+  });
+
   it('projects root category static paths from published category content only', async () => {
     const registry = await createRouteRegistry({
       contentIndexes: await getPublishedContentIndexes(),
