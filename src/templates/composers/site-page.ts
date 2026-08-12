@@ -3,6 +3,7 @@ import { requirePublishedSitePageContent } from '@/content/queries';
 import type { Locale } from '@/i18n/types';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildSiteFooterModelIfAvailable } from '@/navigation/site-footer';
 import type { RouteRegistry } from '@/routing/registry';
 import type { SitePageModel } from '@/templates/models/site-page';
 
@@ -80,6 +81,11 @@ export async function composeSitePageModel(
     title: contentEntry.data.title,
     pageId,
     content,
+    siteFooter: buildSiteFooterModelIfAvailable({
+      locale,
+      routeRegistry: dependencies.routeRegistry,
+      messages: messages.footer,
+    }),
   };
 }
 

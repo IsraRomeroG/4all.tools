@@ -45,6 +45,9 @@ export const pt = {
     unavailable: 'Indisponível',
   },
   footer: {
+    label: 'Navegação do rodapé',
+    about: 'Sobre',
+    contact: 'Contato',
     privacy: 'Privacidade',
     terms: 'Termos',
   },

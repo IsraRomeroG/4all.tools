@@ -7,6 +7,7 @@ import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { RouteRegistry } from '@/routing/registry';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
 import { buildToolBreadcrumbs } from '@/navigation/breadcrumbs';
+import { buildSiteFooterModelIfAvailable } from '@/navigation/site-footer';
 import type {
   ToolPageModel,
   ToolPresentationDefinition,
@@ -100,6 +101,11 @@ export async function composeToolPageModel(
       editorial,
     },
     presentation,
+    siteFooter: buildSiteFooterModelIfAvailable({
+      locale,
+      routeRegistry: dependencies.routeRegistry,
+      messages: messages.footer,
+    }),
   };
 }
 

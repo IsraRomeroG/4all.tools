@@ -45,8 +45,11 @@ export const fr = {
     unavailable: 'Indisponible',
   },
   footer: {
+    label: 'Navigation du pied de page',
+    about: 'À propos',
+    contact: 'Contact',
     privacy: 'Confidentialité',
-    terms: 'Conditions',
+    terms: 'Conditions d’utilisation',
   },
   accessibility: {
     openMenu: 'Ouvrir le menu',

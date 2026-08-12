@@ -1,0 +1,19 @@
+---
+import type { SiteFooterModel } from '@/navigation/site-footer';
+
+interface Props {
+  model: SiteFooterModel;
+}
+
+const { model } = Astro.props;
+---
+
+<footer class="border-t border-slate-200 bg-white" data-site-footer>
+  <nav class="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-6 sm:px-6 lg:px-8" aria-label={model.ariaLabel}>
+    {model.links.map((link) => (
+      <a class="text-sm text-slate-700 underline underline-offset-2 hover:text-slate-950" href={link.url} data-site-footer-link={link.pageId}>
+        {link.label}
+      </a>
+    ))}
+  </nav>
+</footer>

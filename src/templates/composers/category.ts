@@ -6,6 +6,7 @@ import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { RouteRegistry } from '@/routing/registry';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
 import { buildToolCategoryBreadcrumbs } from '@/navigation/breadcrumbs';
+import { buildSiteFooterModelIfAvailable } from '@/navigation/site-footer';
 import type { ToolCategoryPageModel } from '@/templates/models/category';
 
 import {
@@ -104,6 +105,11 @@ export async function composeCategoryPageModel(
       description: contentEntry.data.description,
       editorial,
     },
+    siteFooter: buildSiteFooterModelIfAvailable({
+      locale,
+      routeRegistry: dependencies.routeRegistry,
+      messages: messages.footer,
+    }),
   };
 }
 

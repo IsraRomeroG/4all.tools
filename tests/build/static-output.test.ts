@@ -143,6 +143,7 @@ describe('static build output', () => {
       expect(html).toContain(
         `data-template-identity="${routeTargetIdentity(record.target)}"`,
       );
+      expect(html).toContain('data-site-footer');
 
       if (record.locale === 'en') {
         expect(html).not.toContain('https://4all.tools/en/');
@@ -428,6 +429,20 @@ describe('static build output', () => {
       expect(html).toContain('data-template="site-page"');
       expect(sitemapXml).not.toContain(`<loc>${canonicalUrl}</loc>`);
     }
+  });
+
+  it('renders same-locale footer links on representative public pages', async () => {
+    const englishHome = await readDistFile('index.html');
+    const spanishHome = await readDistFile('es/index.html');
+
+    for (const url of ['/about/', '/contact/', '/privacy/', '/terms/']) {
+      expect(englishHome).toContain(`href="${url}"`);
+    }
+    for (const url of ['/es/acerca-de/', '/es/contacto/', '/es/privacidad/', '/es/terminos/']) {
+      expect(spanishHome).toContain(`href="${url}"`);
+    }
+    expect(englishHome).not.toContain('/en/');
+    expect(spanishHome).not.toContain('href="/about/"');
   });
 
   it('emits the approved static robots policy', async () => {

@@ -2,6 +2,8 @@ import { getGlobalMessages } from '@/i18n/messages/registry';
 import { isLocale } from '@/i18n/guards';
 import type { Locale } from '@/i18n/types';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildSiteFooterModel } from '@/navigation/site-footer';
+import type { RouteRegistry } from '@/routing/registry';
 import type { HomePageModel } from '@/templates/models/home';
 
 import { UnsupportedLocaleError } from './errors';
@@ -28,6 +30,9 @@ const HOME_SEO = {
 
 export async function composeHomePageModel(
   locale: Locale,
+  dependencies?: {
+    readonly routeRegistry: Pick<RouteRegistry, 'getCanonical'>;
+  },
 ): Promise<HomePageModel> {
   if (!isLocale(locale)) {
     throw new UnsupportedLocaleError(locale);
@@ -54,5 +59,14 @@ export async function composeHomePageModel(
     title: homeSeo.title,
     description: homeSeo.description,
     messages,
+    ...(dependencies === undefined
+      ? {}
+      : {
+          siteFooter: buildSiteFooterModel({
+            locale,
+            routeRegistry: dependencies.routeRegistry,
+            messages: messages.footer,
+          }),
+        }),
   };
 }

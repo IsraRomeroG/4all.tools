@@ -43,6 +43,9 @@ export const en = {
     unavailable: 'Not available',
   },
   footer: {
+    label: 'Footer navigation',
+    about: 'About',
+    contact: 'Contact',
     privacy: 'Privacy',
     terms: 'Terms',
   },

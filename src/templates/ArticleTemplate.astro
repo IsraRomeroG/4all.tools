@@ -3,6 +3,7 @@ import ArticleLayout from '@/layouts/ArticleLayout.astro';
 import Breadcrumbs from '@/components/navigation/Breadcrumbs.astro';
 import LanguageSwitcher from '@/components/navigation/LanguageSwitcher.astro';
 import SeoHead from '@/components/seo/SeoHead.astro';
+import SiteFooter from '@/components/navigation/SiteFooter.astro';
 import type { ArticlePageModel } from './models/blog';
 
 interface Props {
@@ -19,6 +20,7 @@ const EditorialContent = page.content.editorial.Content;
     <SeoHead seo={page.seo} />
     <slot name="head" />
   </Fragment>
+  {page.siteFooter && <SiteFooter slot="site-footer" model={page.siteFooter} />}
 
   <Fragment slot="article-header">
     <div class="mb-2"><Breadcrumbs model={page.breadcrumbs} /></div>

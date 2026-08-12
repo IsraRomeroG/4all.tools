@@ -8,6 +8,7 @@ import type { Locale } from '@/i18n/types';
 import type { RouteRecord } from '@/routing/types';
 import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
 import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
+import type { SiteFooterModel } from '@/navigation/site-footer';
 import type { LocalizedRouteCluster, SeoPageModel } from '@/seo';
 
 export interface PageDocumentModel {
@@ -41,6 +42,7 @@ export interface HomePageModel extends PageDocumentModel {
   readonly seo: SeoPageModel;
   readonly languageSwitcher: LanguageSwitcherModel;
   readonly messages: GlobalMessages;
+  readonly siteFooter?: SiteFooterModel | undefined;
 }
 
 export interface ToolPageModel extends PageDocumentModel {
@@ -57,6 +59,7 @@ export interface ToolPageModel extends PageDocumentModel {
     readonly editorial: RenderedContentModel;
   };
   readonly presentation: ToolPresentationDefinition;
+  readonly siteFooter?: SiteFooterModel | undefined;
 }
 
 export interface ToolCategoryPageModel extends PageDocumentModel {
@@ -76,6 +79,7 @@ export interface ToolCategoryPageModel extends PageDocumentModel {
     readonly description: string;
     readonly editorial: RenderedContentModel;
   };
+  readonly siteFooter?: SiteFooterModel | undefined;
 }
 
 export type {

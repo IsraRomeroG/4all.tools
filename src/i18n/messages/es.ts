@@ -45,6 +45,9 @@ export const es = {
     unavailable: 'No disponible',
   },
   footer: {
+    label: 'Navegación del pie de página',
+    about: 'Acerca de',
+    contact: 'Contacto',
     privacy: 'Privacidad',
     terms: 'Términos',
   },

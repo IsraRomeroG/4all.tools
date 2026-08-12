@@ -4,6 +4,7 @@ import type { GlobalMessages } from '@/i18n/messages/types';
 import type { Locale } from '@/i18n/types';
 import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
 import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
+import type { SiteFooterModel } from '@/navigation/site-footer';
 import type { RouteRecord } from '@/routing/types';
 import type { LocalizedRouteCluster, SeoPageModel } from '@/seo';
 
@@ -56,6 +57,7 @@ export interface BlogIndexPageModel {
   readonly description: string;
   readonly articles: readonly ArticleSummaryModel[];
   readonly categories: readonly BlogCategorySummaryModel[];
+  readonly siteFooter?: SiteFooterModel | undefined;
 }
 
 export interface BlogCategoryPageModel {
@@ -75,6 +77,7 @@ export interface BlogCategoryPageModel {
   };
   readonly articles: readonly ArticleSummaryModel[];
   readonly childCategories: readonly BlogCategorySummaryModel[];
+  readonly siteFooter?: SiteFooterModel | undefined;
 }
 
 export interface ArticlePageModel {
@@ -97,4 +100,5 @@ export interface ArticlePageModel {
     readonly updatedAt?: ArticleDateModel;
     readonly primaryCategory: ArticleCategoryReferenceModel;
   };
+  readonly siteFooter?: SiteFooterModel | undefined;
 }

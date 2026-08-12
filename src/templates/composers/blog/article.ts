@@ -7,6 +7,7 @@ import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { Locale } from '@/i18n/types';
 import { buildArticleBreadcrumbs } from '@/navigation/breadcrumbs';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildSiteFooterModelIfAvailable } from '@/navigation/site-footer';
 import type { RouteRegistry } from '@/routing/registry';
 import { buildLocalizedPath } from '@/routing/builders';
 import { composeSeoPageModel } from '@/seo';
@@ -141,6 +142,11 @@ export async function composeArticlePageModel(
       ...(updatedAt === undefined ? {} : { updatedAt }),
       primaryCategory: primaryCategoryReference,
     },
+    siteFooter: buildSiteFooterModelIfAvailable({
+      locale,
+      routeRegistry: dependencies.routeRegistry,
+      messages: messages.footer,
+    }),
   };
 }
 

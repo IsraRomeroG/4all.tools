@@ -1,9 +1,12 @@
 ---
 import HomeTemplate from '@/templates/HomeTemplate.astro';
 import { composeHomePageModel } from '@/templates/composers/home';
+import { getDeliveryRouteRegistry } from '@/templates/composers';
 
 const locale = 'es' as const;
-const page = await composeHomePageModel(locale);
+const page = await composeHomePageModel(locale, {
+  routeRegistry: await getDeliveryRouteRegistry(),
+});
 ---
 
 <HomeTemplate page={page} />

@@ -3,6 +3,7 @@ import { getToolModule } from '@/features/tools/registry';
 import LanguageSwitcher from '@/components/navigation/LanguageSwitcher.astro';
 import Breadcrumbs from '@/components/navigation/Breadcrumbs.astro';
 import SeoHead from '@/components/seo/SeoHead.astro';
+import SiteFooter from '@/components/navigation/SiteFooter.astro';
 import ToolLayout from '@/layouts/ToolLayout.astro';
 import type { ToolPageModel } from './models/tool';
 
@@ -24,6 +25,7 @@ const toolInstanceId = `tool-${page.toolId}-${page.locale}`;
     <SeoHead seo={page.seo} />
     <slot name="head" />
   </Fragment>
+  {page.siteFooter && <SiteFooter slot="site-footer" model={page.siteFooter} />}
 
   <Fragment slot="page-header">
     <Breadcrumbs model={page.breadcrumbs} />

@@ -7,6 +7,7 @@ import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { Locale } from '@/i18n/types';
 import { buildBlogIndexBreadcrumbs } from '@/navigation/breadcrumbs';
 import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildSiteFooterModelIfAvailable } from '@/navigation/site-footer';
 import type { RouteRegistry } from '@/routing/registry';
 import { composeSeoPageModel } from '@/seo';
 import type { BlogIndexPageModel } from '@/templates/models/blog';
@@ -73,5 +74,10 @@ export async function composeBlogIndexPageModel(
     description: content.description,
     articles: articleSummaries,
     categories,
+    siteFooter: buildSiteFooterModelIfAvailable({
+      locale,
+      routeRegistry: dependencies.routeRegistry,
+      messages: messages.footer,
+    }),
   };
 }
