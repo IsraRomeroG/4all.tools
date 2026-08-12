@@ -403,6 +403,33 @@ describe('static build output', () => {
     expect(sitemapXml).not.toContain('https://4all.tools/en/');
   });
 
+  it('keeps localized Terms and Privacy public but out of the indexable sitemap', async () => {
+    const legalPages = [
+      ['privacy/index.html', 'https://4all.tools/privacy/'],
+      ['terms/index.html', 'https://4all.tools/terms/'],
+      ['es/privacidad/index.html', 'https://4all.tools/es/privacidad/'],
+      ['es/terminos/index.html', 'https://4all.tools/es/terminos/'],
+      ['pt/privacidade/index.html', 'https://4all.tools/pt/privacidade/'],
+      ['pt/termos/index.html', 'https://4all.tools/pt/termos/'],
+      ['fr/confidentialite/index.html', 'https://4all.tools/fr/confidentialite/'],
+      ['fr/conditions-utilisation/index.html', 'https://4all.tools/fr/conditions-utilisation/'],
+    ] as const;
+    const distFiles = await listDistFiles(DIST_ROOT);
+    const sitemapFiles = distFiles.filter((file) => /^sitemap-\d+\.xml$/.test(file));
+    const sitemapXml = (
+      await Promise.all(sitemapFiles.map((file) => readDistFile(file)))
+    ).join('\n');
+
+    for (const [relativeFile, canonicalUrl] of legalPages) {
+      const html = await readDistFile(relativeFile);
+
+      expect(html).toContain('<meta name="robots" content="noindex,follow">');
+      expect(html).toContain(`<link rel="canonical" href="${canonicalUrl}">`);
+      expect(html).toContain('data-template="site-page"');
+      expect(sitemapXml).not.toContain(`<loc>${canonicalUrl}</loc>`);
+    }
+  });
+
   it('emits the approved static robots policy', async () => {
     await expect(readDistFile('robots.txt')).resolves.toBe(
       'User-agent: *\nAllow: /\nSitemap: https://4all.tools/sitemap-index.xml\n',

@@ -167,6 +167,28 @@ describe('static path factories', () => {
           },
         },
       },
+      {
+        params: {
+          root: 'privacy',
+        },
+        props: {
+          routeTarget: {
+            kind: 'site-page',
+            pageId: 'privacy',
+          },
+        },
+      },
+      {
+        params: {
+          root: 'terms',
+        },
+        props: {
+          routeTarget: {
+            kind: 'site-page',
+            pageId: 'terms',
+          },
+        },
+      },
     ]);
     expect(
       registry.getByTarget({

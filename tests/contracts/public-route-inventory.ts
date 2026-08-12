@@ -56,6 +56,18 @@ export const PUBLIC_ROUTE_INVENTORY = [
     target: { kind: 'site-page', pageId: 'contact' },
   },
   {
+    area: 'site',
+    locale: 'en',
+    segments: ['privacy'],
+    target: { kind: 'site-page', pageId: 'privacy' },
+  },
+  {
+    area: 'site',
+    locale: 'en',
+    segments: ['terms'],
+    target: { kind: 'site-page', pageId: 'terms' },
+  },
+  {
     area: 'tools',
     locale: 'es',
     segments: ['desarrollo'],
@@ -98,6 +110,18 @@ export const PUBLIC_ROUTE_INVENTORY = [
     target: { kind: 'site-page', pageId: 'contact' },
   },
   {
+    area: 'site',
+    locale: 'es',
+    segments: ['privacidad'],
+    target: { kind: 'site-page', pageId: 'privacy' },
+  },
+  {
+    area: 'site',
+    locale: 'es',
+    segments: ['terminos'],
+    target: { kind: 'site-page', pageId: 'terms' },
+  },
+  {
     area: 'tools',
     locale: 'pt',
     segments: ['desenvolvedor', 'validador-json'],
@@ -130,8 +154,20 @@ export const PUBLIC_ROUTE_INVENTORY = [
   {
     area: 'site',
     locale: 'pt',
+    segments: ['privacidade'],
+    target: { kind: 'site-page', pageId: 'privacy' },
+  },
+  {
+    area: 'site',
+    locale: 'pt',
     segments: ['sobre'],
     target: { kind: 'site-page', pageId: 'about' },
+  },
+  {
+    area: 'site',
+    locale: 'pt',
+    segments: ['termos'],
+    target: { kind: 'site-page', pageId: 'terms' },
   },
   {
     area: 'tools',
@@ -162,6 +198,18 @@ export const PUBLIC_ROUTE_INVENTORY = [
     locale: 'fr',
     segments: ['a-propos'],
     target: { kind: 'site-page', pageId: 'about' },
+  },
+  {
+    area: 'site',
+    locale: 'fr',
+    segments: ['conditions-utilisation'],
+    target: { kind: 'site-page', pageId: 'terms' },
+  },
+  {
+    area: 'site',
+    locale: 'fr',
+    segments: ['confidentialite'],
+    target: { kind: 'site-page', pageId: 'privacy' },
   },
   {
     area: 'site',
