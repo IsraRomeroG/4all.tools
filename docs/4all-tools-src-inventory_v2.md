@@ -35,9 +35,9 @@
 
 ## Inventario por área
 
-### P17: infraestructura de páginas editoriales estáticas
+### P17: infraestructura de site pages editoriales
 
-`staticPages` está registrada en `src/content.config.ts`, con schema estricto, consultas exactas e índice publicado compartido. `StaticPageId`, `static-page` RouteTarget, registros `area: static`, proyección root, `StaticPageModel`, composer y `StaticPageTemplate.astro` están activos internamente. No hay entradas Markdown productivas, rutas nuevas en `PUBLIC_ROUTE_INVENTORY` ni reglas `.htaccess`.
+`sitePages` está registrada en `src/content.config.ts`, con schema estricto, consultas exactas e índice publicado compartido. `SitePageId`, `site-page` RouteTarget, registros `area: site`, proyección `[root]`, `SitePageModel`, composer y `SitePageTemplate.astro` están activos internamente. La admisión se limita a documentos editoriales independientes, no taxonómicos, principalmente Markdown y sin una arquitectura de feature propia. `src/content/site/` conserva copy singleton sin publicar rutas, mientras `src/content/site-pages/` contiene documentos localizados que pueden generar RouteRecords. No hay entradas Markdown productivas, rutas nuevas en `PUBLIC_ROUTE_INVENTORY` ni reglas `.htaccess`.
 
 ### Configuración, contenido y estilos globales
 

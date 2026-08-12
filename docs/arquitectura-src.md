@@ -88,6 +88,7 @@ Es la frontera editorial del proyecto. Contiene los archivos Markdown, los schem
 - `content/schemas/`: schemas Zod para validar frontmatter, publicación, IDs, locales, relaciones y SEO.
 - `content/queries/`: consultas tipadas, índices y errores de contenido.
 - `content/site/`: contenido editorial de páginas globales, como el índice del blog.
+- `content/site-pages/`: documentos Markdown localizados que pueden poseer una ruta pública al publicarse.
 
 ### `src/content.config.ts`
 
@@ -96,15 +97,18 @@ Aunque está en la raíz de `src`, funciona como punto de registro de Astro Cont
 - `tools`;
 - `toolCategories`;
 - `blog`;
-- `blogCategories`.
+- `blogCategories`;
+- `sitePages`.
 
 Las consultas no deben asumir que existe una traducción alternativa. Si falta contenido en un idioma, el resultado debe permanecer observable como ausente o producir un error explícito cuando sea obligatorio.
 
-## Static editorial pages (P17)
+## Site pages (P17-C02)
 
-The `staticPages` collection is registered as an internal publishing family with a strict contract: stable `pageId`, locale, one-segment localized `routeSlug`, publication status, title, SEO metadata, and Markdown body. Published entries are indexed in the shared exact-match snapshot; missing locales do not fall back to another locale.
+The `sitePages` collection is registered as an internal publishing family with a strict contract: stable `SitePageId`, locale, one-segment localized `routeSlug`, publication status, title, SEO metadata, and Markdown body. Published entries are indexed in the shared exact-match snapshot; missing locales do not fall back to another locale.
 
-The route registry derives `area: static` records with `target.kind: static-page`, and the existing root one-segment projection dispatches them alongside root tool categories. `StaticPageModel`, `composeStaticPageModel`, and `StaticPageTemplate.astro` prepare and render the page without collection or URL discovery in the template. P17 does not publish a real page or add a public URL.
+The route registry derives `area: site` records with `target.kind: site-page`, and the neutral `[root]` one-segment projection dispatches them alongside root tool categories. `SitePageModel`, `composeSitePageModel`, and `SitePageTemplate.astro` prepare and render the page without collection or URL discovery in the template. P17 does not publish a real page or add a public URL.
+
+A document belongs in `sitePages` only when it is an independent site-owned editorial document, is not an existing tool/taxonomy/blog entity, shares one stable `SitePageId` across translations, needs at most one canonical root route per locale, is primarily Markdown, and does not need a dedicated feature architecture. Shared singleton copy remains in `content/site/`; it has no `SitePageId`, `routeSlug`, or automatic RouteRecord. The same item must not be represented in both locations.
 
 ## `src/domain/`
 

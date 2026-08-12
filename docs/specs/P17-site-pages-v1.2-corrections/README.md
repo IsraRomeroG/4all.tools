@@ -7,6 +7,9 @@
 > **Risk:** Medium  
 > **Nature:** Semantic alignment / internal refactor  
 > **Public route change:** None
+> **Status:** Complete
+> **Amends:** P17-C01
+> **Current terminology:** `site-page`
 
 ## Purpose
 

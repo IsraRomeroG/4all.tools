@@ -2,11 +2,11 @@
 
 4all.tools es un sitio web estático multilingüe construido con Astro. El proyecto combina herramientas web ejecutables en el navegador, contenido editorial, rutas localizadas y una arquitectura orientada a tipos.
 
-## Static editorial pages
+## Site pages
 
-The project has reusable infrastructure for localized static editorial pages through the `staticPages` collection. Each published translation owns its stable `pageId` and localized flat `routeSlug`; English remains unprefixed, and missing translations stay unavailable. The shared root adapter renders `StaticPageTemplate` with prepared title, Markdown, SEO, and language-switcher models.
+The project has reusable infrastructure for localized site-owned editorial pages through the `sitePages` collection. Each published translation owns one stable `SitePageId` and localized flat `routeSlug`; English remains unprefixed, and missing translations stay unavailable. The shared neutral `[root]` adapter renders `SitePageTemplate.astro` with prepared title, Markdown, SEO, and language-switcher models.
 
-P17 intentionally publishes no placeholder page, changes no public route inventory, and adds no redirects. A future real page must add published Markdown, its localized URL matrix, inventory/build coverage, and any migration decision separately.
+`src/content/site/` contains code-owned singleton/shared copy and does not self-publish routes. `src/content/site-pages/` contains localized Markdown documents whose published entries generate `area: site` + `target.kind: site-page` RouteRecords. A site page is appropriate for independent editorial documents such as Contact, Privacy, Terms, or usually About; it is not appropriate for tools, taxonomy nodes, blog articles, shared copy, or feature workflows that need dedicated architecture. P17 intentionally publishes no placeholder page, changes no public route inventory, and adds no redirects. A future real page must add published Markdown, its localized URL matrix, inventory/build coverage, and any migration decision separately.
 
 ## 1. Página principal
 
