@@ -15,7 +15,7 @@ src/
 ├── features/     Funcionalidades concretas, como JSON Validator
 ├── i18n/         Idiomas y mensajes globales
 ├── layouts/      Estructura HTML común de las páginas
-├── navigation/   Modelos de breadcrumbs y selector de idioma
+├── navigation/   Modelos de breadcrumbs, selector de idioma y header global
 ├── pages/        Entradas públicas y adaptadores de rutas Astro
 ├── routing/      Definición, construcción y validación de URLs
 ├── seo/          Modelos y reglas de posicionamiento
@@ -62,7 +62,7 @@ Contiene componentes Astro reutilizables que aparecen dentro de distintas págin
 
 ### Subcarpetas
 
-- `components/navigation/`: componentes visuales de navegación, como breadcrumbs y selector de idioma.
+- `components/navigation/`: componentes visuales de navegación, como breadcrumbs, selector de idioma, header global y footer.
 - `components/seo/`: componente `SeoHead.astro`, responsable de imprimir los metadatos SEO ya resueltos.
 
 Esta carpeta no debe contener reglas de dominio, consultas directas de contenido ni lógica de routing. Recibe modelos preparados y se concentra en renderizar la interfaz.
@@ -71,7 +71,7 @@ Esta carpeta no debe contener reglas de dominio, consultas directas de contenido
 
 Centraliza configuración global que no pertenece a una funcionalidad concreta.
 
-- `config/site.ts` define la URL canónica del sitio y la política de barra final.
+- `config/site.ts` define el nombre del sitio, la URL canónica y la política de barra final.
 
 Astro consume esta configuración desde `astro.config.ts`, y el routing la utiliza para construir URLs coherentes.
 
@@ -109,6 +109,14 @@ The `sitePages` collection is registered as an internal publishing family with a
 The route registry derives `area: site` records with `target.kind: site-page`, and the neutral `[root]` one-segment projection dispatches them alongside root tool categories. `SitePageModel`, `composeSitePageModel`, and `SitePageTemplate.astro` prepare and render the page without collection or URL discovery in the template. P18 publishes `about`, `contact`, `privacy`, and `terms` in `en`, `es`, `pt`, and `fr`, for 16 production routes and 34 total `RouteRecord` entries. About and Contact are indexable; Privacy and Terms remain public `noindex` pages and are excluded from the indexable sitemap.
 
 Global footer navigation is prepared in `src/navigation/site-footer/` from the same `RouteRegistry` and rendered by `src/components/navigation/SiteFooter.astro` through the existing `BaseLayout` slot. It provides localized links to all four site-page identities without a hardcoded URL catalog. Contact is intentionally email-only at the declared `hello@4all.tools` destination; P18 adds no form, backend, API, CAPTCHA, or legal schema fields without consumers.
+
+## Global site header (P19)
+
+P19 completes the shared header boundary for the seven normal public page families: home, tool, tool-category, blog-index, blog-category, article and site-page. Composers prepare a required `siteHeader: SiteHeaderModel`; the templates pass it through the existing `BaseLayout` `site-header` slot to `SiteHeader.astro`. Templates do not render `LanguageSwitcher.astro` directly.
+
+`src/navigation/site-header/` resolves Home with `buildLocalizedPath({ segments: [] })` and Blog with `BLOG_ROUTE_ROOT_SEGMENT` plus the same builder. It receives the already-computed `LocalizedRouteCluster` only to compose the existing language-switcher model, so `SiteHeader.astro` remains presentation-only. The primary navigation intentionally contains only Brand/Home and Blog. Active section styling is separate from exact-document `aria-current="page"` state: Blog descendants are visually active without marking the Blog index link current.
+
+`SiteHeader.astro` and the embedded `LanguageSwitcher.astro` use one static, wrapping DOM structure. The header has no hamburger, client-side menu state, hydration, sticky positioning or route discovery. English remains unprefixed and the public route inventory remains 34 `RouteRecord` entries.
 
 A document belongs in `sitePages` only when it is an independent site-owned editorial document, is not an existing tool/taxonomy/blog entity, shares one stable `SitePageId` across translations, needs at most one canonical root route per locale, is primarily Markdown, and does not need a dedicated feature architecture. Shared singleton copy remains in `content/site/`; it has no `SitePageId`, `routeSlug`, or automatic RouteRecord. The same item must not be represented in both locations.
 
@@ -190,6 +198,7 @@ Contiene la lógica que prepara modelos de navegación antes de que los componen
 
 - `navigation/breadcrumbs/`: tipos, errores y builders de breadcrumbs para herramientas, categorías y artículos del blog.
 - `navigation/language-switcher/`: tipos y builder del modelo del selector de idioma.
+- `navigation/site-header/`: contrato y builder del modelo del header global, con resolución localizada de Home y Blog.
 
 Esta separación permite que las reglas de navegación se prueben con TypeScript y Vitest sin depender directamente del HTML.
 

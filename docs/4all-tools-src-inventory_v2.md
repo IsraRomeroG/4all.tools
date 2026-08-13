@@ -3,14 +3,14 @@
 **Repositorio:** `IsraRomeroG/4all.tools`  
 **Rama revisada:** `main`  
 **Fecha de revisión:** 12 de agosto de 2026
-**Total de archivos dentro de `src/`:** 203
+**Total de archivos dentro de `src/`:** 207
 
 ## Conclusiones principales
 
 1. **El vertical slice del JSON Validator está activo de extremo a extremo.** Incluye definición de dominio, taxonomía, registro tipado, rutas localizadas, contenido editorial, UI, lógica cliente, mensajes, SEO y renderizado.
 2. **El blog está conectado al flujo público de entrega.** Cuenta con contenido Markdown localizado, schemas, consultas indexadas, taxonomía independiente, categorías publicadas derivadas del contenido, artículos derivados de `routeSlug`, modelos de página, composers, templates y adaptadores Astro para los cuatro idiomas.
 3. **La categoría pública de herramientas activa es `developer` en inglés.** Los adaptadores de categorías localizadas existen y están conectados, pero no generan una categoría raíz de herramientas en español, portugués o francés porque todavía no existe contenido localizado publicado para esa categoría.
-4. **La infraestructura SEO y de navegación está activa.** `src/components/` ya contiene componentes de SEO y navegación; `src/services/` y `src/server/` permanecen como límites reservados para futuras integraciones y lógica de servidor.
+4. **La infraestructura SEO y de navegación está activa.** `src/components/` ya contiene componentes de SEO y navegación, incluido el header global P19; `src/services/` y `src/server/` permanecen como límites reservados para futuras integraciones y lógica de servidor.
 5. **El sitio conserva una política estricta de identidad y traducción.** Las entidades usan IDs estables separados de sus slugs localizados, y el contenido faltante no se sustituye silenciosamente por otro idioma.
 
 ## Criterio de estado
@@ -54,10 +54,12 @@ P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `t
 | Archivo o grupo | Descripción | Estado |
 |---|---|---|
 | `src/components/navigation/Breadcrumbs.astro` | Renderiza breadcrumbs semánticos y accesibles. | Activo |
-| `src/components/navigation/LanguageSwitcher.astro` | Renderiza el selector de idioma con estados disponibles y no disponibles. | Activo |
+| `src/components/navigation/LanguageSwitcher.astro` | Renderiza el selector de idioma embebido dentro del header, con estados disponibles y no disponibles. | Activo |
+| `src/components/navigation/SiteHeader.astro` | Renderiza el header global con Brand/Home, Blog y el selector de idioma; recibe un modelo preparado y no descubre rutas. | Activo |
 | `src/components/seo/SeoHead.astro` | Renderiza canonical, alternates, `x-default`, Open Graph y directivas de indexabilidad. | Activo |
 | `src/navigation/breadcrumbs/` | Modelos y builders de breadcrumbs para herramientas, categorías y blog. | Activo interno |
 | `src/navigation/language-switcher/` | Modelo tipado y builder del selector de idioma. | Activo interno |
+| `src/navigation/site-header/` | Modelo tipado y builder del header; deriva Home y Blog con los builders localizados existentes y conserva el cluster sólo como entrada de composición. | Activo interno |
 | `src/navigation/site-footer/` | Modelo y builder de enlaces de footer resueltos desde `RouteRegistry`, con etiquetas localizadas. | Activo interno |
 | `src/components/navigation/SiteFooter.astro` | Presentación semántica del footer global a través del slot `site-footer`; no descubre rutas ni contenido. | Activo |
 | `src/seo/` | Contratos, composición, disponibilidad, indexabilidad y validación de clusters SEO localizados. | Activo interno |
@@ -187,14 +189,14 @@ P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `t
 | `src/templates/BlogIndexTemplate.astro` | Renderiza el índice del blog. | Activo |
 | `src/templates/BlogCategoryTemplate.astro` | Renderiza categorías del blog y sus artículos. | Activo |
 | `src/templates/ArticleTemplate.astro` | Renderiza artículos del blog. | Activo |
-| `src/templates/SitePageTemplate.astro` | Renderiza site pages con título, Markdown, SEO y selector de idioma preparados. | Activo interno |
+| `src/templates/SitePageTemplate.astro` | Renderiza site pages con título, Markdown, SEO y `SiteHeader` preparados. | Activo interno |
 | `src/templates/models/site-page.ts` | Define `SitePageModel`, el modelo de entrega consumer-facing para site pages. | Activo interno |
 | `src/templates/models/` | Modelos tipados para portada, herramientas, categorías, blog, site pages y datos compartidos. | Activo |
 | `src/templates/composers/home.ts` | Composición de la portada. | Activo |
 | `src/templates/composers/category.ts` | Composición de categorías de herramientas. | Activo |
 | `src/templates/composers/tool.ts` | Composición y validación del modelo de herramienta. | Activo |
 | `src/templates/composers/blog/` | Catálogos, fechas, categorías, artículos, índice y adaptadores del blog. | Activo |
-| `src/templates/composers/site-page.ts` | Compone `SitePageModel` desde contenido publicado, `RouteRegistry`, SEO y selector de idioma. | Activo interno |
+| `src/templates/composers/site-page.ts` | Compone `SitePageModel` desde contenido publicado, `RouteRegistry`, SEO y `SiteHeaderModel`; conserva el cluster localizado como entrada interna. | Activo interno |
 | `src/templates/composers/delivery-route-registry.ts` | Registro de entrega compartido por build y runtime de desarrollo. | Activo |
 | `src/templates/composers/route-adapters.ts` | Convierte destinos de routing en modelos de página. | Activo |
 | `src/templates/composers/rendered-content.ts` | Adapta contenido Astro renderizable. | Activo |

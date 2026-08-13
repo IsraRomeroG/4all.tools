@@ -4,7 +4,7 @@
 
 ## Site pages
 
-The project has reusable infrastructure for localized site-owned editorial pages through the `sitePages` collection. Each published translation owns one stable `SitePageId` and localized flat `routeSlug`; English remains unprefixed, and missing translations stay unavailable. The shared neutral `[root]` adapter renders `SitePageTemplate.astro` with prepared title, Markdown, SEO, and language-switcher models.
+The project has reusable infrastructure for localized site-owned editorial pages through the `sitePages` collection. Each published translation owns one stable `SitePageId` and localized flat `routeSlug`; English remains unprefixed, and missing translations stay unavailable. The shared neutral `[root]` adapter renders `SitePageTemplate.astro` with prepared title, Markdown, SEO, and `SiteHeaderModel` data.
 
 `src/content/site/` contains code-owned singleton/shared copy and does not self-publish routes. `src/content/site-pages/` contains the 16 localized Markdown documents published by P18: `about`, `contact`, `privacy`, and `terms` in `en`, `es`, `pt`, and `fr`. Their `area: site` + `target.kind: site-page` RouteRecords are derived by the shared `RouteRegistry`. About and Contact are indexable; Privacy and Terms are public `noindex` pages and are not emitted as indexable sitemap URLs. The global footer is presentation-only and receives localized same-locale links from a model prepared through `RouteRegistry`. Contact intentionally uses the declared `hello@4all.tools` email destination and has no contact form or backend.
 
@@ -179,9 +179,11 @@ La interfaz incluye:
 - navegación estática entre variantes localizadas;
 - landmarks HTML como `main` y navegación de breadcrumbs.
 
+P19 añade un header global estático a las siete familias públicas normales. `SiteHeader.astro` contiene Brand/Home, Blog y el `LanguageSwitcher` embebido. Home y Blog se localizan mediante los builders existentes (`/`, `/es/`, `/pt/`, `/fr/` y sus equivalentes `/blog/`), sin inventar rutas ni entradas adicionales en la navegación primaria. El header usa `flex-wrap` para anchos estrechos, mantiene un único árbol DOM y no incorpora hamburger, JavaScript ni hidratación. La actividad visual de Blog puede mantenerse en categorías y artículos, pero `aria-current="page"` sólo aparece en el destino exacto.
+
 Los breadcrumbs enlazan únicamente categorías con rutas públicas explícitas; los nodos meramente clasificatorios se muestran como texto.
 
-Código principal: `src/components/navigation/` y `src/templates/`.
+Código principal: `src/components/navigation/SiteHeader.astro`, `src/components/navigation/LanguageSwitcher.astro`, `src/navigation/site-header/` y `src/templates/`.
 
 ## 11. Layouts y templates reutilizables
 
@@ -196,7 +198,7 @@ El renderizado se organiza mediante layouts y templates compartidos:
 - `ArticleTemplate`: artículos;
 - `SitePageTemplate`: páginas editoriales independientes del sitio.
 
-Los composers convierten identidad, contenido, routing y SEO en modelos preparados para esos templates.
+Los composers convierten identidad, contenido, routing y SEO en modelos preparados para esos templates. Todos los modelos de entrega normales incluyen `siteHeader`; el estado de presentación del idioma ya no existe como propiedad superior duplicada.
 
 ## 12. Verificación automatizada
 

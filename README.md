@@ -4,7 +4,7 @@ Astro static site for localized web tools.
 
 ## Project Status
 
-P00-P18 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, validation/test guardrail slimming, the single tool registry, content-owned route publication, simplified composers, localized site-page publication, global footer navigation, selective runtime immutability, and scalable verification exist in source.
+P00-P19 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, validation/test guardrail slimming, the single tool registry, content-owned route publication, simplified composers, localized site-page publication, global footer navigation, the global responsive site header, selective runtime immutability, and scalable verification exist in source.
 
 ## Canonical JSON Validator Routes
 
@@ -85,6 +85,8 @@ Published content queries must not silently fall back to another locale. Missing
 Production and static-build route composition shares the same memoized published-content snapshot used by content query APIs. Development route-registry access reconstructs from the current content snapshot so newly published localized content can affect route availability without a process restart. Page composers consume stable authorities directly and expose only the route registry input that varies at page delivery time.
 
 Site pages use the `sitePages` collection and the same exact published-content snapshot, route registry, SEO composition, language switcher, and neutral `[root]` one-segment adapter as the other page families. P18 publishes the stable identities `about`, `contact`, `privacy`, and `terms` in all four supported locales (16 Markdown entries). English remains unprefixed; localized route slugs are `/es/acerca-de/`, `/pt/sobre/`, and `/fr/a-propos/` for About, with equivalent Contact, Privacy, and Terms routes. About and Contact are indexable; Privacy and Terms are public but `noindex` and omitted from the indexable sitemap. `src/content/site/` remains reserved for code-owned singleton/shared copy, while `src/content/site-pages/` owns localized route-bearing Markdown. The shared `SiteFooter` presentation receives a prepared model whose links are resolved from `RouteRegistry`; no contact form, backend, API, or second sitemap inventory was introduced.
+
+P19 adds the global `SiteHeader.astro` presentation boundary for every normal public page. Its prepared `SiteHeaderModel` contains only the localized brand/Home link, the localized Blog index link, and the existing `LanguageSwitcher` model. Home and Blog URLs use the existing localized path builders; no new routes or parallel URL catalog are introduced. The header is responsive through static flex wrapping and has no hamburger, client state, or hydration. The public `RouteRecord` inventory remains 34 records, including 16 site-page records.
 
 Verification combines generic route/build invariants, a small set of home/category/blog/client-tool golden pages, and feature-specific behavior tests. Published locales receive generic render smoke coverage without duplicating identical interaction scenarios per locale.
 

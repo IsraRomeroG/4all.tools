@@ -2,7 +2,7 @@
 
 > **Package:** `P19-global-site-header-v1.1`  
 > **Phase:** P19  
-> **Status:** Ready  
+> **Status:** Complete  
 > **Baseline:** `74c12ade66801e5a92de48a659460cab8ab9302c`  
 > **Depends on:** P18 Complete
 
