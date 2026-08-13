@@ -148,6 +148,7 @@ describe('static build output', () => {
         `data-template-identity="${routeTargetIdentity(record.target)}"`,
       );
       expect(html).toContain('data-site-footer');
+      expectGlobalHeader(html, record.locale);
 
       if (record.locale === 'en') {
         expect(html).not.toContain('https://4all.tools/en/');
@@ -190,6 +191,7 @@ describe('static build output', () => {
       const escapedDescription = escapeExpectedHtml(expected.description);
 
       expect(html).toContain(`<html lang="${expected.htmlLang}"`);
+      expectGlobalHeader(html, expected.locale, 'home');
       expect(html).toContain('<title>4all.tools</title>');
       expect(html).toContain(
         `<meta name="description" content="${escapedDescription}">`,
@@ -228,12 +230,14 @@ describe('static build output', () => {
     const html = await readDistFile('index.html');
 
     expect(html).toContain('data-template="home"');
+    expectGlobalHeader(html, 'en', 'home');
   });
 
   it('keeps the English client-tool archetype golden output', async () => {
       const html = await readDistFile('developer/json-validator/index.html');
 
       expect(html).toContain('<html lang="en"');
+      expectGlobalHeader(html, 'en', 'other');
       expect(html).toContain('<title>JSON Validator - Validate JSON Online</title>');
       expect(countMatches(html, /<title>/g)).toBe(1);
       const escapedDescription = escapeExpectedHtml(
@@ -292,6 +296,7 @@ describe('static build output', () => {
       const html = await readDistFile(relativeFile);
 
       expect(html).toContain(`<html lang="${locale}"`);
+      expectGlobalHeader(html, locale, 'blog-index');
       expect(html).toContain(`<title>${BLOG_INDEX_CONTENT[locale].title}</title>`);
       expect(html).toContain(
         `<meta name="description" content="${escapeExpectedHtml(BLOG_INDEX_CONTENT[locale].description)}">`,
@@ -316,6 +321,7 @@ describe('static build output', () => {
     const html = await readDistFile(expected.relativeFile);
 
     expect(html).toContain(`<html lang="${expected.htmlLang}"`);
+    expectGlobalHeader(html, expected.locale, 'blog-descendant');
     expect(html).toContain(`<title>${expected.title}</title>`);
     expect(html).toContain('<meta name="robots" content="index,follow">');
     expect(html).toContain(
@@ -339,6 +345,7 @@ describe('static build output', () => {
     const html = await readDistFile(expected.relativeFile);
 
     expect(html).toContain(`<html lang="${expected.htmlLang}"`);
+    expectGlobalHeader(html, expected.locale, 'blog-descendant');
       expect(html).toContain(`<title>${expected.title}</title>`);
       expect(html).toContain('<h1');
       expect(html).toContain(expected.articleTitle);
@@ -453,6 +460,7 @@ describe('static build output', () => {
     const html = await readDistFile('about/index.html');
 
     expect(html).toContain('<html lang="en" dir="ltr">');
+    expectGlobalHeader(html, 'en', 'other');
     expect(html).toContain('<title>About 4all.tools</title>');
     expect(html).toContain('<meta name="description" content="Learn how 4all.tools combines practical web tools with clear, multilingual editorial content.">');
     expect(html).toContain('<meta name="robots" content="index,follow">');
@@ -486,6 +494,7 @@ describe('static build output', () => {
     const html = await readDistFile('es/privacidad/index.html');
 
     expect(html).toContain('<html lang="es" dir="ltr">');
+    expectGlobalHeader(html, 'es', 'other');
     expect(html).toContain('<title>Pol');
     expect(html).toContain('<meta name="description" content="Conoce ');
     expect(html).toContain('<meta name="robots" content="noindex,follow">');
@@ -687,6 +696,50 @@ function compareCodePointOrder(first: string, second: string): number {
 
 function countMatches(value: string, pattern: RegExp): number {
   return value.match(pattern)?.length ?? 0;
+}
+
+function expectGlobalHeader(
+  html: string,
+  locale: Locale,
+  context: 'home' | 'blog-index' | 'blog-descendant' | 'other' = 'other',
+): void {
+  const homeUrl = locale === 'en' ? '/' : `/${locale}/`;
+  const blogUrl = locale === 'en' ? '/blog/' : `/${locale}/blog/`;
+
+  expect(countMatches(html, /data-site-header(?!-)/g)).toBe(1);
+  expect(countMatches(html, /data-site-primary-navigation/g)).toBe(1);
+  expect(countMatches(html, /data-language-switcher/g)).toBe(1);
+  expect(html).toContain('data-site-brand');
+  expect(html).toContain('data-site-header-link="blog"');
+  expect(html).toContain(`href="${homeUrl}"`);
+  expect(html).toContain(`href="${blogUrl}"`);
+
+  if (context === 'home') {
+    expect(html).toMatch(
+      /<a[^>]*aria-current="page"[^>]*data-site-brand/,
+    );
+    expect(html).not.toMatch(
+      /<a[^>]*aria-current="page"[^>]*data-site-header-link="blog"/,
+    );
+  }
+
+  if (context === 'blog-index') {
+    expect(html).toMatch(
+      /<a[^>]*aria-current="page"[^>]*data-site-header-link="blog"/,
+    );
+    expect(html).not.toMatch(
+      /<a[^>]*aria-current="page"[^>]*data-site-brand/,
+    );
+  }
+
+  if (context === 'blog-descendant') {
+    expect(html).toMatch(
+      /<a[^>]*data-site-header-link="blog"[^>]*data-active="true"/,
+    );
+    expect(html).not.toMatch(
+      /<a[^>]*aria-current="page"[^>]*data-site-header-link="blog"/,
+    );
+  }
 }
 
 function escapeExpectedHtml(value: string): string {
