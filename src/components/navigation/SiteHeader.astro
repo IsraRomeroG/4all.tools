@@ -1,0 +1,58 @@
+---
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import type { SiteHeaderModel } from '@/navigation/site-header';
+
+interface Props {
+  model: SiteHeaderModel;
+}
+
+const { model } = Astro.props;
+---
+
+<header
+  class="border-b border-slate-200 bg-white"
+  data-site-header
+>
+  <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 sm:px-6 lg:px-8">
+    <a
+      class:list={[
+        'font-semibold tracking-tight text-slate-950 underline decoration-transparent underline-offset-4 hover:decoration-slate-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-700',
+        model.brand.active && 'text-slate-950',
+      ]}
+      href={model.brand.url}
+      aria-label={model.brand.ariaLabel}
+      aria-current={model.brand.ariaCurrent}
+      data-site-brand
+      data-active={model.brand.active ? 'true' : undefined}
+    >
+      {model.brand.label}
+    </a>
+
+    <nav
+      class="flex items-center"
+      aria-label={model.primaryNavigationLabel}
+      data-site-primary-navigation
+    >
+      <ul class="flex flex-wrap items-center gap-4 text-sm">
+        {model.primaryLinks.map((link) => (
+          <li>
+            <a
+              class:list={[
+                'text-slate-700 underline decoration-transparent underline-offset-4 hover:text-slate-950 hover:decoration-slate-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-700',
+                link.active && 'font-semibold text-slate-950',
+              ]}
+              href={link.url}
+              aria-current={link.ariaCurrent}
+              data-site-header-link={link.id}
+              data-active={link.active ? 'true' : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <LanguageSwitcher model={model.languageSwitcher} />
+  </div>
+</header>
