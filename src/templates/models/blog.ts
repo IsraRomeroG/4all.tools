@@ -3,7 +3,7 @@ import type { ArticleId, BlogCategoryId } from '@/domain/shared/ids';
 import type { GlobalMessages } from '@/i18n/messages/types';
 import type { Locale } from '@/i18n/types';
 import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
-import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
+import type { SiteHeaderModel } from '@/navigation/site-header';
 import type { SiteFooterModel } from '@/navigation/site-footer';
 import type { RouteRecord } from '@/routing/types';
 import type { LocalizedRouteCluster, SeoPageModel } from '@/seo';
@@ -48,9 +48,9 @@ export interface BlogIndexPageModel {
   readonly kind: 'blog-index';
   readonly locale: Locale;
   readonly route: null;
+  readonly siteHeader: SiteHeaderModel;
   readonly seo: SeoPageModel;
   readonly localizedRouteCluster: LocalizedRouteCluster;
-  readonly languageSwitcher: LanguageSwitcherModel;
   readonly breadcrumbs: BreadcrumbModel;
   readonly messages: GlobalMessages;
   readonly title: string;
@@ -65,9 +65,9 @@ export interface BlogCategoryPageModel {
   readonly locale: Locale;
   readonly route: RouteRecord;
   readonly categoryId: BlogCategoryId;
+  readonly siteHeader: SiteHeaderModel;
   readonly seo: SeoPageModel;
   readonly localizedRouteCluster: LocalizedRouteCluster;
-  readonly languageSwitcher: LanguageSwitcherModel;
   readonly breadcrumbs: BreadcrumbModel;
   readonly messages: GlobalMessages;
   readonly content: {
@@ -85,9 +85,9 @@ export interface ArticlePageModel {
   readonly locale: Locale;
   readonly route: RouteRecord;
   readonly articleId: ArticleId;
+  readonly siteHeader: SiteHeaderModel;
   readonly seo: SeoPageModel;
   readonly localizedRouteCluster: LocalizedRouteCluster;
-  readonly languageSwitcher: LanguageSwitcherModel;
   readonly breadcrumbs: BreadcrumbModel;
   readonly messages: GlobalMessages;
   readonly content: {

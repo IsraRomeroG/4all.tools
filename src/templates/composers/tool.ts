@@ -5,7 +5,7 @@ import { requirePublishedToolContent } from '@/content/queries/tools';
 import type { Locale } from '@/i18n/types';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { RouteRegistry } from '@/routing/registry';
-import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildSiteHeaderModel } from '@/navigation/site-header';
 import { buildToolBreadcrumbs } from '@/navigation/breadcrumbs';
 import { buildSiteFooterModelIfAvailable } from '@/navigation/site-footer';
 import type {
@@ -86,9 +86,11 @@ export async function composeToolPageModel(
     route,
     seo: seoComposition.seo,
     localizedRouteCluster: seoComposition.localizedRouteCluster,
-    languageSwitcher: buildLanguageSwitcherModel({
-      cluster: seoComposition.localizedRouteCluster,
-      messages: messages.language,
+    siteHeader: buildSiteHeaderModel({
+      locale,
+      pageContext: 'other',
+      localizedRouteCluster: seoComposition.localizedRouteCluster,
+      messages,
     }),
     breadcrumbs,
     title: contentEntry.data.title,

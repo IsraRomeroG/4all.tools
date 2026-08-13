@@ -12,6 +12,7 @@ import ToolTemplate from '@/templates/ToolTemplate.astro';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import { LOCALES, SUPPORTED_LOCALES } from '@/i18n/config';
 import type { LanguageSwitcherModel } from '@/navigation/language-switcher';
+import type { SiteHeaderModel } from '@/navigation/site-header';
 import type { BreadcrumbModel } from '@/navigation/breadcrumbs';
 import type { RouteRecord, RouteTarget } from '@/routing/types';
 import { createSeoPageModel } from '@/seo';
@@ -64,7 +65,7 @@ describe('template foundation', () => {
             description: 'Valida documentos JSON desde un modelo preparado.',
             canonicalUrl: 'https://4all.tools/es/desarrollo/validador-json/',
           }),
-          languageSwitcher: languageSwitcher('es'),
+          siteHeader: siteHeader('es'),
           breadcrumbs: breadcrumbs('es', 'Validador JSON', 'entity'),
           toolId: 'json-validator',
           title: 'Validador JSON',
@@ -122,7 +123,7 @@ describe('template foundation', () => {
             description: 'Validate JSON.',
             canonicalUrl: 'https://4all.tools/developer/json-validator/',
           }),
-          languageSwitcher: languageSwitcher('en'),
+          siteHeader: siteHeader('en'),
           breadcrumbs: breadcrumbs('en', 'JSON Validator', 'entity'),
           toolId: 'json-validator',
           title: 'JSON Validator',
@@ -177,7 +178,7 @@ describe('template foundation', () => {
             description: 'Herramientas para desarrolladores.',
             canonicalUrl: 'https://4all.tools/es/desarrollo/',
           }),
-          languageSwitcher: languageSwitcher('es'),
+          siteHeader: siteHeader('es'),
           breadcrumbs: breadcrumbs('es', 'Desarrollo', 'taxonomy'),
           categoryId: 'developer',
           title: 'Desarrollo',
@@ -227,7 +228,7 @@ describe('template foundation', () => {
             description: 'Useful tools for everyday work.',
             canonicalUrl: 'https://4all.tools/',
           }),
-          languageSwitcher: languageSwitcher('en'),
+          siteHeader: siteHeader('en'),
           title: '4all.tools',
           description: 'Useful tools for everyday work.',
           messages: getGlobalMessages('en'),
@@ -250,7 +251,7 @@ describe('template foundation', () => {
             canonicalUrl: 'https://4all.tools/fr/blog/',
           }),
           localizedRouteCluster: localizedRouteCluster('fr', null, { kind: 'blog-index' }),
-          languageSwitcher: languageSwitcher('fr'),
+          siteHeader: siteHeader('fr'),
           breadcrumbs: breadcrumbs('fr', 'Guides', 'taxonomy'),
           messages: getGlobalMessages('fr'),
           title: 'Guides',
@@ -296,7 +297,7 @@ describe('template foundation', () => {
               articleId: 'what-is-json',
             },
           }),
-          languageSwitcher: languageSwitcher('pt'),
+          siteHeader: siteHeader('pt'),
           breadcrumbs: breadcrumbs('pt', 'O que é JSON?', 'entity'),
           messages: getGlobalMessages('pt'),
           articleId: 'what-is-json',
@@ -356,7 +357,7 @@ describe('template foundation', () => {
             description: 'Contacta con 4all.tools.',
             canonicalUrl: 'https://4all.tools/es/contacto/',
           }),
-          languageSwitcher: languageSwitcher('es'),
+          siteHeader: siteHeader('es'),
           title: 'Contacto',
           pageId: 'contact',
           content: {
@@ -449,6 +450,36 @@ function languageSwitcher(locale: Locale): LanguageSwitcherModel {
             url: `/${itemLocale}/`,
           },
     ),
+  };
+}
+
+function siteHeader(
+  locale: Locale,
+  pageContext: 'home' | 'blog-index' | 'blog-descendant' | 'other' = 'other',
+): SiteHeaderModel {
+  const messages = getGlobalMessages(locale);
+  const isHome = pageContext === 'home';
+  const isBlogIndex = pageContext === 'blog-index';
+
+  return {
+    brand: {
+      label: '4all.tools',
+      ariaLabel: `4all.tools — ${messages.nav.home}`,
+      url: locale === 'en' ? '/' : `/${locale}/`,
+      active: isHome,
+      ...(isHome ? { ariaCurrent: 'page' as const } : {}),
+    },
+    primaryNavigationLabel: messages.navigation.primaryNavigationLabel,
+    primaryLinks: [
+      {
+        id: 'blog',
+        label: messages.nav.blog,
+        url: locale === 'en' ? '/blog/' : `/${locale}/blog/`,
+        active: isBlogIndex || pageContext === 'blog-descendant',
+        ...(isBlogIndex ? { ariaCurrent: 'page' as const } : {}),
+      },
+    ],
+    languageSwitcher: languageSwitcher(locale),
   };
 }
 

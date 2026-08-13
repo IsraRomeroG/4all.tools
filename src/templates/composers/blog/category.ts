@@ -7,7 +7,7 @@ import type { BlogCategoryId } from '@/domain/shared/ids';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { Locale } from '@/i18n/types';
 import { buildBlogCategoryBreadcrumbs } from '@/navigation/breadcrumbs';
-import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildSiteHeaderModel } from '@/navigation/site-header';
 import { buildSiteFooterModelIfAvailable } from '@/navigation/site-footer';
 import type { RouteRegistry } from '@/routing/registry';
 import type { BlogCategoryPageModel } from '@/templates/models/blog';
@@ -95,9 +95,11 @@ export async function composeBlogCategoryPageModel(
     categoryId,
     seo: seoComposition.seo,
     localizedRouteCluster: seoComposition.localizedRouteCluster,
-    languageSwitcher: buildLanguageSwitcherModel({
-      cluster: seoComposition.localizedRouteCluster,
-      messages: messages.language,
+    siteHeader: buildSiteHeaderModel({
+      locale,
+      pageContext: 'blog-descendant',
+      localizedRouteCluster: seoComposition.localizedRouteCluster,
+      messages,
     }),
     breadcrumbs: buildBlogCategoryBreadcrumbs({
       locale,

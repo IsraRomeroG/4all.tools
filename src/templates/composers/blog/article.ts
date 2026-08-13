@@ -6,7 +6,7 @@ import type { ArticleId } from '@/domain/shared/ids';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { Locale } from '@/i18n/types';
 import { buildArticleBreadcrumbs } from '@/navigation/breadcrumbs';
-import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildSiteHeaderModel } from '@/navigation/site-header';
 import { buildSiteFooterModelIfAvailable } from '@/navigation/site-footer';
 import type { RouteRegistry } from '@/routing/registry';
 import { buildLocalizedPath } from '@/routing/builders';
@@ -118,9 +118,11 @@ export async function composeArticlePageModel(
     articleId,
     seo: seoComposition.seo,
     localizedRouteCluster: seoComposition.localizedRouteCluster,
-    languageSwitcher: buildLanguageSwitcherModel({
-      cluster: seoComposition.localizedRouteCluster,
-      messages: messages.language,
+    siteHeader: buildSiteHeaderModel({
+      locale,
+      pageContext: 'blog-descendant',
+      localizedRouteCluster: seoComposition.localizedRouteCluster,
+      messages,
     }),
     breadcrumbs: buildArticleBreadcrumbs({
       locale,

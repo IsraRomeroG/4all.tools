@@ -58,17 +58,17 @@ describe('SEO page model composition', () => {
         ),
       ).toBe(true);
       expect(
-        page.languageSwitcher.items.map((item) => item.locale),
+      page.siteHeader.languageSwitcher.items.map((item) => item.locale),
       ).toEqual(['en', 'es', 'pt', 'fr']);
       expect(
-        page.languageSwitcher.items.find((item) => item.locale === 'es'),
+        page.siteHeader.languageSwitcher.items.find((item) => item.locale === 'es'),
       ).toMatchObject(
         page.locale === 'es'
           ? { state: 'current' }
           : { state: 'available', url: '/es/desarrollo/validador-json/' },
       );
       expect(
-        page.languageSwitcher.items.find((item) => item.locale === 'fr'),
+        page.siteHeader.languageSwitcher.items.find((item) => item.locale === 'fr'),
       ).toMatchObject(
         page.locale === 'fr'
           ? { state: 'current' }
@@ -124,14 +124,14 @@ describe('SEO page model composition', () => {
       'en',
       'es',
     ]);
-    expect(page.languageSwitcher.items).toEqual([
+    expect(page.siteHeader.languageSwitcher.items).toEqual([
       expect.objectContaining({ locale: 'en', state: 'current' }),
       expect.objectContaining({ locale: 'es', state: 'available', url: '/es/desarrollo/' }),
       expect.objectContaining({ locale: 'pt', state: 'unavailable' }),
       expect.objectContaining({ locale: 'fr', state: 'unavailable' }),
     ]);
     expect(
-      page.languageSwitcher.items
+      page.siteHeader.languageSwitcher.items
         .filter((item) => item.state === 'unavailable')
         .some((item) => 'url' in item),
     ).toBe(false);

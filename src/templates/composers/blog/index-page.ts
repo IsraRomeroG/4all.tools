@@ -6,7 +6,7 @@ import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { Locale } from '@/i18n/types';
 import { buildBlogIndexBreadcrumbs } from '@/navigation/breadcrumbs';
-import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildSiteHeaderModel } from '@/navigation/site-header';
 import { buildSiteFooterModelIfAvailable } from '@/navigation/site-footer';
 import type { RouteRegistry } from '@/routing/registry';
 import { composeSeoPageModel } from '@/seo';
@@ -60,9 +60,11 @@ export async function composeBlogIndexPageModel(
     route: null,
     seo: seoComposition.seo,
     localizedRouteCluster: seoComposition.localizedRouteCluster,
-    languageSwitcher: buildLanguageSwitcherModel({
-      cluster: seoComposition.localizedRouteCluster,
-      messages: messages.language,
+    siteHeader: buildSiteHeaderModel({
+      locale,
+      pageContext: 'blog-index',
+      localizedRouteCluster: seoComposition.localizedRouteCluster,
+      messages,
     }),
     breadcrumbs: buildBlogIndexBreadcrumbs({
       locale,

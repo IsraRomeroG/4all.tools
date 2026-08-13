@@ -12,7 +12,7 @@ describe('production site-page language switcher contract', () => {
       const routeRegistry = await getDeliveryRouteRegistry();
       const page = await composeSitePageModel(locale, pageId, { routeRegistry });
 
-      expect(page.languageSwitcher.items).toEqual([
+      expect(page.siteHeader.languageSwitcher.items).toEqual([
         expect.objectContaining(
           locale === 'en'
             ? { locale: 'en', state: 'current' }
@@ -34,9 +34,9 @@ describe('production site-page language switcher contract', () => {
           url: frenchUrl,
         }),
       ]);
-      expect(page.languageSwitcher.items.filter((item) => item.state === 'current')).toHaveLength(1);
-      expect(page.languageSwitcher.items.filter((item) => item.state === 'available')).toHaveLength(3);
-      expect(page.languageSwitcher.items.some((item) => item.state === 'unavailable')).toBe(false);
+      expect(page.siteHeader.languageSwitcher.items.filter((item) => item.state === 'current')).toHaveLength(1);
+      expect(page.siteHeader.languageSwitcher.items.filter((item) => item.state === 'available')).toHaveLength(3);
+      expect(page.siteHeader.languageSwitcher.items.some((item) => item.state === 'unavailable')).toBe(false);
     },
   );
 });

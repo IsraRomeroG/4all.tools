@@ -1,7 +1,7 @@
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import { isLocale } from '@/i18n/guards';
 import type { Locale } from '@/i18n/types';
-import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildSiteHeaderModel } from '@/navigation/site-header';
 import { buildSiteFooterModel } from '@/navigation/site-footer';
 import type { RouteRegistry } from '@/routing/registry';
 import type { HomePageModel } from '@/templates/models/home';
@@ -52,9 +52,11 @@ export async function composeHomePageModel(
     route: null,
     seo: seoComposition.seo,
     localizedRouteCluster: seoComposition.localizedRouteCluster,
-    languageSwitcher: buildLanguageSwitcherModel({
-      cluster: seoComposition.localizedRouteCluster,
-      messages: messages.language,
+    siteHeader: buildSiteHeaderModel({
+      locale,
+      pageContext: 'home',
+      localizedRouteCluster: seoComposition.localizedRouteCluster,
+      messages,
     }),
     title: homeSeo.title,
     description: homeSeo.description,

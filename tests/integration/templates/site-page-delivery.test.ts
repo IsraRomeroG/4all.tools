@@ -75,13 +75,13 @@ describe('site-page composer and root adapter delivery', () => {
     });
     expect(Object.hasOwn(english, 'localizedRouteCluster')).toBe(false);
     expect(Object.hasOwn(spanish, 'localizedRouteCluster')).toBe(false);
-    expect(english.languageSwitcher.items).toEqual([
+    expect(english.siteHeader.languageSwitcher.items).toEqual([
       expect.objectContaining({ locale: 'en', state: 'current' }),
       expect.objectContaining({ locale: 'es', state: 'available', url: '/es/contacto/' }),
       expect.objectContaining({ locale: 'pt', state: 'unavailable' }),
       expect.objectContaining({ locale: 'fr', state: 'unavailable' }),
     ]);
-    expect(spanish.languageSwitcher.items).toEqual([
+    expect(spanish.siteHeader.languageSwitcher.items).toEqual([
       expect.objectContaining({ locale: 'en', state: 'available', url: '/contact/' }),
       expect.objectContaining({ locale: 'es', state: 'current' }),
       expect.objectContaining({ locale: 'pt', state: 'unavailable' }),

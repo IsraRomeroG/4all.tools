@@ -4,7 +4,7 @@ import { requirePublishedToolCategoryContent } from '@/content/queries/tool-cate
 import type { Locale } from '@/i18n/types';
 import { getGlobalMessages } from '@/i18n/messages/registry';
 import type { RouteRegistry } from '@/routing/registry';
-import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildSiteHeaderModel } from '@/navigation/site-header';
 import { buildToolCategoryBreadcrumbs } from '@/navigation/breadcrumbs';
 import { buildSiteFooterModelIfAvailable } from '@/navigation/site-footer';
 import type { ToolCategoryPageModel } from '@/templates/models/category';
@@ -90,9 +90,11 @@ export async function composeCategoryPageModel(
     route,
     seo: seoComposition.seo,
     localizedRouteCluster: seoComposition.localizedRouteCluster,
-    languageSwitcher: buildLanguageSwitcherModel({
-      cluster: seoComposition.localizedRouteCluster,
-      messages: messages.language,
+    siteHeader: buildSiteHeaderModel({
+      locale,
+      pageContext: 'other',
+      localizedRouteCluster: seoComposition.localizedRouteCluster,
+      messages,
     }),
     breadcrumbs,
     title: contentEntry.data.title,

@@ -2,7 +2,7 @@ import type { SitePageId } from '@/domain/shared/ids';
 import { requirePublishedSitePageContent } from '@/content/queries';
 import type { Locale } from '@/i18n/types';
 import { getGlobalMessages } from '@/i18n/messages/registry';
-import { buildLanguageSwitcherModel } from '@/navigation/language-switcher';
+import { buildSiteHeaderModel } from '@/navigation/site-header';
 import { buildSiteFooterModelIfAvailable } from '@/navigation/site-footer';
 import type { RouteRegistry } from '@/routing/registry';
 import type { SitePageModel } from '@/templates/models/site-page';
@@ -74,9 +74,11 @@ export async function composeSitePageModel(
     locale,
     route,
     seo: seoComposition.seo,
-    languageSwitcher: buildLanguageSwitcherModel({
-      cluster: seoComposition.localizedRouteCluster,
-      messages: messages.language,
+    siteHeader: buildSiteHeaderModel({
+      locale,
+      pageContext: 'other',
+      localizedRouteCluster: seoComposition.localizedRouteCluster,
+      messages,
     }),
     title: contentEntry.data.title,
     pageId,
