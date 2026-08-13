@@ -7,6 +7,7 @@ export const es = {
     blog: 'Blog',
   },
   navigation: {
+    primaryNavigationLabel: 'Navegación principal',
     home: 'Inicio',
     breadcrumbsLabel: 'Ruta de navegación',
   },

@@ -40,6 +40,7 @@ describe('global messages', () => {
       expect(messages.language.unavailable).toBeTruthy();
       expect(messages.navigation.home).toBeTruthy();
       expect(messages.navigation.breadcrumbsLabel).toBeTruthy();
+      expect(messages.navigation.primaryNavigationLabel).toBeTruthy();
       expect(messages.footer.privacy).toBeTruthy();
       expect(messages.accessibility.openMenu).toBeTruthy();
       expect(messages.sections.search).toBeTruthy();
@@ -81,18 +82,22 @@ describe('global messages', () => {
 
   it('localizes breadcrumb navigation labels', () => {
     expect(en.navigation).toEqual({
+      primaryNavigationLabel: 'Primary navigation',
       home: 'Home',
       breadcrumbsLabel: 'Breadcrumbs',
     });
     expect(es.navigation).toEqual({
+      primaryNavigationLabel: 'Navegación principal',
       home: 'Inicio',
       breadcrumbsLabel: 'Ruta de navegación',
     });
     expect(pt.navigation).toEqual({
+      primaryNavigationLabel: 'Navegação principal',
       home: 'Início',
       breadcrumbsLabel: 'Caminho de navegação',
     });
     expect(fr.navigation).toEqual({
+      primaryNavigationLabel: 'Navigation principale',
       home: 'Accueil',
       breadcrumbsLabel: 'Fil d’Ariane',
     });

@@ -5,6 +5,7 @@ export const en = {
     blog: 'Blog',
   },
   navigation: {
+    primaryNavigationLabel: 'Primary navigation',
     home: 'Home',
     breadcrumbsLabel: 'Breadcrumbs',
   },

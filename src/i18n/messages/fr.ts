@@ -7,6 +7,7 @@ export const fr = {
     blog: 'Blog',
   },
   navigation: {
+    primaryNavigationLabel: 'Navigation principale',
     home: 'Accueil',
     breadcrumbsLabel: 'Fil d’Ariane',
   },
