@@ -1,6 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
+import Logo from '@/components/brand/Logo.astro';
 import SiteHeader from '@/components/navigation/SiteHeader.astro';
 import type { SiteHeaderModel } from '@/navigation/site-header';
 
@@ -14,6 +15,8 @@ describe('SiteHeader.astro', () => {
 
     expect(html).toContain('data-site-header');
     expect(html).toContain('data-site-brand');
+    expect(html).toContain('data-site-logo');
+    expect(html).toContain('4all<span class="text-blue-400">.tools</span>');
     expect(html).toContain('href="/es/"');
     expect(html).toContain('aria-label="Navegación principal"');
     expect(html).toContain('data-site-primary-navigation');
@@ -21,6 +24,30 @@ describe('SiteHeader.astro', () => {
     expect(html).toContain('href="/es/blog/"');
     expect(html).toContain('data-language-switcher');
     expect(html).not.toContain('<script');
+  });
+
+  it('changes the wordmark and mark colors with the logo variant', async () => {
+    const container = await AstroContainer.create();
+    const dark = await container.renderToString(Logo, {
+      partial: false,
+      props: { variant: 'dark' },
+    });
+    const light = await container.renderToString(Logo, {
+      partial: false,
+      props: { variant: 'light' },
+    });
+
+    expect(dark).toContain('text-slate-900');
+    expect(dark).toContain('text-blue-400');
+    expect(dark).toContain('bg-slate-900');
+    expect(dark).toContain('bg-white');
+    expect(dark).toContain('bg-blue-400');
+
+    expect(light).toContain('text-white');
+    expect(light).toContain('text-blue-300');
+    expect(light).toContain('bg-white');
+    expect(light).toContain('bg-slate-900');
+    expect(light).toContain('bg-blue-500');
   });
 
   it('renders visual activity without treating a Blog descendant as the Blog index', async () => {

@@ -1,4 +1,5 @@
 ---
+import Logo from '@/components/brand/Logo.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import type { SiteHeaderModel } from '@/navigation/site-header';
 
@@ -14,19 +15,13 @@ const { model } = Astro.props;
   data-site-header
 >
   <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 sm:px-6 lg:px-8">
-    <a
-      class:list={[
-        'font-semibold tracking-tight text-slate-950 underline decoration-transparent underline-offset-4 hover:decoration-slate-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-700',
-        model.brand.active && 'text-slate-950',
-      ]}
+    <Logo
       href={model.brand.url}
-      aria-label={model.brand.ariaLabel}
-      aria-current={model.brand.ariaCurrent}
-      data-site-brand
-      data-active={model.brand.active ? 'true' : undefined}
-    >
-      {model.brand.label}
-    </a>
+      ariaCurrent={model.brand.ariaCurrent}
+      label={model.brand.ariaLabel}
+      active={model.brand.active}
+      dataSiteBrand
+    />
 
     <nav
       class="flex items-center"
