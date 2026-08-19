@@ -28,7 +28,7 @@ La primera herramienta productiva del proyecto es el JSON Validator. Sus accione
 
 La lógica se ejecuta completamente en el navegador y las acciones principales no realizan solicitudes de red.
 
-Código principal: `src/features/tools/developer/json-validator/`.
+Código principal: `src/features/tools/developer/json/json-validator/`.
 
 ## 3. Internacionalización
 

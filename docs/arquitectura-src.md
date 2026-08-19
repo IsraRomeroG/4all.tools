@@ -152,7 +152,12 @@ Para agregar una herramienta se añade un módulo a
 `src/features/tools/registry.ts`; no se sincronizan registros independientes
 de definición, presentación o directorio de origen.
 
-### `src/features/tools/developer/json-validator/`
+La ubicación física de cada módulo sigue
+`src/features/tools/<taxonomy-path>/<toolId>/`, usando los IDs estables de la
+ruta taxonómica completa. Esta convención es independiente de los slugs
+localizados y de la estrategia de URL pública.
+
+### `src/features/tools/developer/json/json-validator/`
 
 Es el módulo del JSON Validator.
 

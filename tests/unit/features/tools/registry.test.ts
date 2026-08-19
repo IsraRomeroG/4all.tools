@@ -76,16 +76,16 @@ describe('canonical tool registry', () => {
     }
   });
 
-  it('derives the English route-to-feature directory convention generically', async () => {
+  it('derives the taxonomy-to-feature directory convention generically', async () => {
     for (const module of toolRegistry.getAll()) {
       const definition = module.definition;
-      const categorySegments = definition.route.strategy === 'flat'
-        ? [definition.rootCategoryId]
-        : [definition.rootCategoryId, definition.taxonomy.primaryCategoryId];
+      const categorySegments = toolTaxonomy
+        .getPathFromRoot(definition.taxonomy.primaryCategoryId)
+        .map((node) => node.id);
       const featurePath = [
         'src/features/tools',
         ...categorySegments,
-        definition.route.localized.en?.slug ?? '',
+        definition.id,
       ].join('/');
 
       await expect(access(new URL(`${featurePath}/`, PROJECT_ROOT))).resolves.toBeUndefined();

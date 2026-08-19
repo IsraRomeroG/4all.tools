@@ -5,6 +5,8 @@ import type {
   ToolCategoryContentEntry,
   ToolContentEntry,
 } from '@/content/queries';
+import type { ToolCategoryId } from '@/domain/shared/ids';
+import type { TaxonomyTree } from '@/domain/taxonomy/shared/types';
 import type { ToolDefinition } from '@/domain/tools';
 import type { Locale } from '@/i18n/types';
 
@@ -254,7 +256,7 @@ export function validateToolRegistryIntegrity(
       );
     }
 
-    validateSourceDirectory(issues, definition);
+    validateSourceDirectory(issues, definition, context.toolTaxonomy);
   }
 
   return sortIssues(issues);
@@ -263,8 +265,9 @@ export function validateToolRegistryIntegrity(
 function validateSourceDirectory(
   issues: ArchitectureValidationIssue[],
   definition: ToolDefinition,
+  taxonomy: TaxonomyTree<ToolCategoryId>,
 ): void {
-  const expected = expectedFeaturePath(definition);
+  const expected = expectedFeaturePath(definition, taxonomy);
   const sourceDirectory = new URL(
     `../../../features/tools/${expected}/`,
     import.meta.url,
@@ -285,12 +288,15 @@ function validateSourceDirectory(
   );
 }
 
-function expectedFeaturePath(definition: ToolDefinition): string {
-  const categorySegments = definition.route.strategy === 'flat'
-    ? [definition.rootCategoryId]
-    : [definition.rootCategoryId, definition.taxonomy.primaryCategoryId];
+function expectedFeaturePath(
+  definition: ToolDefinition,
+  taxonomy: TaxonomyTree<ToolCategoryId>,
+): string {
+  const categorySegments = taxonomy
+    .getPathFromRoot(definition.taxonomy.primaryCategoryId)
+    .map((node) => node.id);
 
-  return [...categorySegments, definition.route.localized.en?.slug ?? ''].join('/');
+  return [...categorySegments, definition.id].join('/');
 }
 
 function exists(directory: URL): boolean {

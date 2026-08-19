@@ -4,7 +4,7 @@ import type { ContentSourceSnapshot } from '@/content/queries';
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import type { ToolDefinition } from '@/domain/tools';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
-import { jsonValidatorDefinition } from '@/features/tools/developer/json-validator/tool.config';
+import { jsonValidatorDefinition } from '@/features/tools/developer/json/json-validator/tool.config';
 import {
   jsonValidatorModule,
   type ToolModule,
@@ -118,7 +118,7 @@ describe('architecture identity validation', () => {
     ]);
   });
 
-  it('validates modules and the generic English route-to-feature convention', () => {
+  it('validates modules and the taxonomy-to-feature convention', () => {
     expect(validateToolRegistryIntegrity({
       toolRegistry: registry([jsonValidatorModule]),
       toolTaxonomy,
@@ -135,6 +135,26 @@ describe('architecture identity validation', () => {
       toolRegistry: registry([missingMessages]),
       toolTaxonomy,
     }).map((issue) => issue.code)).toEqual(['MISSING_TOOL_MODULE_MESSAGES']);
+
+    const missingFeature = moduleFor({
+      ...jsonValidatorDefinition,
+      id: 'missing-feature',
+      route: {
+        ...jsonValidatorDefinition.route,
+        localized: {
+          ...jsonValidatorDefinition.route.localized,
+          en: { slug: 'unrelated-public-slug' },
+        },
+      },
+    });
+    expect(validateToolRegistryIntegrity({
+      toolRegistry: registry([missingFeature]),
+      toolTaxonomy,
+    })).toMatchObject([{
+      code: 'TOOL_FEATURE_PATH_MISMATCH',
+      entityKey: 'missing-feature',
+      details: { expected: 'developer/json/missing-feature' },
+    }]);
   });
 });
 

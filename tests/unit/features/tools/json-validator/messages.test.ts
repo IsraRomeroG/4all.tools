@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getJsonValidatorMessages } from '@/features/tools/developer/json-validator/messages/registry';
+import { getJsonValidatorMessages } from '@/features/tools/developer/json/json-validator/messages/registry';
 import { jsonValidatorModule } from '@/features/tools/registry';
 
 describe('json validator messages', () => {

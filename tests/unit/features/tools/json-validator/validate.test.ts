@@ -4,8 +4,8 @@ import {
   deriveJsonErrorDetails,
   getLocationFromPosition,
   validateJson,
-} from '@/features/tools/developer/json-validator/engine';
-import { JSON_ENGINE_SEMANTIC_LIMITATIONS } from '@/features/tools/developer/json-validator/types';
+} from '@/features/tools/developer/json/json-validator/engine';
+import { JSON_ENGINE_SEMANTIC_LIMITATIONS } from '@/features/tools/developer/json/json-validator/types';
 
 import {
   INVALID_JSON_FIXTURES,

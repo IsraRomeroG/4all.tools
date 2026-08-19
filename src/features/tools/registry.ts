@@ -7,10 +7,10 @@ import type { TaxonomyTree } from '@/domain/taxonomy/shared/types';
 import type { ToolDefinition } from '@/domain/tools';
 import { SUPPORTED_LOCALES, type Locale } from '@/i18n/types';
 
-import JsonValidatorTool from './developer/json-validator/Tool.astro';
-import { getJsonValidatorMessages } from './developer/json-validator/messages/registry';
-import type { JsonValidatorMessages } from './developer/json-validator/messages/types';
-import { jsonValidatorDefinition } from './developer/json-validator/tool.config';
+import JsonValidatorTool from './developer/json/json-validator/Tool.astro';
+import { getJsonValidatorMessages } from './developer/json/json-validator/messages/registry';
+import type { JsonValidatorMessages } from './developer/json/json-validator/messages/types';
+import { jsonValidatorDefinition } from './developer/json/json-validator/tool.config';
 
 export type ToolMessageDictionary = Readonly<object>;
 

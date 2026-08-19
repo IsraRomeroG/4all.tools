@@ -127,12 +127,12 @@ P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `t
 | Archivo o grupo | Descripción | Estado |
 |---|---|---|
 | `src/features/tools/registry.ts` | Registro canónico único de `ToolModule`, con definición, componente, mensajes, validación e índice. | Activo |
-| `src/features/tools/developer/json-validator/tool.config.ts` | Configuración canónica, rutas, taxonomía, ejecución cliente y publicación. | Activo |
-| `src/features/tools/developer/json-validator/Tool.astro` | UI ejecutable, editor, acciones, resultado y accesibilidad. | Activo |
-| `src/features/tools/developer/json-validator/client.ts` | Controlador de validación, formato, minificación, copia y limpieza. | Activo |
-| `src/features/tools/developer/json-validator/engine/` | Validación, formato, minificación y extracción de detalles de errores. | Activo |
-| `src/features/tools/developer/json-validator/messages/` | Tipos y diccionarios localizados del JSON Validator. | Activo |
-| `src/features/tools/developer/json-validator/types.ts` | Tipos de entrada, acciones, resultados y errores. | Activo |
+| `src/features/tools/developer/json/json-validator/tool.config.ts` | Configuración canónica, rutas, taxonomía, ejecución cliente y publicación. | Activo |
+| `src/features/tools/developer/json/json-validator/Tool.astro` | UI ejecutable, editor, acciones, resultado y accesibilidad. | Activo |
+| `src/features/tools/developer/json/json-validator/client.ts` | Controlador de validación, formato, minificación, copia y limpieza. | Activo |
+| `src/features/tools/developer/json/json-validator/engine/` | Validación, formato, minificación y extracción de detalles de errores. | Activo |
+| `src/features/tools/developer/json/json-validator/messages/` | Tipos y diccionarios localizados del JSON Validator. | Activo |
+| `src/features/tools/developer/json/json-validator/types.ts` | Tipos de entrada, acciones, resultados y errores. | Activo |
 
 ### Internacionalización
 

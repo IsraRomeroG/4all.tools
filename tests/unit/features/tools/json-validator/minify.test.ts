@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { minifyJson } from '@/features/tools/developer/json-validator/engine';
+import { minifyJson } from '@/features/tools/developer/json/json-validator/engine';
 
 import { FORMATTED_FOR_MINIFY } from './fixtures';
 

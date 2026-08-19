@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { jsonValidatorDefinition } from '@/features/tools/developer/json-validator/tool.config';
+import { jsonValidatorDefinition } from '@/features/tools/developer/json/json-validator/tool.config';
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
 import { createTaxonomyTree } from '@/domain/taxonomy/shared/tree';
