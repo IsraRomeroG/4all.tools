@@ -161,7 +161,7 @@ describe('delivery route registry content-index lifecycle', () => {
       'pt:desenvolvedor/validador-json',
       'fr:developpement/validateur-json',
     ]);
-    expect(content?.id).toBe('tools/en/developer/json-validator');
+    expect(content?.id).toBe('tools/en/developer/json/json-validator');
     expect(mocks.getCollection.mock.calls.map(([collection]) => collection))
       .toEqual(['tools', 'toolCategories', 'blog', 'blogCategories', 'sitePages']);
   });
@@ -200,7 +200,7 @@ describe('delivery route registry content-index lifecycle', () => {
       locale: 'en',
       status: 'published',
       matchedEntryIds: [
-        'tools/en/developer/json-validator',
+        'tools/en/developer/json/json-validator',
         'tools/en/duplicates/json-validator',
       ],
     });
@@ -286,7 +286,7 @@ function mockAstroCollections(fixtures: CollectionFixtures): void {
 }
 
 function publishedTool(locale: Locale) {
-  return entry(`tools/${locale}/developer/json-validator`, {
+  return entry(`tools/${locale}/developer/json/json-validator`, {
     toolId: 'json-validator',
     locale,
     status: 'published',

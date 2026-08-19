@@ -82,7 +82,7 @@ describe('json-validator localized editorial content', () => {
 async function readToolContent(locale: Locale): Promise<string> {
   return readFile(
     new URL(
-      `src/content/tools/${locale}/developer/json-validator.md`,
+      `src/content/tools/${locale}/developer/json/json-validator.md`,
       PROJECT_ROOT,
     ),
     'utf8',

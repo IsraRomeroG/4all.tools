@@ -47,22 +47,22 @@ describe('tool content query services', () => {
 
     collections = {
       tools: [
-        entry('tools/en/developer/json-validator', {
+        entry('tools/en/developer/json/json-validator', {
           toolId: 'json-validator',
           locale: 'en',
           status: 'published',
         }),
-        entry('tools/es/developer/json-validator', {
+        entry('tools/es/developer/json/json-validator', {
           toolId: 'json-validator',
           locale: 'es',
           status: 'published',
         }),
-        entry('tools/pt/developer/json-validator', {
+        entry('tools/pt/developer/json/json-validator', {
           toolId: 'json-validator',
           locale: 'pt',
           status: 'published',
         }),
-        entry('tools/fr/developer/json-validator', {
+        entry('tools/fr/developer/json/json-validator', {
           toolId: 'json-validator',
           locale: 'fr',
           status: 'published',
@@ -113,7 +113,7 @@ describe('tool content query services', () => {
 
   it('finds English published tool content by ToolId and locale', async () => {
     await expect(getPublishedToolContent('json-validator', 'en')).resolves.toMatchObject({
-      id: 'tools/en/developer/json-validator',
+      id: 'tools/en/developer/json/json-validator',
       data: {
         toolId: 'json-validator',
         locale: 'en',
@@ -123,7 +123,7 @@ describe('tool content query services', () => {
 
   it('finds Spanish published tool content separately from English', async () => {
     await expect(getPublishedToolContent('json-validator', 'es')).resolves.toMatchObject({
-      id: 'tools/es/developer/json-validator',
+      id: 'tools/es/developer/json/json-validator',
       data: {
         toolId: 'json-validator',
         locale: 'es',
@@ -134,7 +134,7 @@ describe('tool content query services', () => {
   it('finds one published json-validator entry for each supported locale', async () => {
     for (const locale of ['en', 'es', 'pt', 'fr'] as const) {
       await expect(getPublishedToolContent('json-validator', locale)).resolves.toMatchObject({
-        id: `tools/${locale}/developer/json-validator`,
+        id: `tools/${locale}/developer/json/json-validator`,
         data: {
           toolId: 'json-validator',
           locale,
@@ -156,7 +156,7 @@ describe('tool content query services', () => {
 
   it('filters drafts before resolving published cardinality', async () => {
     await expect(getPublishedToolContent('json-validator', 'es')).resolves.toMatchObject({
-      id: 'tools/es/developer/json-validator',
+      id: 'tools/es/developer/json/json-validator',
     });
   });
 
@@ -211,7 +211,7 @@ describe('tool content query services', () => {
         locale: 'es',
         status: 'published',
         matchedEntryIds: [
-          'tools/es/developer/json-validator',
+          'tools/es/developer/json/json-validator',
           'tools/es/duplicate/json-validator',
         ],
       });

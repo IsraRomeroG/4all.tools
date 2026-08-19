@@ -77,10 +77,10 @@ P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `t
 
 | Archivo o grupo | Descripción | Estado |
 |---|---|---|
-| `src/content/tools/en/developer/json-validator.md` | Contenido editorial y SEO del JSON Validator en inglés. | Activo y público |
-| `src/content/tools/es/developer/json-validator.md` | Contenido editorial y SEO del JSON Validator en español. | Activo y público |
-| `src/content/tools/pt/developer/json-validator.md` | Contenido editorial y SEO del JSON Validator en portugués. | Activo y público |
-| `src/content/tools/fr/developer/json-validator.md` | Contenido editorial y SEO del JSON Validator en francés. | Activo y público |
+| `src/content/tools/en/developer/json/json-validator.md` | Contenido editorial y SEO del JSON Validator en inglés. | Activo y público |
+| `src/content/tools/es/developer/json/json-validator.md` | Contenido editorial y SEO del JSON Validator en español. | Activo y público |
+| `src/content/tools/pt/developer/json/json-validator.md` | Contenido editorial y SEO del JSON Validator en portugués. | Activo y público |
+| `src/content/tools/fr/developer/json/json-validator.md` | Contenido editorial y SEO del JSON Validator en francés. | Activo y público |
 | `src/content/tool-categories/{en,es,pt,fr}/developer.md` | Contenido localizado de la categoría pública de herramientas `developer`. | Activo y público |
 | `src/content/blog/{en,es,pt,fr}/development/json-guides/what-is-json.md` | Artículo localizado “What is JSON?” en los cuatro idiomas. | Activo y público |
 | `src/content/blog-categories/{en,es,pt,fr}/development.md` | Categoría raíz localizada `development`. | Activo y público |

@@ -110,7 +110,7 @@ describe('json-validator end-to-end route integration', () => {
           kind: 'tool',
           toolId: 'json-validator',
         },
-        sourceId: `tool-content:${locale}/developer/json-validator`,
+        sourceId: `tool-content:${locale}/developer/json/json-validator`,
       });
       expect(record?.segments).not.toContain('data-formats');
       expect(record?.segments).not.toContain('json');

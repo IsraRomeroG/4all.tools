@@ -12,7 +12,7 @@ describe('tool content collections', () => {
   it('commits representative valid fixture entries', async () => {
     for (const locale of ['en', 'es', 'pt', 'fr'] as const) {
       await expect(
-        readdir(new URL(`${locale}/developer/`, TOOL_CONTENT_DIR)),
+        readdir(new URL(`${locale}/developer/json/`, TOOL_CONTENT_DIR)),
       ).resolves.toContain('json-validator.md');
     }
 
