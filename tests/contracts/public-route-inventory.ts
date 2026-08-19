@@ -124,6 +124,12 @@ export const PUBLIC_ROUTE_INVENTORY = [
   {
     area: 'tools',
     locale: 'pt',
+    segments: ['desenvolvedor'],
+    target: { kind: 'tool-category', categoryId: 'developer' },
+  },
+  {
+    area: 'tools',
+    locale: 'pt',
     segments: ['desenvolvedor', 'validador-json'],
     target: { kind: 'tool', toolId: 'json-validator' },
   },
@@ -168,6 +174,12 @@ export const PUBLIC_ROUTE_INVENTORY = [
     locale: 'pt',
     segments: ['termos'],
     target: { kind: 'site-page', pageId: 'terms' },
+  },
+  {
+    area: 'tools',
+    locale: 'fr',
+    segments: ['developpement'],
+    target: { kind: 'tool-category', categoryId: 'developer' },
   },
   {
     area: 'tools',

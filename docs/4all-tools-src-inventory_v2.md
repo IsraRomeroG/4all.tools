@@ -3,13 +3,13 @@
 **Repositorio:** `IsraRomeroG/4all.tools`  
 **Rama revisada:** `main`  
 **Fecha de revisión:** 12 de agosto de 2026
-**Total de archivos dentro de `src/`:** 207
+**Total de archivos dentro de `src/`:** 210
 
 ## Conclusiones principales
 
 1. **El vertical slice del JSON Validator está activo de extremo a extremo.** Incluye definición de dominio, taxonomía, registro tipado, rutas localizadas, contenido editorial, UI, lógica cliente, mensajes, SEO y renderizado.
 2. **El blog está conectado al flujo público de entrega.** Cuenta con contenido Markdown localizado, schemas, consultas indexadas, taxonomía independiente, categorías publicadas derivadas del contenido, artículos derivados de `routeSlug`, modelos de página, composers, templates y adaptadores Astro para los cuatro idiomas.
-3. **La categoría pública de herramientas activa es `developer` en inglés.** Los adaptadores de categorías localizadas existen y están conectados, pero no generan una categoría raíz de herramientas en español, portugués o francés porque todavía no existe contenido localizado publicado para esa categoría.
+3. **La categoría pública de herramientas `developer` está activa en los cuatro idiomas.** Cada locale tiene contenido publicado propio y una ruta canónica explícita, sin fallback entre traducciones.
 4. **La infraestructura SEO y de navegación está activa.** `src/components/` ya contiene componentes de SEO y navegación, incluido el header global P19; `src/services/` y `src/server/` permanecen como límites reservados para futuras integraciones y lógica de servidor.
 5. **El sitio conserva una política estricta de identidad y traducción.** Las entidades usan IDs estables separados de sus slugs localizados, y el contenido faltante no se sustituye silenciosamente por otro idioma.
 
@@ -26,7 +26,7 @@
 |---|---|
 | Sitio Astro y generación estática | Activo |
 | JSON Validator | Activo y publicado en cuatro idiomas |
-| Categoría de herramientas `developer` | Activa en inglés |
+| Categoría de herramientas `developer` | Activa y publicada en cuatro idiomas |
 | Blog | Activo y publicado en cuatro idiomas |
 | Routing localizado | Activo |
 | Contenido y consultas indexadas | Activo |
@@ -37,9 +37,9 @@
 
 ### P17/P18: infraestructura y publicación de site pages editoriales
 
-P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `terms` en `en`, `es`, `pt` y `fr`. El inventario público queda en 34 `RouteRecord`; About y Contact son indexables, mientras Privacy y Terms son públicas con `noindex` y quedan fuera del sitemap indexable. `src/navigation/site-footer/` prepara enlaces desde `RouteRegistry` y `src/components/navigation/SiteFooter.astro` los presenta mediante el slot `site-footer`. No se añadió un mapa paralelo de URLs, formulario/backend de contacto ni inventario alternativo de sitemap.
+P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `terms` en `en`, `es`, `pt` y `fr`. Con las cuatro variantes públicas de la categoría `developer`, el inventario público queda en 36 `RouteRecord`; About y Contact son indexables, mientras Privacy y Terms son públicas con `noindex` y quedan fuera del sitemap indexable. `src/navigation/site-footer/` prepara enlaces desde `RouteRegistry` y `src/components/navigation/SiteFooter.astro` los presenta mediante el slot `site-footer`. No se añadió un mapa paralelo de URLs, formulario/backend de contacto ni inventario alternativo de sitemap.
 
-`sitePages` está registrada en `src/content.config.ts`, con schema estricto, consultas exactas e índice publicado compartido. `SitePageId`, `site-page` RouteTarget, registros `area: site`, proyección `[root]`, `SitePageModel`, composer y `SitePageTemplate.astro` están activos. P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `terms` en `en`, `es`, `pt` y `fr`, elevando el inventario público a 34 RouteRecords. `src/content/site/` conserva copy singleton sin publicar rutas, mientras `src/content/site-pages/` contiene los documentos localizados publicados que generan RouteRecords. No hay mapa paralelo de URLs, reglas `.htaccess`, formulario/backend de contacto ni inventario alternativo de sitemap.
+`sitePages` está registrada en `src/content.config.ts`, con schema estricto, consultas exactas e índice publicado compartido. `SitePageId`, `site-page` RouteTarget, registros `area: site`, proyección `[root]`, `SitePageModel`, composer y `SitePageTemplate.astro` están activos. P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `terms` en `en`, `es`, `pt` y `fr`; junto con las cuatro variantes públicas de `developer`, el inventario público contiene 36 RouteRecords. `src/content/site/` conserva copy singleton sin publicar rutas, mientras `src/content/site-pages/` contiene los documentos localizados publicados que generan RouteRecords. No hay mapa paralelo de URLs, reglas `.htaccess`, formulario/backend de contacto ni inventario alternativo de sitemap.
 
 ### Configuración, contenido y estilos globales
 
@@ -81,7 +81,7 @@ P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `t
 | `src/content/tools/es/developer/json-validator.md` | Contenido editorial y SEO del JSON Validator en español. | Activo y público |
 | `src/content/tools/pt/developer/json-validator.md` | Contenido editorial y SEO del JSON Validator en portugués. | Activo y público |
 | `src/content/tools/fr/developer/json-validator.md` | Contenido editorial y SEO del JSON Validator en francés. | Activo y público |
-| `src/content/tool-categories/en/developer.md` | Contenido de la categoría pública de herramientas `developer`. | Activo y público |
+| `src/content/tool-categories/{en,es,pt,fr}/developer.md` | Contenido localizado de la categoría pública de herramientas `developer`. | Activo y público |
 | `src/content/blog/{en,es,pt,fr}/development/what-is-json.md` | Artículo localizado “What is JSON?” en los cuatro idiomas. | Activo y público |
 | `src/content/blog-categories/{en,es,pt,fr}/development.md` | Categoría raíz localizada `development`. | Activo y público |
 | `src/content/blog-categories/{en,es,pt,fr}/json-guides.md` | Categoría localizada `json-guides`. | Activo y público |
@@ -204,6 +204,15 @@ P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `t
 
 ## Rutas públicas canónicas actuales
 
+### Categoría Developer
+
+```text
+/developer/
+/es/desarrollo/
+/pt/desenvolvedor/
+/fr/developpement/
+```
+
 ### JSON Validator
 
 ```text
@@ -287,6 +296,6 @@ El blog ya no está en estado “preparado”. La implementación pública actua
 
 El JSON Validator es la herramienta productiva implementada. La infraestructura de herramientas permite incorporar módulos adicionales mediante módulo tipado, componente, mensajes, contenido localizado publicado y metadatos de ruta definidos en `ToolDefinition` dentro del `ToolRegistry` canónico. El contenido editorial determina la disponibilidad por idioma; no almacena la autoridad de los slugs de ruta de la herramienta.
 
-El blog está publicado con un artículo y dos niveles de categorías en cuatro idiomas. La categoría raíz de herramientas `developer` solo tiene contenido público en inglés; sus adaptadores localizados permanecen listos para publicar cuando se añada el contenido editorial correspondiente.
+El blog está publicado con un artículo y dos niveles de categorías en cuatro idiomas. La categoría raíz de herramientas `developer` también tiene contenido público y rutas canónicas en los cuatro idiomas.
 
 _La clasificación “activo” describe el papel del archivo en la arquitectura y el build actual; no significa que cada módulo se ejecute en cada solicitud o página._

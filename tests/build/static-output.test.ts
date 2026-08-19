@@ -410,6 +410,12 @@ describe('static build output', () => {
       '<loc>https://4all.tools/developer/json-validator/</loc>',
     );
     expect(sitemapXml).toContain(
+      '<loc>https://4all.tools/pt/desenvolvedor/</loc>',
+    );
+    expect(sitemapXml).toContain(
+      '<loc>https://4all.tools/fr/developpement/</loc>',
+    );
+    expect(sitemapXml).toContain(
       '<loc>https://4all.tools/blog/development/json-guides/what-is-json/</loc>',
     );
     expect(sitemapXml).not.toContain('https://4all.tools/en/');

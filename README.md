@@ -6,19 +6,6 @@ Astro static site for localized web tools.
 
 P00-P19 are implemented in this repository: the Astro foundation, core i18n/domain contracts, taxonomy, content schemas and queries, localized routing, delivery templates, the JSON Validator vertical slice, validation/test guardrail slimming, the single tool registry, content-owned route publication, simplified composers, localized site-page publication, global footer navigation, the global responsive site header, selective runtime immutability, and scalable verification exist in source.
 
-## Canonical JSON Validator Routes
-
-These routes are canonical and must remain unchanged:
-
-```text
-/developer/json-validator/
-/es/desarrollo/validador-json/
-/pt/desenvolvedor/validador-json/
-/fr/developpement/validateur-json/
-```
-
-English is intentionally unprefixed. `/en/developer/json-validator/` is forbidden output and is covered by build tests.
-
 ## Architecture Entry Points
 
 - `src/i18n/config.ts` defines supported locales, prefixes, and locale display metadata.
@@ -86,7 +73,7 @@ Production and static-build route composition shares the same memoized published
 
 Site pages use the `sitePages` collection and the same exact published-content snapshot, route registry, SEO composition, language switcher, and neutral `[root]` one-segment adapter as the other page families. P18 publishes the stable identities `about`, `contact`, `privacy`, and `terms` in all four supported locales (16 Markdown entries). English remains unprefixed; localized route slugs are `/es/acerca-de/`, `/pt/sobre/`, and `/fr/a-propos/` for About, with equivalent Contact, Privacy, and Terms routes. About and Contact are indexable; Privacy and Terms are public but `noindex` and omitted from the indexable sitemap. `src/content/site/` remains reserved for code-owned singleton/shared copy, while `src/content/site-pages/` owns localized route-bearing Markdown. The shared `SiteFooter` presentation receives a prepared model whose links are resolved from `RouteRegistry`; no contact form, backend, API, or second sitemap inventory was introduced.
 
-P19 adds the global `SiteHeader.astro` presentation boundary for every normal public page. Its prepared `SiteHeaderModel` contains only the localized brand/Home link, the localized Blog index link, and the existing `LanguageSwitcher` model. Home and Blog URLs use the existing localized path builders; no new routes or parallel URL catalog are introduced. The header is responsive through static flex wrapping and has no hamburger, client state, or hydration. The public `RouteRecord` inventory remains 34 records, including 16 site-page records.
+P19 adds the global `SiteHeader.astro` presentation boundary for every normal public page. Its prepared `SiteHeaderModel` contains only the localized brand/Home link, the localized Blog index link, and the existing `LanguageSwitcher` model. Home and Blog URLs use the existing localized path builders; no new routes or parallel URL catalog are introduced. The header is responsive through static flex wrapping and has no hamburger, client state, or hydration. The public `RouteRecord` inventory contains 36 records, including 16 site-page records.
 
 Verification combines generic route/build invariants, a small set of home/category/blog/client-tool golden pages, and feature-specific behavior tests. Published locales receive generic render smoke coverage without duplicating identical interaction scenarios per locale.
 
@@ -106,20 +93,20 @@ Use Node.js 24. The canonical project version is defined in `.nvmrc`, and CI rea
 
 Run commands from the project root:
 
-| Command | Action |
-| :-- | :-- |
-| `npm ci` | Install dependencies from the lockfile |
-| `npm run dev` | Start the Astro development server |
-| `npm run check` | Run Astro and TypeScript checks |
-| `npm run test:unit` | Run unit tests |
-| `npm run test:integration` | Prepare the Astro content store and run integration tests |
-| `npm run test` | Run unit and integration tests |
-| `npm run test:build` | Build the site and run static output tests against `./dist/` |
-| `npm run test:e2e` | Run Playwright browser tests against the production build |
-| `npm run verify` | Run `check`, `validate:architecture`, `test`, `test:build`, and `test:e2e` |
-| `npm run build` | Build the static site to `./dist/` |
-| `npm run preview` | Preview the production build |
-| `npm run astro -- --help` | Show Astro CLI help |
+| Command                    | Action                                                                     |
+| :------------------------- | :------------------------------------------------------------------------- |
+| `npm ci`                   | Install dependencies from the lockfile                                     |
+| `npm run dev`              | Start the Astro development server                                         |
+| `npm run check`            | Run Astro and TypeScript checks                                            |
+| `npm run test:unit`        | Run unit tests                                                             |
+| `npm run test:integration` | Prepare the Astro content store and run integration tests                  |
+| `npm run test`             | Run unit and integration tests                                             |
+| `npm run test:build`       | Build the site and run static output tests against `./dist/`               |
+| `npm run test:e2e`         | Run Playwright browser tests against the production build                  |
+| `npm run verify`           | Run `check`, `validate:architecture`, `test`, `test:build`, and `test:e2e` |
+| `npm run build`            | Build the static site to `./dist/`                                         |
+| `npm run preview`          | Preview the production build                                               |
+| `npm run astro -- --help`  | Show Astro CLI help                                                        |
 
 Local phase-gate verification:
 

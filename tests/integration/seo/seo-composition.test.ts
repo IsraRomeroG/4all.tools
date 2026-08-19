@@ -84,7 +84,7 @@ describe('SEO page model composition', () => {
               : ['Accueil', 'Outils pour développeurs', 'JSON', 'Validateur JSON'],
       );
       expect(page.breadcrumbs.items.filter((item) => item.state === 'link')).toHaveLength(
-        page.locale === 'pt' || page.locale === 'fr' ? 1 : 2,
+        2,
       );
     }
   });
@@ -118,23 +118,34 @@ describe('SEO page model composition', () => {
         hrefLang: 'es',
         url: 'https://4all.tools/es/desarrollo/',
       },
+      {
+        locale: 'pt',
+        hrefLang: 'pt',
+        url: 'https://4all.tools/pt/desenvolvedor/',
+      },
+      {
+        locale: 'fr',
+        hrefLang: 'fr',
+        url: 'https://4all.tools/fr/developpement/',
+      },
     ]);
     expect(page.seo.xDefaultUrl).toBe('https://4all.tools/developer/');
     expect(page.localizedRouteCluster?.variants.map((variant) => variant.locale)).toEqual([
       'en',
       'es',
+      'pt',
+      'fr',
     ]);
     expect(page.siteHeader.languageSwitcher.items).toEqual([
       expect.objectContaining({ locale: 'en', state: 'current' }),
       expect.objectContaining({ locale: 'es', state: 'available', url: '/es/desarrollo/' }),
-      expect.objectContaining({ locale: 'pt', state: 'unavailable' }),
-      expect.objectContaining({ locale: 'fr', state: 'unavailable' }),
+      expect.objectContaining({ locale: 'pt', state: 'available', url: '/pt/desenvolvedor/' }),
+      expect.objectContaining({ locale: 'fr', state: 'available', url: '/fr/developpement/' }),
     ]);
     expect(
       page.siteHeader.languageSwitcher.items
         .filter((item) => item.state === 'unavailable')
-        .some((item) => 'url' in item),
-    ).toBe(false);
+    ).toEqual([]);
     expect(page.breadcrumbs.items).toEqual([
       { kind: 'home', state: 'link', label: 'Home', url: '/' },
       { kind: 'taxonomy', state: 'current', label: 'Developer Tools' },
