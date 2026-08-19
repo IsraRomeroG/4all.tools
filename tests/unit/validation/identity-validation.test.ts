@@ -4,7 +4,7 @@ import type { ContentSourceSnapshot } from '@/content/queries';
 import { blogTaxonomy } from '@/domain/taxonomy/blog/registry';
 import type { ToolDefinition } from '@/domain/tools';
 import { toolTaxonomy } from '@/domain/taxonomy/tools/registry';
-import { jsonValidatorDefinition } from '@/features/tools/developer/json/json-validator/tool.config';
+import { jsonValidatorDefinition } from '@/features/tools/developer/json/json-formatter-validator/tool.config';
 import {
   jsonValidatorModule,
   type ToolModule,

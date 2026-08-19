@@ -228,23 +228,23 @@ describe('published content indexes', () => {
   it('uses prepared indexes for route publication without repeated source loads', async () => {
     const source = contentSource({
       tools: [
-        entry('tools/en/developer/json-validator', {
-          toolId: 'json-validator',
+        entry('tools/en/developer/json-formatter-validator', {
+          toolId: 'json-formatter-validator',
           locale: 'en',
           status: 'published',
         }),
-        entry('tools/es/developer/json-validator', {
-          toolId: 'json-validator',
+        entry('tools/es/developer/json-formatter-validator', {
+          toolId: 'json-formatter-validator',
           locale: 'es',
           status: 'published',
         }),
-        entry('tools/pt/developer/json-validator', {
-          toolId: 'json-validator',
+        entry('tools/pt/developer/json-formatter-validator', {
+          toolId: 'json-formatter-validator',
           locale: 'pt',
           status: 'published',
         }),
-        entry('tools/fr/developer/json-validator', {
-          toolId: 'json-validator',
+        entry('tools/fr/developer/json-formatter-validator', {
+          toolId: 'json-formatter-validator',
           locale: 'fr',
           status: 'published',
         }),

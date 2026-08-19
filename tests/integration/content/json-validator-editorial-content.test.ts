@@ -14,13 +14,13 @@ const EXPECTED_TITLES = {
   fr: 'Validateur JSON',
 } as const satisfies Record<Locale, string>;
 
-describe('json-validator localized editorial content', () => {
+describe('json-formatter-validator localized editorial content', () => {
   it('publishes one physical content file for each supported locale', async () => {
     for (const locale of LOCALES) {
       const content = await readToolContent(locale);
       const { frontmatter } = splitMarkdown(content);
 
-      expect(frontmatter).toContain('toolId: json-validator');
+      expect(frontmatter).toContain('toolId: json-formatter-validator');
       expect(frontmatter).toContain(`locale: ${locale}`);
       expect(frontmatter).toContain('status: published');
       expect(frontmatter).toContain(`title: ${EXPECTED_TITLES[locale]}`);
@@ -82,7 +82,7 @@ describe('json-validator localized editorial content', () => {
 async function readToolContent(locale: Locale): Promise<string> {
   return readFile(
     new URL(
-      `src/content/tools/${locale}/developer/json/json-validator.md`,
+      `src/content/tools/${locale}/developer/json/json-formatter-validator.md`,
       PROJECT_ROOT,
     ),
     'utf8',

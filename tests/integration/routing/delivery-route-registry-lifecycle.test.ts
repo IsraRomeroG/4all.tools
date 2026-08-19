@@ -152,7 +152,7 @@ describe('delivery route registry content-index lifecycle', () => {
     });
 
     const registry = await getDeliveryRouteRegistry();
-    const content = await getPublishedToolContent('json-validator', 'en');
+    const content = await getPublishedToolContent('json-formatter-validator', 'en');
 
     expect(paths(registry)).toEqual([
       'en:developer',
@@ -161,7 +161,7 @@ describe('delivery route registry content-index lifecycle', () => {
       'pt:desenvolvedor/validador-json',
       'fr:developpement/validateur-json',
     ]);
-    expect(content?.id).toBe('tools/en/developer/json/json-validator');
+    expect(content?.id).toBe('tools/en/developer/json/json-formatter-validator');
     expect(mocks.getCollection.mock.calls.map(([collection]) => collection))
       .toEqual(['tools', 'toolCategories', 'blog', 'blogCategories', 'sitePages']);
   });
@@ -171,8 +171,8 @@ describe('delivery route registry content-index lifecycle', () => {
       contentSource({
         tools: [
           publishedTool('en'),
-          entry('tools/en/duplicates/json-validator', {
-            toolId: 'json-validator',
+          entry('tools/en/duplicates/json-formatter-validator', {
+            toolId: 'json-formatter-validator',
             locale: 'en',
             status: 'published',
           }),
@@ -196,12 +196,12 @@ describe('delivery route registry content-index lifecycle', () => {
     expect((caughtError as AmbiguousContentError).context).toMatchObject({
       collection: 'tools',
       entityField: 'toolId',
-      entityId: 'json-validator',
+      entityId: 'json-formatter-validator',
       locale: 'en',
       status: 'published',
       matchedEntryIds: [
-        'tools/en/developer/json/json-validator',
-        'tools/en/duplicates/json-validator',
+        'tools/en/developer/json/json-formatter-validator',
+        'tools/en/duplicates/json-formatter-validator',
       ],
     });
   });
@@ -286,8 +286,8 @@ function mockAstroCollections(fixtures: CollectionFixtures): void {
 }
 
 function publishedTool(locale: Locale) {
-  return entry(`tools/${locale}/developer/json/json-validator`, {
-    toolId: 'json-validator',
+  return entry(`tools/${locale}/developer/json/json-formatter-validator`, {
+    toolId: 'json-formatter-validator',
     locale,
     status: 'published',
   });

@@ -23,7 +23,7 @@ export const PUBLIC_ROUTE_INVENTORY = [
     area: 'tools',
     locale: 'en',
     segments: ['developer', 'json-validator'],
-    target: { kind: 'tool', toolId: 'json-validator' },
+    target: { kind: 'tool', toolId: 'json-formatter-validator' },
   },
   {
     area: 'blog',
@@ -77,7 +77,7 @@ export const PUBLIC_ROUTE_INVENTORY = [
     area: 'tools',
     locale: 'es',
     segments: ['desarrollo', 'validador-json'],
-    target: { kind: 'tool', toolId: 'json-validator' },
+    target: { kind: 'tool', toolId: 'json-formatter-validator' },
   },
   {
     area: 'blog',
@@ -131,7 +131,7 @@ export const PUBLIC_ROUTE_INVENTORY = [
     area: 'tools',
     locale: 'pt',
     segments: ['desenvolvedor', 'validador-json'],
-    target: { kind: 'tool', toolId: 'json-validator' },
+    target: { kind: 'tool', toolId: 'json-formatter-validator' },
   },
   {
     area: 'blog',
@@ -185,7 +185,7 @@ export const PUBLIC_ROUTE_INVENTORY = [
     area: 'tools',
     locale: 'fr',
     segments: ['developpement', 'validateur-json'],
-    target: { kind: 'tool', toolId: 'json-validator' },
+    target: { kind: 'tool', toolId: 'json-formatter-validator' },
   },
   {
     area: 'blog',

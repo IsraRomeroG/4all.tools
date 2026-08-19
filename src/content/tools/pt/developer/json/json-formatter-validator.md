@@ -1,5 +1,5 @@
 ---
-toolId: json-validator
+toolId: json-formatter-validator
 locale: pt
 status: published
 

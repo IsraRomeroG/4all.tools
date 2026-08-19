@@ -282,9 +282,9 @@ describe('static build output', () => {
       expect(html).toContain('How to use the JSON Validator');
       expect(html).toContain('data-json-validator');
       expect(html).toContain('data-locale="en"');
-      expect(html).toContain('data-template-identity="json-validator"');
-      expect(html).toContain('id="tool-json-validator-en-help"');
-      expect(html).toContain('id="tool-json-validator-en-status"');
+      expect(html).toContain('data-template-identity="json-formatter-validator"');
+      expect(html).toContain('id="tool-json-formatter-validator-en-help"');
+      expect(html).toContain('id="tool-json-formatter-validator-en-status"');
       expect(html).not.toContain('/en/developer/json-validator/');
       expect(html).not.toContain('developer/data-formats/json/json-validator');
   });

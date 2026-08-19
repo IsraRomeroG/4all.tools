@@ -56,7 +56,7 @@ describe('template foundation', () => {
             segments: ['desarrollo', 'validador-json'],
             target: {
               kind: 'tool',
-              toolId: 'json-validator',
+              toolId: 'json-formatter-validator',
             },
           }),
           documentTitle: 'Documento de herramienta',
@@ -67,7 +67,7 @@ describe('template foundation', () => {
           }),
           siteHeader: siteHeader('es'),
           breadcrumbs: breadcrumbs('es', 'Validador JSON', 'entity'),
-          toolId: 'json-validator',
+          toolId: 'json-formatter-validator',
           title: 'Validador JSON',
           description: 'Valida documentos JSON desde un modelo preparado.',
           messages: getGlobalMessages('es'),
@@ -80,7 +80,7 @@ describe('template foundation', () => {
             },
           },
           presentation: {
-            toolId: 'json-validator',
+            toolId: 'json-formatter-validator',
             primaryCategoryId: 'json',
             executionType: 'client',
           },
@@ -94,11 +94,11 @@ describe('template foundation', () => {
     });
 
     expect(html).toContain('<html lang="es" dir="ltr">');
-    expect(html).toContain('data-template-identity="json-validator"');
+    expect(html).toContain('data-template-identity="json-formatter-validator"');
     expect(html).toContain('Validador JSON');
     expect(html).toContain('Espacio de trabajo de la herramienta');
     expect(html).toContain('data-fixture-rendered-content');
-    expect(html).not.toContain('text-slate-600" data-template-identity="json-validator">json-validator</p>');
+    expect(html).not.toContain('text-slate-600" data-template-identity="json-formatter-validator">json-formatter-validator</p>');
     expect(html).not.toContain('unrelated');
   });
 
@@ -115,7 +115,7 @@ describe('template foundation', () => {
             segments: ['developer', 'json-validator'],
             target: {
               kind: 'tool',
-              toolId: 'json-validator',
+              toolId: 'json-formatter-validator',
             },
           }),
           seo: seo({
@@ -125,7 +125,7 @@ describe('template foundation', () => {
           }),
           siteHeader: siteHeader('en'),
           breadcrumbs: breadcrumbs('en', 'JSON Validator', 'entity'),
-          toolId: 'json-validator',
+          toolId: 'json-formatter-validator',
           title: 'JSON Validator',
           messages: getGlobalMessages('en'),
           content: {
@@ -137,7 +137,7 @@ describe('template foundation', () => {
             },
           },
           presentation: {
-            toolId: 'json-validator',
+            toolId: 'json-formatter-validator',
             primaryCategoryId: 'json',
             executionType: 'client',
           },

@@ -99,7 +99,7 @@ describe('json-validator end-to-end route integration', () => {
       const expected = EXPECTED[locale];
       const record = registry.getCanonical(locale, {
         kind: 'tool',
-        toolId: 'json-validator',
+        toolId: 'json-formatter-validator',
       });
 
       expect(record).toMatchObject({
@@ -108,9 +108,9 @@ describe('json-validator end-to-end route integration', () => {
         segments: expected.segments,
         target: {
           kind: 'tool',
-          toolId: 'json-validator',
+          toolId: 'json-formatter-validator',
         },
-        sourceId: `tool-content:${locale}/developer/json/json-validator`,
+        sourceId: `tool-content:${locale}/developer/json/json-formatter-validator`,
       });
       expect(record?.segments).not.toContain('data-formats');
       expect(record?.segments).not.toContain('json');
@@ -119,7 +119,7 @@ describe('json-validator end-to-end route integration', () => {
     expect(
       registry.getByTarget({
         kind: 'tool',
-        toolId: 'json-validator',
+        toolId: 'json-formatter-validator',
       }).map((record) => `${record.locale}:${record.segments.join('/')}`),
     ).toEqual([
       'en:developer/json-validator',
@@ -139,7 +139,7 @@ describe('json-validator end-to-end route integration', () => {
         props: {
           routeTarget: {
             kind: 'tool',
-            toolId: 'json-validator',
+            toolId: 'json-formatter-validator',
           },
         },
       });
@@ -158,13 +158,13 @@ describe('json-validator end-to-end route integration', () => {
         props: {
           routeTarget: {
             kind: 'tool',
-            toolId: 'json-validator',
+            toolId: 'json-formatter-validator',
           },
         },
       });
 
       expect(html).toContain(`<html lang="${locale}" dir="ltr">`);
-      expect(html).toContain('data-template-identity="json-validator"');
+      expect(html).toContain('data-template-identity="json-formatter-validator"');
       expect(html).toContain('data-json-validator');
       expect(html).toContain(expected.title);
       expect(html).toContain(expected.label);
@@ -185,7 +185,7 @@ describe('json-validator end-to-end route integration', () => {
 
     expect(route?.target).toEqual({
       kind: 'tool',
-      toolId: 'json-validator',
+      toolId: 'json-formatter-validator',
     });
 
     if (route?.target.kind !== 'tool') {
@@ -202,14 +202,14 @@ describe('json-validator end-to-end route integration', () => {
       throw new Error('Expected Spanish JSON Validator page model to be a tool.');
     }
 
-    expect(page.toolId).toBe('json-validator');
+    expect(page.toolId).toBe('json-formatter-validator');
     expect(page.route.segments).toEqual(['desarrollo', 'validador-json']);
     expect(page.presentation).toEqual({
-      toolId: 'json-validator',
+      toolId: 'json-formatter-validator',
       primaryCategoryId: 'json',
       executionType: 'client',
     });
-    expect(getToolDefinition(page.toolId).id).toBe('json-validator');
+    expect(getToolDefinition(page.toolId).id).toBe('json-formatter-validator');
     const module = getToolModule(page.toolId);
     expect(module.component).toBeTypeOf('function');
     expect(module.getMessages(page.locale)).toMatchObject({
@@ -246,7 +246,7 @@ describe('json-validator end-to-end route integration', () => {
       props: {
         routeTarget: {
           kind: 'tool',
-          toolId: 'json-validator',
+          toolId: 'json-formatter-validator',
         },
       },
     });

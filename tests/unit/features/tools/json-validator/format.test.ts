@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { formatJson } from '@/features/tools/developer/json/json-validator/engine';
+import { formatJson } from '@/features/tools/developer/json/json-formatter-validator/engine';
 
 import {
   ARRAY_JSON_FORMATTED,

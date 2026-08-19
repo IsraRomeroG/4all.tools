@@ -27,7 +27,7 @@ describe('P08 production blog vertical slice', () => {
       expect(article?.data.seo.noindex).toBe(false);
       expect(article?.data.secondaryCategoryIds).toEqual([]);
       expect(article?.data.relatedArticleIds).toEqual([]);
-      expect(article?.data.relatedToolIds).toEqual(['json-validator']);
+      expect(article?.data.relatedToolIds).toEqual(['json-formatter-validator']);
       expect(article?.data.publishedAt.toISOString()).toBe(
         '2026-07-21T00:00:00.000Z',
       );

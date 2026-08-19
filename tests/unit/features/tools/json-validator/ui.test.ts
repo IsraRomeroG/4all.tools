@@ -1,8 +1,8 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 
-import JsonValidatorTool from '@/features/tools/developer/json/json-validator/Tool.astro';
-import { getJsonValidatorMessages } from '@/features/tools/developer/json/json-validator/messages/registry';
+import JsonValidatorTool from '@/features/tools/developer/json/json-formatter-validator/Tool.astro';
+import { getJsonValidatorMessages } from '@/features/tools/developer/json/json-formatter-validator/messages/registry';
 import { jsonValidatorModule } from '@/features/tools/registry';
 
 describe('json validator tool UI', () => {

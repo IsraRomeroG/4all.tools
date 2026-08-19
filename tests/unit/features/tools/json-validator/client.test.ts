@@ -4,8 +4,8 @@ import {
   runJsonValidatorAction,
   type ClipboardWriter,
   type JsonValidatorClientContext,
-} from '@/features/tools/developer/json/json-validator/client';
-import { getJsonValidatorMessages } from '@/features/tools/developer/json/json-validator/messages/registry';
+} from '@/features/tools/developer/json/json-formatter-validator/client';
+import { getJsonValidatorMessages } from '@/features/tools/developer/json/json-formatter-validator/messages/registry';
 
 describe('json validator client adapter', () => {
   it('validates valid and invalid input without replacing editor text', async () => {

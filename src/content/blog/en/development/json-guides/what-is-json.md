@@ -20,7 +20,7 @@ publishedAt: 2026-07-21T00:00:00.000Z
 
 relatedArticleIds: []
 relatedToolIds:
-  - json-validator
+  - json-formatter-validator
 ---
 
 JSON is a text-based format for exchanging structured data. It is deliberately

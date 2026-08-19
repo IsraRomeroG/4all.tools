@@ -22,7 +22,7 @@ describe('SEO page model composition', () => {
           locale,
           {
             kind: 'tool',
-            toolId: 'json-validator',
+            toolId: 'json-formatter-validator',
           },
           {
             routeRegistry: registry,
@@ -158,7 +158,7 @@ describe('SEO page model composition', () => {
       'es',
       {
         kind: 'tool',
-        toolId: 'json-validator',
+        toolId: 'json-formatter-validator',
       },
       {
         routeRegistry: registry,

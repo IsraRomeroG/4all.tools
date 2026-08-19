@@ -20,7 +20,7 @@ publishedAt: 2026-07-21T00:00:00.000Z
 
 relatedArticleIds: []
 relatedToolIds:
-  - json-validator
+  - json-formatter-validator
 ---
 
 JSON est un format texte utilisé pour échanger des données structurées. Un

@@ -13,7 +13,7 @@ describe('tool content collections', () => {
     for (const locale of ['en', 'es', 'pt', 'fr'] as const) {
       await expect(
         readdir(new URL(`${locale}/developer/json/`, TOOL_CONTENT_DIR)),
-      ).resolves.toContain('json-validator.md');
+      ).resolves.toContain('json-formatter-validator.md');
     }
 
     for (const locale of ['en', 'es', 'pt', 'fr'] as const) {

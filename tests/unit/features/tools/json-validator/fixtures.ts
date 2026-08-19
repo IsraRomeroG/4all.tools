@@ -1,4 +1,4 @@
-import type { JsonValue } from '@/features/tools/developer/json/json-validator/types';
+import type { JsonValue } from '@/features/tools/developer/json/json-formatter-validator/types';
 
 export const VALID_JSON_FIXTURES = [
   {

@@ -139,7 +139,7 @@ describe('English route adapters', () => {
       props: {
         routeTarget: {
           kind: 'tool',
-          toolId: 'json-validator',
+          toolId: 'json-formatter-validator',
         },
       },
     });

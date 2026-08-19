@@ -27,7 +27,7 @@ const PROJECT_ROOT = new URL('../../../../', import.meta.url);
 
 describe('canonical tool registry', () => {
   it('registers every production tool through the canonical module projections', () => {
-    expect(toolRegistry.get('json-validator')).toBe(jsonValidatorModule);
+    expect(toolRegistry.get('json-formatter-validator')).toBe(jsonValidatorModule);
 
     for (const module of TOOL_MODULES) {
       expect(toolRegistry.get(module.definition.id)).toBe(module);
@@ -41,14 +41,14 @@ describe('canonical tool registry', () => {
   });
 
   it('resolves the component and localized messages through the same module', () => {
-    const module = toolRegistry.get('json-validator');
+    const module = toolRegistry.get('json-formatter-validator');
 
     expect(module.component).toBeTypeOf('function');
     expect(module.getMessages('en')).toMatchObject({
       input: { label: 'Input JSON' },
       actions: { validate: 'Validate JSON' },
     });
-    expect(getToolModule('json-validator')).toBe(module);
+    expect(getToolModule('json-formatter-validator')).toBe(module);
   });
 
   it('validates every registered locale and renders every registered component', async () => {
@@ -112,7 +112,7 @@ describe('canonical tool registry', () => {
 
     expect(registry.getAll().map((module) => module.definition.id)).toEqual([
       'json-formatter',
-      'json-validator',
+      'json-formatter-validator',
     ]);
     expect(() =>
       createToolRegistry([jsonValidatorModule, jsonValidatorModule]),
