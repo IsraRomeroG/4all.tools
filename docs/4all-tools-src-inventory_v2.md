@@ -84,7 +84,7 @@ P18 publica exactamente 16 entradas Markdown: `about`, `contact`, `privacy` y `t
 | `src/content/tool-categories/{en,es,pt,fr}/developer.md` | Contenido localizado de la categoría pública de herramientas `developer`. | Activo y público |
 | `src/content/blog/{en,es,pt,fr}/development/json-guides/what-is-json.md` | Artículo localizado “What is JSON?” en los cuatro idiomas. | Activo y público |
 | `src/content/blog-categories/{en,es,pt,fr}/development.md` | Categoría raíz localizada `development`. | Activo y público |
-| `src/content/blog-categories/{en,es,pt,fr}/json-guides.md` | Categoría localizada `json-guides`. | Activo y público |
+| `src/content/blog-categories/{en,es,pt,fr}/development/json-guides.md` | Categoría localizada `json-guides`. | Activo y público |
 | `src/content/schemas/shared.ts` | Schemas comunes para locale, publicación, fechas y SEO. | Activo |
 | `src/content/schemas/tools.ts` | Schemas de herramientas y categorías de herramientas. | Activo |
 | `src/content/schemas/blog.ts` | Schemas de artículos y categorías del blog. | Activo |

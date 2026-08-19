@@ -7,7 +7,7 @@ const BLOG_FIXTURE_DIR = new URL(
   import.meta.url,
 );
 const BLOG_CATEGORY_FIXTURE_DIR = new URL(
-  '../../../src/content/blog-categories/en/',
+  '../../../src/content/blog-categories/en/development/',
   import.meta.url,
 );
 

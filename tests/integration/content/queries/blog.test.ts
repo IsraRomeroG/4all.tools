@@ -68,7 +68,7 @@ describe('blog content query services', () => {
         }),
       ],
       blogCategories: [
-        entry('blog-categories/en/json-guides', {
+        entry('blog-categories/en/development/json-guides', {
           categoryId: 'json-guides',
           locale: 'en',
           status: 'published',
@@ -171,7 +171,7 @@ describe('blog content query services', () => {
 
   it('finds published blog-category content by BlogCategoryId and locale', async () => {
     await expect(getPublishedBlogCategoryContent('json-guides', 'en')).resolves.toMatchObject({
-      id: 'blog-categories/en/json-guides',
+      id: 'blog-categories/en/development/json-guides',
       data: {
         categoryId: 'json-guides',
         locale: 'en',
