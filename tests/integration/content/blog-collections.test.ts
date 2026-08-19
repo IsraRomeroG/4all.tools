@@ -3,7 +3,7 @@ import { readdir } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 
 const BLOG_FIXTURE_DIR = new URL(
-  '../../../src/content/blog/en/development/',
+  '../../../src/content/blog/en/development/json-guides/',
   import.meta.url,
 );
 const BLOG_CATEGORY_FIXTURE_DIR = new URL(

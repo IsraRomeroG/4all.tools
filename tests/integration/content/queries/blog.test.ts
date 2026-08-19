@@ -46,12 +46,12 @@ describe('blog content query services', () => {
 
     collections = {
       blog: [
-        entry('blog/en/development/what-is-json', {
+        entry('blog/en/development/json-guides/what-is-json', {
           articleId: 'what-is-json',
           locale: 'en',
           status: 'published',
         }),
-        entry('blog/es/development/what-is-json', {
+        entry('blog/es/development/json-guides/what-is-json', {
           articleId: 'what-is-json',
           locale: 'es',
           status: 'published',
@@ -90,7 +90,7 @@ describe('blog content query services', () => {
 
   it('finds a published article by ArticleId and locale', async () => {
     await expect(getPublishedArticleContent('what-is-json', 'en')).resolves.toMatchObject({
-      id: 'blog/en/development/what-is-json',
+      id: 'blog/en/development/json-guides/what-is-json',
       data: {
         articleId: 'what-is-json',
         locale: 'en',
@@ -100,7 +100,7 @@ describe('blog content query services', () => {
 
   it('resolves the same ArticleId separately across locales', async () => {
     await expect(getPublishedArticleContent('what-is-json', 'es')).resolves.toMatchObject({
-      id: 'blog/es/development/what-is-json',
+      id: 'blog/es/development/json-guides/what-is-json',
       data: {
         articleId: 'what-is-json',
         locale: 'es',
@@ -124,7 +124,7 @@ describe('blog content query services', () => {
 
   it('filters drafts before resolving published article cardinality', async () => {
     await expect(getPublishedArticleContent('what-is-json', 'es')).resolves.toMatchObject({
-      id: 'blog/es/development/what-is-json',
+      id: 'blog/es/development/json-guides/what-is-json',
     });
   });
 
@@ -162,7 +162,7 @@ describe('blog content query services', () => {
         entityId: 'what-is-json',
         locale: 'es',
         matchedEntryIds: [
-          'blog/es/development/what-is-json',
+          'blog/es/development/json-guides/what-is-json',
           'blog/es/duplicate/what-is-json',
         ],
       });
